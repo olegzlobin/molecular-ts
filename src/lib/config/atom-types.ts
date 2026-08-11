@@ -86,14 +86,14 @@ export function createDefaultTypesConfig(): TypesConfig {
     FREQUENCIES: [1, 1, 1],
     RADIUS: [1, 1, 0.6],
     GRAVITY: [
-      [-3, 0, 1],
+      [-2, 0, 1],
       [0, 0, 0],
-      [1, 0, -3],
+      [1, 0, -2],
     ],
     LINK_GRAVITY: [
-      [1, 1, -1],
+      [-10, 1, 0],
       [1, 1, 0],
-      [-1, 0, -10],
+      [0, 0, -10],
     ],
     LINKS: [7, 7, 1],
     TYPE_LINKS: [
@@ -107,13 +107,13 @@ export function createDefaultTypesConfig(): TypesConfig {
       [1, 1, 1],
     ],
     LINK_LENGTH: [0.3, 0.3, 1.2],
-    LINK_STIFFNESS: [1, 1, 0.6],
+    LINK_STIFFNESS: [1, 1.4, 0.6],
     LINK_FACTOR_DISTANCE: createFilledTensor(3, 3, 3, 1),
     LINK_FACTOR_ELASTIC: createFilledTensor(3, 3, 3, 1),
-    TRANSFORMATION: {},
+    TRANSFORMS: {},
     DECAYS: {
       1: {
-        halfLife: 40,
+        halfLife: 240,
         to: 0,
         secondary: 2,
         stabilizers: [0],
