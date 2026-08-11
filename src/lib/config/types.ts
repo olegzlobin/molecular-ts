@@ -73,6 +73,7 @@ export type WorldConfig = {
   MAX_LINK_RADIUS: number;
   MAX_FORCE: number,
   GRAVITY_FORCE_MULTIPLIER: number;
+  WORLD_GRAVITY: number;
   LINK_FORCE_MULTIPLIER: number;
   BOUNCE_FORCE_MULTIPLIER: number;
   BOUNDS_FORCE_MULTIPLIER: number;

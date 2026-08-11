@@ -107,6 +107,13 @@ watch(() => configStore.worldConfig.VIEW_MODE, () => {
       </div>
       <div>
         <input-header
+          name="World Gravity"
+          tooltip="Constant downward acceleration (positive Y). 0 disables it. Scaled by Speed."
+        />
+        <input type="number" v-model="worldConfig.WORLD_GRAVITY" step="0.0001" />
+      </div>
+      <div>
+        <input-header
           name="Link Force Multiplier"
           tooltip="Parameter by which the link elastic force is multiplied."
         />

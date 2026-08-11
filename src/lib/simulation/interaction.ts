@@ -47,6 +47,11 @@ export class InteractionManager implements InteractionManagerInterface {
     // Apply temperature
     this.handleTemperature(atom);
 
+    const worldGravity = this.WORLD_CONFIG.WORLD_GRAVITY;
+    if (worldGravity) {
+      atom.speed[1] += worldGravity * this.WORLD_CONFIG.SPEED;
+    }
+
     // Apply speed
     atom.position.add(atom.speed);
 

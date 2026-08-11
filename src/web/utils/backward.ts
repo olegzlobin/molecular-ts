@@ -6,6 +6,9 @@ export function convertWorldConfigForBackwardCompatibility(inputConfig: WorldCon
   if (config.DECAY_SPLITS_VELOCITY === undefined) {
     config.DECAY_SPLITS_VELOCITY = 1;
   }
+  if (config.WORLD_GRAVITY === undefined) {
+    config.WORLD_GRAVITY = 0;
+  }
   return config;
 }
 
