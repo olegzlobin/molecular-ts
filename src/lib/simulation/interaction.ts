@@ -103,11 +103,13 @@ export class InteractionManager implements InteractionManagerInterface {
     }
 
     const dist = Math.sqrt(dist2);
-    const force = this.normalizeForce(this.physicModel.getGravityForce(lhs, rhs, dist2));
-    for (let i=0; i<distVector.length; ++i) {
-      distVector[i] = distVector[i] / dist * force;
+    if (dist > 0) {
+      const force = this.normalizeForce(this.physicModel.getGravityForce(lhs, rhs, dist2));
+      for (let i=0; i<distVector.length; ++i) {
+        distVector[i] = distVector[i] / dist * force;
+      }
+      lhs.speed.add(distVector);
     }
-    lhs.speed.add(distVector);
 
     if (
       !lhs.bonds.has(rhs) &&
@@ -238,7 +240,7 @@ export class InteractionManager implements InteractionManagerInterface {
     for (let i = 0; i < distVector.length; ++i) {
       dist += distVector[i] ** 2;
     }
-    return dist < 1 ? 1 : dist;
+    return dist;
   }
 
   private getDistVector(lhs: AtomInterface, rhs: AtomInterface): NumericVector {

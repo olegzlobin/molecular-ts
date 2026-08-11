@@ -32,7 +32,7 @@ export class PhysicModelV2 implements PhysicModelInterface {
       multiplier = this.WORLD_CONFIG.GRAVITY_FORCE_MULTIPLIER * this.TYPES_CONFIG.LINK_GRAVITY[lhs.type][rhs.type];
     }
 
-    const gravityForce = multiplier / dist2;
+    const gravityForce = multiplier / Math.max(dist2, 1);
 
     return (gravityForce + bounceForce) * this.geometry.getMassMultiplier(lhs, rhs);
   }
