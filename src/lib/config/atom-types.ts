@@ -106,6 +106,8 @@ export function createDefaultTypesConfig(): TypesConfig {
       [1, 1, 1],
       [1, 1, 1],
     ],
+    LINK_LENGTH: [1, 1, 1.2],
+    LINK_STIFFNESS: [1, 1, 0.6],
     LINK_FACTOR_DISTANCE: createFilledTensor(3, 3, 3, 1),
     LINK_FACTOR_ELASTIC: createFilledTensor(3, 3, 3, 1),
     TRANSFORMATION: {},
@@ -128,6 +130,8 @@ export function createTransparentTypesConfig(typesCount: number): TypesConfig {
     LINKS: createFilledArray(typesCount, 0),
     TYPE_LINKS: createFilledMatrix(typesCount, typesCount, 0),
     TYPE_LINK_WEIGHTS: createFilledMatrix(typesCount, typesCount, 1),
+    LINK_LENGTH: createFilledArray(typesCount, 1),
+    LINK_STIFFNESS: createFilledArray(typesCount, 1),
     LINK_FACTOR_DISTANCE: createFilledTensor(typesCount, typesCount, typesCount, 1),
     LINK_FACTOR_ELASTIC: createFilledTensor(typesCount, typesCount, typesCount, 1),
     FREQUENCIES: createFilledArray(typesCount, 1),
@@ -147,6 +151,8 @@ export function createSingleTypeConfig(): TypesConfig {
     LINKS: [0],
     TYPE_LINKS: [[0]],
     TYPE_LINK_WEIGHTS: [[1]],
+    LINK_LENGTH: [1],
+    LINK_STIFFNESS: [1],
     LINK_FACTOR_DISTANCE: [[[1]]],
     LINK_FACTOR_ELASTIC: [[[1]]],
     TRANSFORMATION: {},
@@ -163,6 +169,8 @@ export function createRandomTypesConfig({
   LINK_BOUNDS,
   LINK_TYPE_BOUNDS,
   LINK_TYPE_WEIGHT_BOUNDS,
+  LINK_LENGTH_BOUNDS,
+  LINK_STIFFNESS_BOUNDS,
   LINK_FACTOR_DISTANCE_BOUNDS,
   LINK_FACTOR_ELASTIC_BOUNDS,
   GRAVITY_MATRIX_SYMMETRIC,
@@ -223,6 +231,16 @@ export function createRandomTypesConfig({
     precision,
   );
 
+  const linkLength: number[] = [];
+  for (let i=0; i<TYPES_COUNT; ++i) {
+    linkLength.push(createRandomFloat(LINK_LENGTH_BOUNDS, precision));
+  }
+
+  const linkStiffness: number[] = [];
+  for (let i=0; i<TYPES_COUNT; ++i) {
+    linkStiffness.push(createRandomFloat(LINK_STIFFNESS_BOUNDS, precision));
+  }
+
   const linkFactorDistance: LinkFactorDistanceConfig = [];
 
   for (let i=0; i<TYPES_COUNT; ++i) {
@@ -263,6 +281,8 @@ export function createRandomTypesConfig({
     LINKS: links,
     TYPE_LINKS: typeLinks,
     TYPE_LINK_WEIGHTS: typeLinkWeights,
+    LINK_LENGTH: linkLength,
+    LINK_STIFFNESS: linkStiffness,
     LINK_FACTOR_DISTANCE: linkFactorDistance,
     LINK_FACTOR_ELASTIC: linkFactorElastic,
     COLORS: createColors(TYPES_COUNT),
@@ -280,6 +300,8 @@ export function createRandomIntTypesConfig({
   LINK_BOUNDS,
   LINK_TYPE_BOUNDS,
   LINK_TYPE_WEIGHT_BOUNDS,
+  LINK_LENGTH_BOUNDS,
+  LINK_STIFFNESS_BOUNDS,
   LINK_FACTOR_DISTANCE_BOUNDS,
   LINK_FACTOR_ELASTIC_BOUNDS,
   GRAVITY_MATRIX_SYMMETRIC,
@@ -338,6 +360,16 @@ export function createRandomIntTypesConfig({
     0,
   );
 
+  const linkLength: number[] = [];
+  for (let i=0; i<TYPES_COUNT; ++i) {
+    linkLength.push(createRandomInteger([LINK_LENGTH_BOUNDS[0], LINK_LENGTH_BOUNDS[1]]));
+  }
+
+  const linkStiffness: number[] = [];
+  for (let i=0; i<TYPES_COUNT; ++i) {
+    linkStiffness.push(createRandomInteger([LINK_STIFFNESS_BOUNDS[0], LINK_STIFFNESS_BOUNDS[1]]));
+  }
+
   const linkFactorDistance: LinkFactorDistanceConfig = [];
 
   for (let i=0; i<TYPES_COUNT; ++i) {
@@ -378,6 +410,8 @@ export function createRandomIntTypesConfig({
     LINKS: links,
     TYPE_LINKS: typeLinks,
     TYPE_LINK_WEIGHTS: typeLinkWeights,
+    LINK_LENGTH: linkLength,
+    LINK_STIFFNESS: linkStiffness,
     LINK_FACTOR_DISTANCE: linkFactorDistance,
     LINK_FACTOR_ELASTIC: linkFactorElastic,
     COLORS: createColors(TYPES_COUNT),
@@ -397,6 +431,8 @@ export function createDefaultRandomTypesConfig(typesCount: number): RandomTypesC
     USE_LINK_BOUNDS: true,
     USE_LINK_TYPE_BOUNDS: true,
     USE_LINK_TYPE_WEIGHT_BOUNDS: true,
+    USE_LINK_LENGTH_BOUNDS: true,
+    USE_LINK_STIFFNESS_BOUNDS: true,
     USE_LINK_FACTOR_DISTANCE_BOUNDS: true,
     USE_LINK_FACTOR_ELASTIC_BOUNDS: true,
 
@@ -407,6 +443,8 @@ export function createDefaultRandomTypesConfig(typesCount: number): RandomTypesC
     LINK_BOUNDS: [1, 8, 3],
     LINK_TYPE_BOUNDS: [0, 4, 2],
     LINK_TYPE_WEIGHT_BOUNDS: [0.5, 2, 1, 0.5],
+    LINK_LENGTH_BOUNDS: [0.7, 1.3, 1, 0.1],
+    LINK_STIFFNESS_BOUNDS: [0.5, 1.2, 1, 0.1],
     LINK_FACTOR_DISTANCE_BOUNDS: [0.7, 1.2, 1, 0.1],
     LINK_FACTOR_ELASTIC_BOUNDS: [0.5, 1, 1, 0.1],
 
@@ -504,6 +542,14 @@ export function randomizeTypesConfig(
 
   if (!randomTypesConfig.USE_LINK_BOUNDS || skipSubMatricesBoundaryIndex !== undefined) {
     copyConfigListValue(oldConfig.LINKS, newConfig.LINKS, 0);
+  }
+
+  if (!randomTypesConfig.USE_LINK_LENGTH_BOUNDS || skipSubMatricesBoundaryIndex !== undefined) {
+    copyConfigListValue(oldConfig.LINK_LENGTH ?? createFilledArray(oldConfig.RADIUS.length, 1), newConfig.LINK_LENGTH, 1);
+  }
+
+  if (!randomTypesConfig.USE_LINK_STIFFNESS_BOUNDS || skipSubMatricesBoundaryIndex !== undefined) {
+    copyConfigListValue(oldConfig.LINK_STIFFNESS ?? createFilledArray(oldConfig.RADIUS.length, 1), newConfig.LINK_STIFFNESS, 1);
   }
 
   // TODO randomize transformations
@@ -605,6 +651,9 @@ export function concatTypesConfigs(lhs: TypesConfig, rhs: TypesConfig): TypesCon
   result.TYPE_LINKS = concatMatrices(lhs.TYPE_LINKS, rhs.TYPE_LINKS, 0);
   result.TYPE_LINK_WEIGHTS = concatMatrices(lhs.TYPE_LINK_WEIGHTS, rhs.TYPE_LINK_WEIGHTS, 1);
 
+  result.LINK_LENGTH = concatArrays(lhs.LINK_LENGTH ?? createFilledArray(lhs.RADIUS.length, 1), rhs.LINK_LENGTH ?? createFilledArray(rhs.RADIUS.length, 1));
+  result.LINK_STIFFNESS = concatArrays(lhs.LINK_STIFFNESS ?? createFilledArray(lhs.RADIUS.length, 1), rhs.LINK_STIFFNESS ?? createFilledArray(rhs.RADIUS.length, 1));
+
   result.LINK_FACTOR_DISTANCE = concatTensors(lhs.LINK_FACTOR_DISTANCE, rhs.LINK_FACTOR_DISTANCE, 1);
   result.LINK_FACTOR_ELASTIC = concatTensors(lhs.LINK_FACTOR_ELASTIC, rhs.LINK_FACTOR_ELASTIC, 1);
 
@@ -624,6 +673,9 @@ export function crossTypesConfigs(lhs: TypesConfig, rhs: TypesConfig, separator:
   result.LINKS = crossArrays(lhs.LINKS, rhs.LINKS, separator);
   result.TYPE_LINKS = crossMatrices(lhs.TYPE_LINKS, rhs.TYPE_LINKS, separator, 0);
   result.TYPE_LINK_WEIGHTS = crossMatrices(lhs.TYPE_LINK_WEIGHTS, rhs.TYPE_LINK_WEIGHTS, separator, 1);
+
+  result.LINK_LENGTH = crossArrays(lhs.LINK_LENGTH ?? createFilledArray(lhs.RADIUS.length, 1), rhs.LINK_LENGTH ?? createFilledArray(rhs.RADIUS.length, 1), separator);
+  result.LINK_STIFFNESS = crossArrays(lhs.LINK_STIFFNESS ?? createFilledArray(lhs.RADIUS.length, 1), rhs.LINK_STIFFNESS ?? createFilledArray(rhs.RADIUS.length, 1), separator);
 
   result.LINK_FACTOR_DISTANCE = crossTensors(lhs.LINK_FACTOR_DISTANCE, rhs.LINK_FACTOR_DISTANCE, separator, 1);
   result.LINK_FACTOR_ELASTIC = crossTensors(lhs.LINK_FACTOR_ELASTIC, rhs.LINK_FACTOR_ELASTIC, separator, 1);
@@ -645,6 +697,9 @@ export function randomCrossTypesConfigs(lhs: TypesConfig, rhs: TypesConfig, sepa
   result.TYPE_LINKS = randomCrossMatrices(lhs.TYPE_LINKS, rhs.TYPE_LINKS, separator);
   result.TYPE_LINK_WEIGHTS = randomCrossMatrices(lhs.TYPE_LINK_WEIGHTS, rhs.TYPE_LINK_WEIGHTS, separator);
 
+  result.LINK_LENGTH = randomCrossArrays(lhs.LINK_LENGTH ?? createFilledArray(lhs.RADIUS.length, 1), rhs.LINK_LENGTH ?? createFilledArray(rhs.RADIUS.length, 1), separator);
+  result.LINK_STIFFNESS = randomCrossArrays(lhs.LINK_STIFFNESS ?? createFilledArray(lhs.RADIUS.length, 1), rhs.LINK_STIFFNESS ?? createFilledArray(rhs.RADIUS.length, 1), separator);
+
   result.LINK_FACTOR_DISTANCE = randomCrossTensors(lhs.LINK_FACTOR_DISTANCE, rhs.LINK_FACTOR_DISTANCE, separator);
   result.LINK_FACTOR_ELASTIC = randomCrossTensors(lhs.LINK_FACTOR_ELASTIC, rhs.LINK_FACTOR_ELASTIC, separator);
 
@@ -665,6 +720,9 @@ export function crossTypesConfigsByIndexes(lhs: TypesConfig, rhs: TypesConfig, i
   result.TYPE_LINKS = crossMatricesByIndexes(lhs.TYPE_LINKS, rhs.TYPE_LINKS, indexes);
   result.TYPE_LINK_WEIGHTS = crossMatricesByIndexes(lhs.TYPE_LINK_WEIGHTS, rhs.TYPE_LINK_WEIGHTS, indexes);
 
+  result.LINK_LENGTH = crossArraysByIndexes(lhs.LINK_LENGTH ?? createFilledArray(lhs.RADIUS.length, 1), rhs.LINK_LENGTH ?? createFilledArray(rhs.RADIUS.length, 1), indexes);
+  result.LINK_STIFFNESS = crossArraysByIndexes(lhs.LINK_STIFFNESS ?? createFilledArray(lhs.RADIUS.length, 1), rhs.LINK_STIFFNESS ?? createFilledArray(rhs.RADIUS.length, 1), indexes);
+
   result.LINK_FACTOR_DISTANCE = crossTensorsByIndexes(lhs.LINK_FACTOR_DISTANCE, rhs.LINK_FACTOR_DISTANCE, indexes);
   result.LINK_FACTOR_ELASTIC = crossTensorsByIndexes(lhs.LINK_FACTOR_ELASTIC, rhs.LINK_FACTOR_ELASTIC, indexes);
 
@@ -684,6 +742,9 @@ export function removeIndexFromTypesConfig(input: TypesConfig, index: number): T
   result.LINKS = removeIndexFromArray(input.LINKS, index);
   result.TYPE_LINKS = removeIndexFromMatrix(input.TYPE_LINKS, index);
   result.TYPE_LINK_WEIGHTS = removeIndexFromMatrix(input.TYPE_LINK_WEIGHTS, index);
+
+  result.LINK_LENGTH = removeIndexFromArray(input.LINK_LENGTH ?? createFilledArray(input.RADIUS.length, 1), index);
+  result.LINK_STIFFNESS = removeIndexFromArray(input.LINK_STIFFNESS ?? createFilledArray(input.RADIUS.length, 1), index);
 
   result.LINK_FACTOR_DISTANCE = removeIndexFromTensor(input.LINK_FACTOR_DISTANCE, index);
   result.LINK_FACTOR_ELASTIC = removeIndexFromTensor(input.LINK_FACTOR_ELASTIC, index);
@@ -706,6 +767,9 @@ export function copyIndexInTypesConfig(input: TypesConfig, indexFrom: number, in
   result.LINKS = copyArrayIndex(input.LINKS, indexFrom, indexTo);
   result.TYPE_LINKS = copyMatrixIndex(input.TYPE_LINKS, indexFrom, indexTo);
   result.TYPE_LINK_WEIGHTS = copyMatrixIndex(input.TYPE_LINK_WEIGHTS, indexFrom, indexTo);
+
+  result.LINK_LENGTH = copyArrayIndex(input.LINK_LENGTH ?? createFilledArray(input.RADIUS.length, 1), indexFrom, indexTo);
+  result.LINK_STIFFNESS = copyArrayIndex(input.LINK_STIFFNESS ?? createFilledArray(input.RADIUS.length, 1), indexFrom, indexTo);
 
   result.LINK_FACTOR_DISTANCE = copyTensorIndex(input.LINK_FACTOR_DISTANCE, indexFrom, indexTo);
   result.LINK_FACTOR_ELASTIC = copyTensorIndex(input.LINK_FACTOR_ELASTIC, indexFrom, indexTo);

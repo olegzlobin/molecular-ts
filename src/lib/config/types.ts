@@ -56,6 +56,8 @@ export type TypesConfig = {
   LINKS: LinksConfig;
   TYPE_LINKS: TypeLinksConfig;
   TYPE_LINK_WEIGHTS: TypeLinkWeightsConfig;
+  LINK_LENGTH: number[];
+  LINK_STIFFNESS: number[];
   LINK_FACTOR_DISTANCE: LinkFactorDistanceConfig;
   LINK_FACTOR_ELASTIC: LinkFactorElasticConfig;
   FREQUENCIES: FrequenciesConfig;
@@ -94,6 +96,8 @@ export type RandomTypesConfig = {
   USE_LINK_BOUNDS: boolean;
   USE_LINK_TYPE_BOUNDS: boolean;
   USE_LINK_TYPE_WEIGHT_BOUNDS: boolean;
+  USE_LINK_LENGTH_BOUNDS: boolean;
+  USE_LINK_STIFFNESS_BOUNDS: boolean;
   USE_LINK_FACTOR_DISTANCE_BOUNDS: boolean;
   USE_LINK_FACTOR_ELASTIC_BOUNDS: boolean;
 
@@ -104,6 +108,8 @@ export type RandomTypesConfig = {
   LINK_BOUNDS: [number, number, number?];
   LINK_TYPE_BOUNDS: [number, number, number?];
   LINK_TYPE_WEIGHT_BOUNDS: [number, number, number?, number?];
+  LINK_LENGTH_BOUNDS: [number, number, number?, number?];
+  LINK_STIFFNESS_BOUNDS: [number, number, number?, number?];
   LINK_FACTOR_DISTANCE_BOUNDS: [number, number, number?, number?];
   LINK_FACTOR_ELASTIC_BOUNDS: [number, number, number?, number?];
 

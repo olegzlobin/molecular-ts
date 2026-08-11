@@ -178,32 +178,51 @@ const linkElasticFactorConfigDescription = computed(() => {
       </div>
       <div>
         <input-header
-          name="Links Distance Factor"
-          :tooltip="linkDistanceFactorConfigDescription"
+          name="Link Length"
+          tooltip="Preferred link length multiplier for this type. For a bond A–B the length is the average of both types."
           position="center"
         />
-        <config-tensor
-          :values="typesConfig.LINK_FACTOR_DISTANCE"
-          :colors="typesConfig.COLORS"
-          :step="0.1"
-          :min="0"
-          v-model:symmetric="typesSymmetricConfig.LINK_FACTOR_DISTANCE_MATRIX_SYMMETRIC"
-        />
+        <config-list :values="typesConfig.LINK_LENGTH" :colors="typesConfig.COLORS" :step="0.1" :min="0" />
       </div>
       <div>
         <input-header
-          name="Links Elastic Factor"
-          :tooltip="linkElasticFactorConfigDescription"
+          name="Link Stiffness"
+          tooltip="Link stiffness multiplier for this type. For a bond A–B the stiffness is the average of both types."
           position="center"
         />
-        <config-tensor
-          :values="typesConfig.LINK_FACTOR_ELASTIC"
-          :colors="typesConfig.COLORS"
-          :step="0.1"
-          :min="0"
-          v-model:symmetric="typesSymmetricConfig.LINK_FACTOR_ELASTIC_MATRIX_SYMMETRIC"
-        />
+        <config-list :values="typesConfig.LINK_STIFFNESS" :colors="typesConfig.COLORS" :step="0.1" :min="0" />
       </div>
+      <details class="advanced-link-factors">
+        <summary>Advanced link influence tensors</summary>
+        <div>
+          <input-header
+            name="Links Distance Factor"
+            :tooltip="linkDistanceFactorConfigDescription"
+            position="center"
+          />
+          <config-tensor
+            :values="typesConfig.LINK_FACTOR_DISTANCE"
+            :colors="typesConfig.COLORS"
+            :step="0.1"
+            :min="0"
+            v-model:symmetric="typesSymmetricConfig.LINK_FACTOR_DISTANCE_MATRIX_SYMMETRIC"
+          />
+        </div>
+        <div>
+          <input-header
+            name="Links Elastic Factor"
+            :tooltip="linkElasticFactorConfigDescription"
+            position="center"
+          />
+          <config-tensor
+            :values="typesConfig.LINK_FACTOR_ELASTIC"
+            :colors="typesConfig.COLORS"
+            :step="0.1"
+            :min="0"
+            v-model:symmetric="typesSymmetricConfig.LINK_FACTOR_ELASTIC_MATRIX_SYMMETRIC"
+          />
+        </div>
+      </details>
       <div style="margin-top: 30px;">
         <input-header
           name="Transformations on link creation"
@@ -227,5 +246,16 @@ const linkElasticFactorConfigDescription = computed(() => {
 <style scoped lang="scss">
 
 @use "../../assets/config-editor";
+
+.advanced-link-factors {
+  margin-top: 16px;
+  padding: 8px 0;
+}
+
+.advanced-link-factors > summary {
+  cursor: pointer;
+  margin-bottom: 12px;
+  opacity: 0.85;
+}
 
 </style>

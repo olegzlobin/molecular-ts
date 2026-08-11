@@ -24,6 +24,8 @@ export function extractExpressedTypesConfig(typesConfigs: TypesConfig[], express
     LINKS: express(typesConfigs.map((x) => x.LINKS), expressionIndices.LINKS),
     TYPE_LINKS: express(typesConfigs.map((x) => x.TYPE_LINKS), expressionIndices.TYPE_LINKS),
     TYPE_LINK_WEIGHTS: express(typesConfigs.map((x) => x.TYPE_LINK_WEIGHTS), expressionIndices.TYPE_LINK_WEIGHTS),
+    LINK_LENGTH: express(typesConfigs.map((x) => x.LINK_LENGTH ?? x.RADIUS.map(() => 1)), expressionIndices.LINK_LENGTH ?? expressionIndices.RADIUS),
+    LINK_STIFFNESS: express(typesConfigs.map((x) => x.LINK_STIFFNESS ?? x.RADIUS.map(() => 1)), expressionIndices.LINK_STIFFNESS ?? expressionIndices.RADIUS),
     LINK_FACTOR_DISTANCE: express(typesConfigs.map((x) => x.LINK_FACTOR_DISTANCE), expressionIndices.LINK_FACTOR_DISTANCE),
     LINK_FACTOR_ELASTIC: express(typesConfigs.map((x) => x.LINK_FACTOR_ELASTIC), expressionIndices.LINK_FACTOR_ELASTIC),
     FREQUENCIES: express(typesConfigs.map((x) => x.FREQUENCIES), expressionIndices.FREQUENCIES),
@@ -94,6 +96,8 @@ export function createRandomExpressedIndicesConfig(typesCount: number, chromosom
     USE_LINK_BOUNDS: true,
     USE_LINK_TYPE_BOUNDS: true,
     USE_LINK_TYPE_WEIGHT_BOUNDS: true,
+    USE_LINK_LENGTH_BOUNDS: true,
+    USE_LINK_STIFFNESS_BOUNDS: true,
     USE_LINK_FACTOR_DISTANCE_BOUNDS: true,
     USE_LINK_FACTOR_ELASTIC_BOUNDS: true,
 
@@ -104,6 +108,8 @@ export function createRandomExpressedIndicesConfig(typesCount: number, chromosom
     LINK_BOUNDS: [0, chromosomesCount-1],
     LINK_TYPE_BOUNDS: [0, chromosomesCount-1],
     LINK_TYPE_WEIGHT_BOUNDS: [0, chromosomesCount-1],
+    LINK_LENGTH_BOUNDS: [0, chromosomesCount-1],
+    LINK_STIFFNESS_BOUNDS: [0, chromosomesCount-1],
     LINK_FACTOR_DISTANCE_BOUNDS: [0, chromosomesCount-1],
     LINK_FACTOR_ELASTIC_BOUNDS: [0, chromosomesCount-1],
 

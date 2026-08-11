@@ -182,6 +182,34 @@ const randomizeTypesConfig = () => {
         </div>
       </div>
 
+      <div v-show="!useIgnoreSubMatricesBoundaryIndex">
+        <input-header
+          name="Link Length"
+          tooltip="Per-type link length multiplier. Pair length is the average of both types."
+          tooltip-position="left"
+          :tooltip-width="400"
+        >
+          <input type="checkbox" class="title-flag" v-model="randomTypesConfig.USE_LINK_LENGTH_BOUNDS" />
+        </input-header>
+        <div v-show="randomTypesConfig.USE_LINK_LENGTH_BOUNDS">
+          <config-bounds :step="0.1" :values="randomTypesConfig.LINK_LENGTH_BOUNDS" />
+        </div>
+      </div>
+
+      <div v-show="!useIgnoreSubMatricesBoundaryIndex">
+        <input-header
+          name="Link Stiffness"
+          tooltip="Per-type link stiffness multiplier. Pair stiffness is the average of both types."
+          tooltip-position="left"
+          :tooltip-width="400"
+        >
+          <input type="checkbox" class="title-flag" v-model="randomTypesConfig.USE_LINK_STIFFNESS_BOUNDS" />
+        </input-header>
+        <div v-show="randomTypesConfig.USE_LINK_STIFFNESS_BOUNDS">
+          <config-bounds :step="0.1" :values="randomTypesConfig.LINK_STIFFNESS_BOUNDS" />
+        </div>
+      </div>
+
       <div>
         <input-header
             name="Links Distance Factor"

@@ -27,6 +27,7 @@ import {
   convertTypesConfigForBackwardCompatibility,
   convertWorldConfigForBackwardCompatibility,
   convertTypesSymmetricConfigForBackwardCompatibility,
+  convertRandomTypesConfigForBackwardCompatibility,
 } from '@/web/utils/backward';
 import type { ShowConfig } from "@/lib/drawer/types";
 import { createDefaultShowConfig } from "@/lib/drawer/2d";
@@ -117,8 +118,8 @@ export const useConfigStore = defineStore("config", () => {
   }
 
   const setRandomTypesConfig = (newConfig: RandomTypesConfig, excludeKeys: string[] = []) => {
-    const buf = fullCopyObject(newConfig);
-    for (const i in newConfig) {
+    const buf = fullCopyObject(convertRandomTypesConfigForBackwardCompatibility(newConfig));
+    for (const i in buf) {
       if (excludeKeys.includes(i)) {
         continue;
       }

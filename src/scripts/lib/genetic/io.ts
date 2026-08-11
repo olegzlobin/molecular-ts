@@ -24,9 +24,23 @@ export function getGeneticMainConfig<TTaskConfig>(
 
 export function getRandomizeConfigCollection(fileName: string, typesCount?: number): RandomTypesConfig[] {
   const result = readJsonFile(`data/input/${fileName}`) as RandomTypesConfig[];
-  if (typesCount !== undefined) {
-    result.forEach((config) => { config.TYPES_COUNT = typesCount });
-  }
+  result.forEach((config) => {
+    if (config.USE_LINK_LENGTH_BOUNDS === undefined) {
+      config.USE_LINK_LENGTH_BOUNDS = false;
+    }
+    if (config.USE_LINK_STIFFNESS_BOUNDS === undefined) {
+      config.USE_LINK_STIFFNESS_BOUNDS = false;
+    }
+    if (!config.LINK_LENGTH_BOUNDS) {
+      config.LINK_LENGTH_BOUNDS = [0.7, 1.3, 1, 0.1];
+    }
+    if (!config.LINK_STIFFNESS_BOUNDS) {
+      config.LINK_STIFFNESS_BOUNDS = [0.5, 1.2, 1, 0.1];
+    }
+    if (typesCount !== undefined) {
+      config.TYPES_COUNT = typesCount;
+    }
+  });
   return result;
 }
 

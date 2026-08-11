@@ -1,4 +1,4 @@
-import type { TypesConfig, TypesSymmetricConfig, WorldConfig } from '@/lib/config/types';
+import type { RandomTypesConfig, TypesConfig, TypesSymmetricConfig, WorldConfig } from '@/lib/config/types';
 import { fullCopyObject } from '@/lib/utils/functions';
 
 export function convertWorldConfigForBackwardCompatibility(inputConfig: WorldConfig): WorldConfig {
@@ -26,6 +26,31 @@ export function convertTypesConfigForBackwardCompatibility(inputConfig: TypesCon
     }
   }
 
+  const typesCount = config.FREQUENCIES?.length ?? config.RADIUS?.length ?? 0;
+  if (!config.LINK_LENGTH || config.LINK_LENGTH.length !== typesCount) {
+    config.LINK_LENGTH = Array(typesCount).fill(1);
+  }
+  if (!config.LINK_STIFFNESS || config.LINK_STIFFNESS.length !== typesCount) {
+    config.LINK_STIFFNESS = Array(typesCount).fill(1);
+  }
+
+  return config;
+}
+
+export function convertRandomTypesConfigForBackwardCompatibility(inputConfig: RandomTypesConfig): RandomTypesConfig {
+  const config = fullCopyObject(inputConfig);
+  if (config.USE_LINK_LENGTH_BOUNDS === undefined) {
+    config.USE_LINK_LENGTH_BOUNDS = false;
+  }
+  if (config.USE_LINK_STIFFNESS_BOUNDS === undefined) {
+    config.USE_LINK_STIFFNESS_BOUNDS = false;
+  }
+  if (!config.LINK_LENGTH_BOUNDS) {
+    config.LINK_LENGTH_BOUNDS = [0.7, 1.3, 1, 0.1];
+  }
+  if (!config.LINK_STIFFNESS_BOUNDS) {
+    config.LINK_STIFFNESS_BOUNDS = [0.5, 1.2, 1, 0.1];
+  }
   return config;
 }
 

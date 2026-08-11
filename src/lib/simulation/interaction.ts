@@ -61,7 +61,7 @@ export class InteractionManager implements InteractionManagerInterface {
     const dist2 = this.getDist2(distVector);
 
     if (
-      dist2 >= (this.WORLD_CONFIG.MAX_LINK_RADIUS * this.getDistanceFactor(link.lhs, link.rhs) * this.getDistanceFactor(link.rhs, link.lhs)) ** 2
+      dist2 >= (this.WORLD_CONFIG.MAX_LINK_RADIUS * this.getPairLinkDistanceFactor(link.lhs, link.rhs)) ** 2
       || dist2 > this.WORLD_CONFIG.MAX_INTERACTION_RADIUS ** 2
       || this.ruleHelper.isLinkRedundant(link.lhs, link.rhs)
     ) {
@@ -111,7 +111,7 @@ export class InteractionManager implements InteractionManagerInterface {
     if (
       !lhs.bonds.has(rhs) &&
       this.ruleHelper.canLink(lhs, rhs) &&
-      dist2 <= (this.WORLD_CONFIG.MAX_LINK_RADIUS * this.getDistanceFactor(lhs, rhs) * this.getDistanceFactor(rhs, lhs)) ** 2
+      dist2 <= (this.WORLD_CONFIG.MAX_LINK_RADIUS * this.getPairLinkDistanceFactor(lhs, rhs)) ** 2
     ) {
       const link = this.linkManager.create(lhs, rhs);
 
@@ -141,11 +141,19 @@ export class InteractionManager implements InteractionManagerInterface {
   }
 
   getDistanceFactor(lhs: AtomInterface, rhs: AtomInterface): number {
-    return lhs.linkDistanceFactors[rhs.type];
+    return lhs.linkDistanceFactors[rhs.type] ?? 1;
+  }
+
+  getPairLinkDistanceFactor(lhs: AtomInterface, rhs: AtomInterface): number {
+    const lengths = this.TYPES_CONFIG.LINK_LENGTH;
+    const lengthFactor = ((lengths?.[lhs.type] ?? 1) + (lengths?.[rhs.type] ?? 1)) / 2;
+    return lengthFactor * this.getDistanceFactor(lhs, rhs) * this.getDistanceFactor(rhs, lhs);
   }
 
   getElasticFactor(lhs: AtomInterface, rhs: AtomInterface): number {
-    return lhs.linkElasticFactors[rhs.type];
+    const stiffness = this.TYPES_CONFIG.LINK_STIFFNESS;
+    const stiffnessFactor = ((stiffness?.[lhs.type] ?? 1) + (stiffness?.[rhs.type] ?? 1)) / 2;
+    return stiffnessFactor * (lhs.linkElasticFactors[rhs.type] ?? 1);
   }
 
   updateDistanceFactor(lhs: AtomInterface, rhs: AtomInterface): void {
