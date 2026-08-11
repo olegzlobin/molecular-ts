@@ -199,11 +199,30 @@ export class Simulation implements SimulationInterface {
         this.interactionManager.interactAtomsStep2(lhs, rhs);
       });
     }
+    this.removeDeletedAtoms();
     for (const link of this._links) {
       this.interactionManager.interactLink(link);
       this.summaryManager.noticeLink(link, this.config.worldConfig);
     }
     this.interactionManager.handleTime();
+  }
+
+  private removeDeletedAtoms(): void {
+    let write = 0;
+    for (let i = 0; i < this._atoms.length; ++i) {
+      const atom = this._atoms[i];
+      if (atom.toDelete) {
+        for (const link of [...this._links]) {
+          if (link.lhs === atom || link.rhs === atom) {
+            this._links.delete(link);
+          }
+        }
+        atom.spatialGridCell?.remove(atom);
+        continue;
+      }
+      this._atoms[write++] = atom;
+    }
+    this._atoms.length = write;
   }
 
   private tick() {

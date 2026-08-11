@@ -13,7 +13,20 @@ export type LinkFactorDistanceConfig = number[][][];
 export type LinkFactorElasticConfig = number[][][];
 export type FrequenciesConfig = number[];
 export type ColorsConfig = Array<ColorVector>;
+// value >= 0: change type; value < 0: merge into type (-value - 1)
 export type TransformationConfig = Record<number, Record<number, number>>;
+
+export function isMergeTransform(value: number): boolean {
+  return value < 0;
+}
+
+export function decodeTransformType(value: number): number {
+  return value < 0 ? -value - 1 : value;
+}
+
+export function encodeTransform(type: number, merge: boolean): number {
+  return merge ? -(type + 1) : type;
+}
 export type BoundsConfig = {
   MIN_POSITION: NumericVector;
   MAX_POSITION: NumericVector;

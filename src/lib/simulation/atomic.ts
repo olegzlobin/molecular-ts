@@ -72,6 +72,7 @@ export class Atom implements AtomInterface {
   readonly linkElasticFactors: number[];
   type: number;
   newType: number | undefined = undefined;
+  toDelete: boolean = false;
   spatialGridCell?: SpatialGridCellInterface;
 
   constructor(id: number, type: number, position: NumericVector, speed?: NumericVector) {

@@ -71,6 +71,15 @@ export class Drawer3d implements DrawerInterface {
   }
 
   draw(atoms: Array<AtomInterface>, links: LinkManagerInterface): void {
+    const alive = new Set(atoms);
+    for (const [atom, drawObject] of this.atomsMap) {
+      if (!alive.has(atom)) {
+        drawObject.dispose();
+        drawObject.material?.dispose();
+        this.atomsMap.delete(atom);
+      }
+    }
+
     for (const atom of atoms) {
       const radius = this.TYPES_CONFIG.RADIUS[atom.type];
       const drawObject = this.getAtomDrawObject(atom);

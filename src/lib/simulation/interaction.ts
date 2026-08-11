@@ -90,7 +90,7 @@ export class InteractionManager implements InteractionManagerInterface {
   }
 
   interactAtomsStep2(lhs: AtomInterface, rhs: AtomInterface): void {
-    if (lhs === rhs) {
+    if (lhs === rhs || lhs.toDelete || rhs.toDelete) {
       return;
     }
 

@@ -22,6 +22,7 @@ export interface AtomInterface {
   readonly linkElasticFactors: number[];
   type: number;
   newType: number | undefined;
+  toDelete: boolean;
   spatialGridCell?: SpatialGridCellInterface;
   exportState(): Record<string, unknown>;
 }

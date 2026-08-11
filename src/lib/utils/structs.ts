@@ -11,6 +11,7 @@ import type {
   WorldConfig,
   TypesConfig,
 } from '../config/types';
+import { decodeTransformType, isMergeTransform } from '../config/types';
 import { arrayBinaryOperation, arrayUnaryOperation } from '../math';
 import { Link } from '../simulation/atomic';
 
@@ -110,11 +111,22 @@ export class RulesHelper implements RulesHelperInterface {
   }
 
   private _handleTransform(lhs: AtomInterface, rhs: AtomInterface): [number, number][] {
-    if (!this._issetTransformation(lhs, rhs)) {
+    if (lhs.toDelete || rhs.toDelete || !this._issetTransformation(lhs, rhs)) {
       return [];
     }
-    lhs.newType = this.TYPES_CONFIG.TRANSFORMATION[lhs.type][rhs.type];
-    return [[lhs.type, lhs.newType]];
+    const raw = this.TYPES_CONFIG.TRANSFORMATION[lhs.type][rhs.type];
+    const newType = decodeTransformType(raw);
+    if (newType !== lhs.type) {
+      lhs.newType = newType;
+    }
+    if (isMergeTransform(raw)) {
+      for (let i = 0; i < lhs.position.length; ++i) {
+        lhs.position[i] = (lhs.position[i] + rhs.position[i]) / 2;
+        lhs.speed[i] = (lhs.speed[i] + rhs.speed[i]) / 2;
+      }
+      rhs.toDelete = true;
+    }
+    return [[lhs.type, newType]];
   }
 
   private _issetTransformation(lhs: AtomInterface, rhs: AtomInterface): boolean {
