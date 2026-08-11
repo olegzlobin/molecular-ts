@@ -117,7 +117,7 @@ watch(() => configStore.worldConfig.VIEW_MODE, () => {
           name="Bounce Force Multiplier"
           tooltip="Parameter by which the collision rebound force is multiplied."
         />
-        <input type="number" v-model="worldConfig.BOUNCE_FORCE_MULTIPLIER" step="0.1" />
+        <input type="number" v-model="worldConfig.BOUNCE_FORCE_MULTIPLIER" step="0.01" />
       </div>
       <div>
         <input-header

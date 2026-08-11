@@ -7,7 +7,6 @@ export class PhysicModelV2 implements PhysicModelInterface {
   public readonly geometry: GeometryHelper;
   private WORLD_CONFIG: WorldConfig;
   private TYPES_CONFIG: TypesConfig;
-  private BOUNCE_CORRECTION_FACTOR: number = 0.01;
 
   constructor(worldConfig: WorldConfig, typesConfig: TypesConfig) {
     this.WORLD_CONFIG = worldConfig;
@@ -21,7 +20,7 @@ export class PhysicModelV2 implements PhysicModelInterface {
 
     if (dist2 < bounceDistance ** 2) {
       const bounceForce = (bounceDistance - Math.sqrt(dist2))
-        * (-this.WORLD_CONFIG.BOUNCE_FORCE_MULTIPLIER * this.BOUNCE_CORRECTION_FACTOR);
+        * (-this.WORLD_CONFIG.BOUNCE_FORCE_MULTIPLIER);
       return bounceForce * massMult;
     }
 
