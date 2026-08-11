@@ -56,7 +56,7 @@ class SpatialGridCell implements SpatialGridCellInterface {
 }
 
 class SpatialGrid implements SpatialGridInterface {
-  map: Map<number, SpatialGridCell> = new Map();
+  map: Map<string, SpatialGridCell> = new Map();
   quantum: number;
   phase: number;
 
@@ -103,9 +103,7 @@ class SpatialGrid implements SpatialGridInterface {
   }
 
   public getCell(cellCoords: NumericVector): SpatialGridCellInterface {
-    const key = cellCoords.length === 3
-      ? cellCoords[0] * 10000 + cellCoords[1] * 100000000 + cellCoords[2]
-      : cellCoords[0] * 10000 + cellCoords[1];
+    const key = cellCoords.join(',');
 
     if (!this.map.has(key)) {
       this.map.set(key, new SpatialGridCell([...cellCoords]));
