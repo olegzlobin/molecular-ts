@@ -120,9 +120,12 @@ export class RulesHelper implements RulesHelperInterface {
       lhs.newType = newType;
     }
     if (isMergeTransform(raw)) {
+      const massLhs = this.TYPES_CONFIG.RADIUS[lhs.type] ** 3;
+      const massRhs = this.TYPES_CONFIG.RADIUS[rhs.type] ** 3;
+      const massSum = massLhs + massRhs || 1;
       for (let i = 0; i < lhs.position.length; ++i) {
-        lhs.position[i] = (lhs.position[i] + rhs.position[i]) / 2;
-        lhs.speed[i] = (lhs.speed[i] + rhs.speed[i]) / 2;
+        lhs.position[i] = (lhs.position[i] * massLhs + rhs.position[i] * massRhs) / massSum;
+        lhs.speed[i] = (lhs.speed[i] * massLhs + rhs.speed[i] * massRhs) / massSum;
       }
       rhs.toDelete = true;
     }
@@ -161,8 +164,9 @@ export class GeometryHelper implements GeometryHelperInterface {
     return this.getAtomRadius(lhs) + this.getAtomRadius(rhs);
   }
 
-  getMassMultiplier(lhs: AtomInterface, rhs: AtomInterface): number {
-    return (this.TYPES_CONFIG.RADIUS[rhs.type] ** 3) / (this.TYPES_CONFIG.RADIUS[lhs.type] ** 3);
+  getMassMultiplier(lhs: AtomInterface, _rhs: AtomInterface): number {
+    const mass = this.TYPES_CONFIG.RADIUS[lhs.type] ** 3;
+    return mass > 0 ? 1 / mass : 1;
   }
 }
 
