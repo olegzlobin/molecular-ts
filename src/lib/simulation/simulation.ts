@@ -194,6 +194,9 @@ export class Simulation implements SimulationInterface {
       this.summaryManager.noticeAtom(atom, this.config.worldConfig);
     }
     for (const atom of this._atoms) {
+      this.spatialGridManager.updateAtomCell(atom);
+    }
+    for (const atom of this._atoms) {
       this.spatialGridManager.handleAtom(atom, (lhs, rhs) => {
         this.interactionManager.interactAtomsStep1(lhs, rhs);
       });
@@ -305,7 +308,7 @@ export class Simulation implements SimulationInterface {
             this._links.delete(link);
           }
         }
-        atom.spatialGridCell?.remove(atom);
+        this.spatialGridManager.detachAtom(atom);
         continue;
       }
       this._atoms[write++] = atom;

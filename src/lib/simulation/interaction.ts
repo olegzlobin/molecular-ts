@@ -18,6 +18,7 @@ export class InteractionManager implements InteractionManagerInterface {
   private physicModel: PhysicModelInterface;
   private time: number;
   private bufVector: VectorInterface = new Vector([0, 0]);
+  private tempVector: VectorInterface = new Vector([0, 0]);
 
   constructor(
     viewMode: ViewMode,
@@ -57,8 +58,8 @@ export class InteractionManager implements InteractionManagerInterface {
   }
 
   interactLink(link: LinkInterface): void {
-    const distVector = this.bufVector.set(this.getDistVector(link.lhs, link.rhs));
-    const dist2 = this.getDist2(distVector);
+    this.fillDistVector(link.lhs, link.rhs, this.bufVector);
+    const dist2 = this.getDist2(this.bufVector);
 
     if (
       dist2 >= (this.WORLD_CONFIG.MAX_LINK_RADIUS * this.getPairLinkDistanceFactor(link.lhs, link.rhs)) ** 2
@@ -78,8 +79,8 @@ export class InteractionManager implements InteractionManagerInterface {
     const elasticFactor = (
       this.getElasticFactor(link.lhs, link.rhs) + this.getElasticFactor(link.rhs, link.lhs)
     ) / 2;
-    this.handleLinkInfluence(link.lhs, link.rhs, dist2, distVector, elasticFactor);
-    this.handleLinkInfluence(link.rhs, link.lhs, dist2, distVector.inverse(), elasticFactor);
+    this.handleLinkInfluence(link.lhs, link.rhs, dist2, this.bufVector, elasticFactor);
+    this.handleLinkInfluence(link.rhs, link.lhs, dist2, this.bufVector.inverse(), elasticFactor);
   }
 
   interactAtomsStep1(lhs: AtomInterface, rhs: AtomInterface): void {
@@ -87,12 +88,14 @@ export class InteractionManager implements InteractionManagerInterface {
       return;
     }
 
-    const distVector = this.getDistVector(lhs, rhs);
-    const dist2 = this.getDist2(distVector);
+    this.fillDistVector(lhs, rhs, this.bufVector);
+    const dist2 = this.getDist2(this.bufVector);
 
     if (dist2 <= this.WORLD_CONFIG.MAX_LINK_RADIUS ** 2) {
       this.updateDistanceFactor(lhs, rhs);
+      this.updateDistanceFactor(rhs, lhs);
       this.updateElasticFactor(lhs, rhs);
+      this.updateElasticFactor(rhs, lhs);
     }
   }
 
@@ -101,8 +104,8 @@ export class InteractionManager implements InteractionManagerInterface {
       return;
     }
 
-    const distVector = this.getDistVector(lhs, rhs);
-    const dist2 = this.getDist2(distVector);
+    this.fillDistVector(lhs, rhs, this.bufVector);
+    const dist2 = this.getDist2(this.bufVector);
 
     if (dist2 > this.WORLD_CONFIG.MAX_INTERACTION_RADIUS ** 2) {
       return;
@@ -110,11 +113,13 @@ export class InteractionManager implements InteractionManagerInterface {
 
     const dist = Math.sqrt(dist2);
     if (dist > 0) {
-      const force = this.normalizeForce(this.physicModel.getGravityForce(lhs, rhs, dist2));
-      for (let i=0; i<distVector.length; ++i) {
-        distVector[i] = distVector[i] / dist * force;
+      const forceLhs = this.normalizeForce(this.physicModel.getGravityForce(lhs, rhs, dist2));
+      const forceRhs = this.normalizeForce(this.physicModel.getGravityForce(rhs, lhs, dist2));
+      for (let i = 0; i < this.bufVector.length; ++i) {
+        const dir = this.bufVector[i] / dist;
+        lhs.speed[i] += dir * forceLhs;
+        rhs.speed[i] -= dir * forceRhs;
       }
-      lhs.speed.add(distVector);
     }
 
     if (
@@ -220,14 +225,13 @@ export class InteractionManager implements InteractionManagerInterface {
     if (isEqual(this.WORLD_CONFIG.TEMPERATURE_MULTIPLIER, 0)) {
       return;
     }
+    if (this.tempVector.length !== atom.position.length) {
+      this.tempVector = new Vector(new Array(atom.position.length).fill(0));
+    }
     const func = this.WORLD_CONFIG.TEMPERATURE_FUNCTION;
     const mult = this.WORLD_CONFIG.TEMPERATURE_MULTIPLIER;
-    const v = atom.speed
-      .clone()
-      .random()
-      .normalize()
-      .mul(mult * func(atom.position, this.time));
-    atom.speed.add(v);
+    this.tempVector.random().normalize().mul(mult * func(atom.position, this.time));
+    atom.speed.add(this.tempVector);
   }
 
   private handleLinkInfluence(
@@ -249,11 +253,12 @@ export class InteractionManager implements InteractionManagerInterface {
     return dist;
   }
 
-  private getDistVector(lhs: AtomInterface, rhs: AtomInterface): NumericVector {
-    const distVector: number[] = new Array(lhs.position.length) as number[];
-    for (let i = 0; i < lhs.position.length; ++i) {
-      distVector[i] = rhs.position[i] - lhs.position[i];
+  private fillDistVector(lhs: AtomInterface, rhs: AtomInterface, out: VectorInterface): void {
+    if (out.length !== lhs.position.length) {
+      out.set(new Array(lhs.position.length).fill(0));
     }
-    return distVector;
+    for (let i = 0; i < lhs.position.length; ++i) {
+      out[i] = rhs.position[i] - lhs.position[i];
+    }
   }
 }

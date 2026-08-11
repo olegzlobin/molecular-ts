@@ -2,6 +2,10 @@ import type { AtomInterface } from './types/atomic';
 import type { NumericVector } from '../math/types';
 import type { SpatialGridCellInterface, SpatialGridManagerManagerInterface, SpatialGridInterface } from './types/spatial';
 
+function cellKey(cellCoords: NumericVector): string {
+  return cellCoords.join(',');
+}
+
 function incPoint(aPoint: NumericVector, aCenterPoint: NumericVector, aDim: number): boolean {
   aPoint[aDim]++;
   if (aPoint[aDim] > aCenterPoint[aDim] + 1) {
@@ -69,8 +73,10 @@ class SpatialGrid implements SpatialGridInterface {
     const result = [];
     const currentCell = this.handleAtom(atom);
     for (const coords of getNeighboursCoords(currentCell.coords)) {
-      const cell = this.getCell(coords);
-      result.push(cell);
+      const cell = this.getCellIfExists(coords);
+      if (cell) {
+        result.push(cell);
+      }
     }
     return result;
   }
@@ -93,7 +99,7 @@ class SpatialGrid implements SpatialGridInterface {
 
     if (actualCell !== currentCell) {
       if (currentCell !== undefined) {
-        currentCell.remove(atom);
+        this.detachFromCell(atom, currentCell);
       }
       actualCell.add(atom);
       atom.spatialGridCell = actualCell;
@@ -102,8 +108,24 @@ class SpatialGrid implements SpatialGridInterface {
     return actualCell;
   }
 
+  public detachAtom(atom: AtomInterface): void {
+    const cell = atom.spatialGridCell;
+    if (cell === undefined) {
+      return;
+    }
+    this.detachFromCell(atom, cell);
+    atom.spatialGridCell = undefined;
+  }
+
+  private detachFromCell(atom: AtomInterface, cell: SpatialGridCellInterface): void {
+    cell.remove(atom);
+    if (cell.empty()) {
+      this.map.delete(cellKey(cell.coords));
+    }
+  }
+
   public getCell(cellCoords: NumericVector): SpatialGridCellInterface {
-    const key = cellCoords.join(',');
+    const key = cellKey(cellCoords);
 
     if (!this.map.has(key)) {
       this.map.set(key, new SpatialGridCell([...cellCoords]));
@@ -112,16 +134,59 @@ class SpatialGrid implements SpatialGridInterface {
     return this.map.get(key) as SpatialGridCell;
   }
 
+  public getCellIfExists(cellCoords: NumericVector): SpatialGridCellInterface | undefined {
+    return this.map.get(cellKey(cellCoords));
+  }
+
   public findAtomByCoords(coords: NumericVector, radiusMap: number[], radiusMultiplier: number): AtomInterface | undefined {
     const cellCoords = this.getCellCoords(coords);
-    const cell = this.getCell(cellCoords);
-    for (const atom of cell) {
-      const dist = atom.position.clone().sub(coords).abs;
-      if (dist <= radiusMap[atom.type] * radiusMultiplier) {
-        return atom;
+    let best: AtomInterface | undefined;
+    let bestDist = Infinity;
+
+    const dims = cellCoords.length;
+    const min = cellCoords.map((c) => c - 1);
+    const max = cellCoords.map((c) => c + 1);
+
+    const visit = (cell: SpatialGridCellInterface | undefined) => {
+      if (!cell) {
+        return;
+      }
+      for (const atom of cell) {
+        let dist2 = 0;
+        for (let i = 0; i < coords.length; ++i) {
+          const d = atom.position[i] - coords[i];
+          dist2 += d * d;
+        }
+        const dist = Math.sqrt(dist2);
+        const limit = radiusMap[atom.type] * radiusMultiplier;
+        if (dist <= limit && dist < bestDist) {
+          bestDist = dist;
+          best = atom;
+        }
+      }
+    };
+
+    if (dims === 2) {
+      for (let i = min[0]; i <= max[0]; ++i) {
+        for (let j = min[1]; j <= max[1]; ++j) {
+          visit(this.getCellIfExists([i, j]));
+        }
+      }
+    } else if (dims === 3) {
+      for (let i = min[0]; i <= max[0]; ++i) {
+        for (let j = min[1]; j <= max[1]; ++j) {
+          for (let k = min[2]; k <= max[2]; ++k) {
+            visit(this.getCellIfExists([i, j, k]));
+          }
+        }
+      }
+    } else {
+      for (const neighbourCoords of getNeighboursCoords(cellCoords)) {
+        visit(this.getCellIfExists(neighbourCoords));
       }
     }
-    return undefined;
+
+    return best;
   }
 
   private getCellByAtom(atom: AtomInterface): SpatialGridCellInterface {
@@ -153,35 +218,57 @@ export class SpatialGridManager implements SpatialGridManagerManagerInterface {
     this.map.clear();
   }
 
+  detachAtom(atom: AtomInterface): void {
+    this.map.detachAtom(atom);
+  }
+
+  updateAtomCell(atom: AtomInterface): void {
+    this.map.handleAtom(atom);
+  }
+
   handleAtom(atom: AtomInterface, callback: (lhs: AtomInterface, rhs: AtomInterface) => void): void {
+    const onNeighbour = (neighbour: AtomInterface) => {
+      if (neighbour.id <= atom.id) {
+        return;
+      }
+      callback(atom, neighbour);
+    };
+
+    const cc = atom.spatialGridCell ?? this.map.handleAtom(atom);
     if (atom.position.length === 3) {
-      const cc = this.map.handleAtom(atom);
       for (let i=cc.coords[0]-1; i<=cc.coords[0]+1; ++i) {
         for (let j=cc.coords[1]-1; j<=cc.coords[1]+1; ++j) {
           for (let k=cc.coords[2]-1; k<=cc.coords[2]+1; ++k) {
-            const cell = this.map.getCell([i, j, k]);
+            const cell = this.map.getCellIfExists([i, j, k]);
+            if (!cell) {
+              continue;
+            }
             for (const neighbour of cell.atoms) {
-              callback(atom, neighbour);
+              onNeighbour(neighbour);
             }
           }
         }
       }
     } else if (atom.position.length === 2) {
-      const cc = this.map.handleAtom(atom);
       for (let i=cc.coords[0]-1; i<=cc.coords[0]+1; ++i) {
         for (let j=cc.coords[1]-1; j<=cc.coords[1]+1; ++j) {
-          const cell = this.map.getCell([i, j]);
+          const cell = this.map.getCellIfExists([i, j]);
+          if (!cell) {
+            continue;
+          }
           for (const neighbour of cell.atoms) {
-            callback(atom, neighbour);
+            onNeighbour(neighbour);
           }
         }
       }
     } else {
-      const neighborhood = this.map.getNeighbourhood(atom);
-      for (let i=0; i<neighborhood.length; ++i) {
-        const cell = neighborhood[i];
+      for (const coords of getNeighboursCoords(cc.coords)) {
+        const cell = this.map.getCellIfExists(coords);
+        if (!cell) {
+          continue;
+        }
         for (const neighbour of cell.atoms) {
-          callback(atom, neighbour);
+          onNeighbour(neighbour);
         }
       }
     }

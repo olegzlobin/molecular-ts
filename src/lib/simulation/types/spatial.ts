@@ -20,7 +20,9 @@ export interface SpatialGridInterface {
 }
 
 export interface SpatialGridManagerManagerInterface {
+  updateAtomCell(atom: AtomInterface): void;
   handleAtom(atom: AtomInterface, callback: (lhs: AtomInterface, rhs: AtomInterface) => void): void;
+  detachAtom(atom: AtomInterface): void;
   countAtoms(): number;
   clear(): void;
   findAtomByCoords(coords: NumericVector, radiusMap: number[], radiusMultiplier: number): AtomInterface | undefined;
