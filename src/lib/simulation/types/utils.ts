@@ -16,6 +16,7 @@ export interface LinkManagerInterface extends Iterable<LinkInterface> {
 export interface RulesHelperInterface {
   canLink(lhs: AtomInterface, rhs: AtomInterface): boolean;
   isLinkRedundant(lhs: AtomInterface, rhs: AtomInterface): boolean;
+  hasMergeTransform(lhs: AtomInterface, rhs: AtomInterface): boolean;
   handleTransform(lhs: AtomInterface, rhs: AtomInterface): [number, number][];
 }
 

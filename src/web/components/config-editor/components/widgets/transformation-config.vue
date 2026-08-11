@@ -20,12 +20,18 @@ type TransformationRow = {
 };
 
 const transformations = ref<TransformationRow[]>([]);
+let syncing = false;
+
 const syncForward = () => {
-  transformations.value = [];
+  if (syncing || !modelValue.value) {
+    return;
+  }
+  syncing = true;
+  const next: TransformationRow[] = [];
   for (const i in modelValue.value) {
     for (const j in modelValue.value[Number(i)]) {
       const raw = modelValue.value[Number(i)][Number(j)];
-      transformations.value.push({
+      next.push({
         lhs: Number(i),
         rhs: Number(j),
         type: decodeTransformType(raw),
@@ -33,9 +39,15 @@ const syncForward = () => {
       });
     }
   }
-}
+  transformations.value = next;
+  syncing = false;
+};
 
 const syncBackward = () => {
+  if (syncing || !modelValue.value) {
+    return;
+  }
+  syncing = true;
   for (const i in modelValue.value) {
     delete modelValue.value[Number(i)];
   }
@@ -43,23 +55,24 @@ const syncBackward = () => {
     const from = Number(lhs);
     const withType = Number(rhs);
     const to = Number(type);
-    if (!(from in modelValue.value!)) {
-      modelValue.value![from] = {};
+    if (!(from in modelValue.value)) {
+      modelValue.value[from] = {};
     }
-    modelValue.value![from][withType] = encodeTransform(to, kind === 'merge');
+    modelValue.value[from][withType] = encodeTransform(to, kind === 'merge');
   }
-}
+  syncing = false;
+};
 
-watch(modelValue, syncForward);
+watch(modelValue, syncForward, { immediate: true });
 watch(transformations, syncBackward, { deep: true });
 
 const addTransformation = () => {
   transformations.value.push({ lhs: 0, rhs: 0, type: 0, kind: 'link' });
-}
+};
 
 const removeTransformation = (index: number) => {
   transformations.value.splice(index, 1);
-}
+};
 
 </script>
 

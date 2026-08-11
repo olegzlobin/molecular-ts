@@ -29,6 +29,10 @@ export function convertTypesConfigForBackwardCompatibility(inputConfig: TypesCon
     }
   }
 
+  if (config.TRANSFORMATION === undefined) {
+    config.TRANSFORMATION = {};
+  }
+
   const typesCount = config.FREQUENCIES?.length ?? config.RADIUS?.length ?? 0;
   if (!config.LINK_LENGTH || config.LINK_LENGTH.length !== typesCount) {
     config.LINK_LENGTH = Array(typesCount).fill(1);

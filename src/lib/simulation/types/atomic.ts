@@ -23,6 +23,7 @@ export interface AtomInterface {
   type: number;
   newType: number | undefined;
   toDelete: boolean;
+  linkBanWith?: number;
   spatialGridCell?: SpatialGridCellInterface;
   exportState(): Record<string, unknown>;
 }

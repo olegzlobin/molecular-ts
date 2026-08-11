@@ -76,47 +76,49 @@ export function createColors(count: number, randomize: boolean = false, usePrede
 }
 
 export function createDefaultTypesConfig(): TypesConfig {
-  // 0=C, 1=H, 2=O, 3=N — valences 4 / 1 / 2 / 3
+  // 0 = proton, 1 = neutron, 2 = electron
   return {
     COLORS: [
-      [160, 160, 170],
-      [245, 245, 250],
-      [230, 55, 55],
-      [70, 120, 255],
+      [220, 50, 50],
+      [190, 190, 200],
+      [70, 140, 255],
     ],
-    FREQUENCIES: [1, 2.2, 0.35, 0.2],
-    RADIUS: [1, 0.5, 0.85, 0.9],
+    FREQUENCIES: [1, 1, 1],
+    RADIUS: [1, 1, 0.6],
     GRAVITY: [
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
+      [-3, 0, 1],
+      [0, 0, 0],
+      [1, 0, -3],
     ],
     LINK_GRAVITY: [
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
+      [1, 1, -1],
+      [1, 1, 0],
+      [-1, 0, -10],
     ],
-    LINKS: [4, 1, 2, 3],
+    LINKS: [7, 7, 1],
     TYPE_LINKS: [
-      [4, 4, 4, 4],
-      [1, 1, 1, 1],
-      [2, 2, 1, 1],
-      [3, 3, 2, 1],
+      [3, 3, 1],
+      [3, 3, 0],
+      [1, 0, 0],
     ],
     TYPE_LINK_WEIGHTS: [
-      [1, 1, 1, 1],
-      [1, 1, 1, 1],
-      [1, 1, 1, 1],
-      [1, 1, 1, 1],
+      [1, 1, 1],
+      [1, 1, 1],
+      [1, 1, 1],
     ],
-    LINK_LENGTH: [1.0, 0.89, 1.01, 1.0],
-    LINK_STIFFNESS: [1.0, 1.35, 1.45, 1.2],
-    LINK_FACTOR_DISTANCE: createFilledTensor(4, 4, 4, 1),
-    LINK_FACTOR_ELASTIC: createFilledTensor(4, 4, 4, 1),
+    LINK_LENGTH: [0.3, 0.3, 1.2],
+    LINK_STIFFNESS: [1, 1, 0.6],
+    LINK_FACTOR_DISTANCE: createFilledTensor(3, 3, 3, 1),
+    LINK_FACTOR_ELASTIC: createFilledTensor(3, 3, 3, 1),
     TRANSFORMATION: {},
-    DECAYS: {},
+    DECAYS: {
+      1: {
+        halfLife: 40,
+        to: 0,
+        secondary: 2,
+        stabilizers: [0],
+      },
+    },
   };
 }
 
@@ -552,7 +554,7 @@ export function randomizeTypesConfig(
 
   // TODO randomize transformations
   if (newConfig.FREQUENCIES.length === oldConfig.FREQUENCIES.length) {
-    newConfig.TRANSFORMATION = fullCopyObject(oldConfig.TRANSFORMATION);
+    newConfig.TRANSFORMATION = fullCopyObject(oldConfig.TRANSFORMATION ?? {});
     newConfig.DECAYS = fullCopyObject(oldConfig.DECAYS ?? {});
   }
 

@@ -253,11 +253,10 @@ export class Simulation implements SimulationInterface {
       const massSum = mass1 + mass2 || 1;
       const dir = toVector(new Array(atom.position.length).fill(0)).random().normalize();
       const u = dir.clone().mul(kick);
-      const offset = dir.clone().mul(
-        this.config.worldConfig.ATOM_RADIUS * (
-          this.config.typesConfig.RADIUS[rule.to] + this.config.typesConfig.RADIUS[rule.secondary]
-        ) / 2
+      const radiusSum = this.config.worldConfig.ATOM_RADIUS * (
+        this.config.typesConfig.RADIUS[rule.to] + this.config.typesConfig.RADIUS[rule.secondary]
       );
+      const offset = dir.clone().mul(radiusSum + 1);
 
       const speed1 = atom.speed.clone().add(u.clone().mul(mass2 / massSum));
       const speed2 = atom.speed.clone().sub(u.clone().mul(mass1 / massSum));
@@ -270,7 +269,10 @@ export class Simulation implements SimulationInterface {
         atom.newType = rule.to;
       }
 
-      spawned.push(createAtom(rule.secondary, [...pos2], [...speed2]));
+      const child = createAtom(rule.secondary, [...pos2], [...speed2]);
+      atom.linkBanWith = child.id;
+      child.linkBanWith = atom.id;
+      spawned.push(child);
     }
 
     if (spawned.length) {

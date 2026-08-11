@@ -88,6 +88,10 @@ export class RulesHelper implements RulesHelperInterface {
     return this._isLinkRedundant(lhs, rhs) || this._isLinkRedundant(rhs, lhs);
   }
 
+  hasMergeTransform(lhs: AtomInterface, rhs: AtomInterface): boolean {
+    return this._isMergeTransform(lhs, rhs) || this._isMergeTransform(rhs, lhs);
+  }
+
   handleTransform(lhs: AtomInterface, rhs: AtomInterface): [number, number][] {
     return [
       ...this._handleTransform(lhs, rhs),
@@ -108,6 +112,13 @@ export class RulesHelper implements RulesHelperInterface {
       return true;
     }
     return lhs.bonds.lengthOf(rhs.type) > this.TYPES_CONFIG.TYPE_LINKS[lhs.type][rhs.type];
+  }
+
+  private _isMergeTransform(lhs: AtomInterface, rhs: AtomInterface): boolean {
+    if (!this._issetTransformation(lhs, rhs)) {
+      return false;
+    }
+    return isMergeTransform(this.TYPES_CONFIG.TRANSFORMATION[lhs.type][rhs.type]);
   }
 
   private _handleTransform(lhs: AtomInterface, rhs: AtomInterface): [number, number][] {
@@ -133,8 +144,12 @@ export class RulesHelper implements RulesHelperInterface {
   }
 
   private _issetTransformation(lhs: AtomInterface, rhs: AtomInterface): boolean {
-    return this.TYPES_CONFIG.TRANSFORMATION[lhs.type]
-      && this.TYPES_CONFIG.TRANSFORMATION[lhs.type][rhs.type] !== undefined;
+    const transforms = this.TYPES_CONFIG.TRANSFORMATION;
+    if (!transforms) {
+      return false;
+    }
+    return transforms[lhs.type] !== undefined
+      && transforms[lhs.type][rhs.type] !== undefined;
   }
 
   private _countWeightedBonds(atom: AtomInterface): number {

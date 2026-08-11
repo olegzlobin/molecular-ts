@@ -127,11 +127,36 @@ export class InteractionManager implements InteractionManagerInterface {
       }
     }
 
+    const linkRadius2 = (this.WORLD_CONFIG.MAX_LINK_RADIUS * this.getPairLinkDistanceFactor(lhs, rhs)) ** 2;
+
+    if (lhs.linkBanWith === rhs.id || rhs.linkBanWith === lhs.id) {
+      if (dist2 > linkRadius2) {
+        if (lhs.linkBanWith === rhs.id) {
+          lhs.linkBanWith = undefined;
+        }
+        if (rhs.linkBanWith === lhs.id) {
+          rhs.linkBanWith = undefined;
+        }
+      } else if (
+        !lhs.bonds.has(rhs) &&
+        this.ruleHelper.canLink(lhs, rhs)
+      ) {
+        return;
+      }
+    }
+
     if (
       !lhs.bonds.has(rhs) &&
       this.ruleHelper.canLink(lhs, rhs) &&
-      dist2 <= (this.WORLD_CONFIG.MAX_LINK_RADIUS * this.getPairLinkDistanceFactor(lhs, rhs)) ** 2
+      dist2 <= linkRadius2
     ) {
+      if (this.ruleHelper.hasMergeTransform(lhs, rhs)) {
+        const radiusSum = this.physicModel.geometry.getAtomsRadiusSum(lhs, rhs);
+        if (dist2 > radiusSum ** 2) {
+          return;
+        }
+      }
+
       const link = this.linkManager.create(lhs, rhs);
 
       const transformations = this.ruleHelper.handleTransform(lhs, rhs);

@@ -76,7 +76,16 @@ export const useConfigStore = defineStore("config", () => {
   const setTypesConfigRaw = <T>(newConfig: TypesConfig) => {
     const buf = fullCopyObject(newConfig);
     for (const i in newConfig) {
-      (typesConfigRaw[i as keyof TypesConfig] as T) = buf[i as keyof TypesConfig] as T;
+      const value = buf[i as keyof TypesConfig];
+      if (value !== undefined) {
+        (typesConfigRaw[i as keyof TypesConfig] as T) = value as T;
+      }
+    }
+    if (!typesConfigRaw.TRANSFORMATION) {
+      typesConfigRaw.TRANSFORMATION = {};
+    }
+    if (!typesConfigRaw.DECAYS) {
+      typesConfigRaw.DECAYS = {};
     }
   }
 
@@ -90,7 +99,16 @@ export const useConfigStore = defineStore("config", () => {
   const setTypesConfig = <T>(newConfig: TypesConfig) => {
     const buf = fullCopyObject(newConfig);
     for (const i in newConfig) {
-      (typesConfig.value[i as keyof TypesConfig] as T) = buf[i as keyof TypesConfig] as T;
+      const value = buf[i as keyof TypesConfig];
+      if (value !== undefined) {
+        (typesConfig.value[i as keyof TypesConfig] as T) = value as T;
+      }
+    }
+    if (!typesConfig.value.TRANSFORMATION) {
+      typesConfig.value.TRANSFORMATION = {};
+    }
+    if (!typesConfig.value.DECAYS) {
+      typesConfig.value.DECAYS = {};
     }
     setTypesConfigRaw(newConfig);
   }

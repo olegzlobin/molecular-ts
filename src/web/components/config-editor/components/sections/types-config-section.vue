@@ -72,8 +72,7 @@ const linkElasticFactorConfigDescription = computed(() => {
       <div class="btn-group" role="group">
         <button class="btn btn-outline-secondary" @click="rightBarStore.toggle(rightBarStore.modes.RANDOMIZE)">Randomize</button>
         <button class="btn btn-outline-secondary" @click="rightBarStore.toggle(rightBarStore.modes.EDIT_TYPES)">Edit</button>
-        <!-- <button class="btn btn-outline-secondary" @click="clean">Clean</button> -->
-        <!-- <button class="btn btn-outline-secondary" @click="setDefaultTypesConfig">Default</button> -->
+        <button class="btn btn-outline-secondary" @click="setDefaultTypesConfig">Default</button>
         <button class="btn btn-outline-secondary" @click="refill">Refill</button>
         <button class="btn btn-outline-secondary" @click="rightBarStore.toggle(rightBarStore.modes.GENETIC)">Genetic</button>
         <button class="btn btn-outline-secondary" @click="configStore.appendType">Add type</button>
@@ -226,7 +225,7 @@ const linkElasticFactorConfigDescription = computed(() => {
       <div style="margin-top: 30px;">
         <input-header
           name="Transformations on link creation"
-          tooltip="Experimental feature. A ↻ B ➔ C means that when A connects to B, A changes type to C. A + B ➔ C merges A and B into C."
+          tooltip="Experimental feature. A ↻ B ➔ C means that when A connects to B, A changes type to C. A + B ➔ C merges A and B into C on contact (radii overlap)."
         />
         <div style="margin-top: 10px;"></div>
         <transformation-config :colors="typesConfig.COLORS" v-model="typesConfig.TRANSFORMATION" />

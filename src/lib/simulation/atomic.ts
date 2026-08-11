@@ -73,6 +73,7 @@ export class Atom implements AtomInterface {
   type: number;
   newType: number | undefined = undefined;
   toDelete: boolean = false;
+  linkBanWith?: number;
   spatialGridCell?: SpatialGridCellInterface;
 
   constructor(id: number, type: number, position: NumericVector, speed?: NumericVector) {

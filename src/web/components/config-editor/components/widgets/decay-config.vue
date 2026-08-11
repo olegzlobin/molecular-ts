@@ -59,7 +59,7 @@ const syncBackward = () => {
   syncing = false;
 };
 
-watch(modelValue, syncForward, { immediate: true, deep: true });
+watch(modelValue, syncForward, { immediate: true });
 watch(rows, syncBackward, { deep: true });
 
 const addRule = () => {
