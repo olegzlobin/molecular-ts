@@ -16,25 +16,21 @@ export class PhysicModelV2 implements PhysicModelInterface {
   }
 
   getGravityForce(lhs: AtomInterface, rhs: AtomInterface, dist2: number): number {
-    let multiplier: number;
-
     const bounceDistance = this.geometry.getAtomsRadiusSum(lhs, rhs);
-    let bounceForce = 0;
+    const massMult = this.geometry.getMassMultiplier(lhs, rhs);
 
     if (dist2 < bounceDistance ** 2) {
-      multiplier = -this.WORLD_CONFIG.BOUNCE_FORCE_MULTIPLIER * this.BOUNCE_CORRECTION_FACTOR;
-      bounceForce = (bounceDistance - Math.sqrt(dist2)) * multiplier;
+      const bounceForce = (bounceDistance - Math.sqrt(dist2))
+        * (-this.WORLD_CONFIG.BOUNCE_FORCE_MULTIPLIER * this.BOUNCE_CORRECTION_FACTOR);
+      return bounceForce * massMult;
     }
 
-    if (!lhs.bonds.has(rhs)) {
-      multiplier = this.WORLD_CONFIG.GRAVITY_FORCE_MULTIPLIER * this.TYPES_CONFIG.GRAVITY[lhs.type][rhs.type];
-    } else {
-      multiplier = this.WORLD_CONFIG.GRAVITY_FORCE_MULTIPLIER * this.TYPES_CONFIG.LINK_GRAVITY[lhs.type][rhs.type];
-    }
+    const gravity = lhs.bonds.has(rhs)
+      ? this.TYPES_CONFIG.LINK_GRAVITY[lhs.type][rhs.type]
+      : this.TYPES_CONFIG.GRAVITY[lhs.type][rhs.type];
+    const multiplier = this.WORLD_CONFIG.GRAVITY_FORCE_MULTIPLIER * gravity;
 
-    const gravityForce = multiplier / Math.max(dist2, 1);
-
-    return (gravityForce + bounceForce) * this.geometry.getMassMultiplier(lhs, rhs);
+    return (multiplier / Math.max(dist2, 1)) * massMult;
   }
 
   getLinkForce(lhs: AtomInterface, rhs: AtomInterface, dist2: number, elasticFactor: number): number {
