@@ -3,20 +3,25 @@
 import { getColorString } from "@/web/components/config-editor/utils";
 import { computed, ref } from "vue";
 
-const modelValue = defineModel<number>({ type: Number });
-const props = defineProps<{
+const modelValue = defineModel<number | null>();
+const props = withDefaults(defineProps<{
   colors: [number, number, number][];
-}>();
+  allowNone?: boolean;
+}>(), {
+  allowNone: false,
+});
 
 const isOpen = ref(false);
 
 const selectedColor = computed(() => {
-  const value = Number(modelValue.value ?? 0);
-  const color = props.colors[value] ?? props.colors[0];
+  if (modelValue.value === null || modelValue.value === undefined) {
+    return 'transparent';
+  }
+  const color = props.colors[Number(modelValue.value)] ?? props.colors[0];
   return color ? getColorString(color) : 'rgb(128, 128, 128)';
 });
 
-const select = (index: number) => {
+const select = (index: number | null) => {
   modelValue.value = index;
   isOpen.value = false;
 };
@@ -36,11 +41,20 @@ const close = () => {
     <button
       type="button"
       class="type-select__toggle"
+      :class="{ 'type-select__toggle--none': modelValue === null }"
       :style="{ backgroundColor: selectedColor }"
       :aria-expanded="isOpen"
       @click="toggle"
-    />
+    >
+      <span v-if="modelValue === null">∅</span>
+    </button>
     <ul v-show="isOpen" class="type-select__menu">
+      <li
+        v-if="allowNone"
+        class="type-select__option type-select__option--none"
+        :class="{ 'type-select__option--active': modelValue === null }"
+        @mousedown.prevent="select(null)"
+      >∅</li>
       <li
         v-for="(color, index) in colors"
         :key="index"
@@ -66,6 +80,13 @@ const close = () => {
   border: 1px solid #999;
   padding: 0;
   cursor: pointer;
+  color: #ccc;
+  line-height: 28px;
+  text-align: center;
+}
+
+.type-select__toggle--none {
+  background: #2a2a2a !important;
 }
 
 .type-select__menu {
@@ -88,6 +109,15 @@ const close = () => {
   cursor: pointer;
   border: 1px solid transparent;
   transition: filter 0.1s ease, outline 0.1s ease;
+}
+
+.type-select__option--none {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ccc;
+  background: #2a2a2a;
+  font-size: 14px;
 }
 
 .type-select__option:hover {

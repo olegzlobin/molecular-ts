@@ -184,6 +184,10 @@ export class Simulation implements SimulationInterface {
   private interact(): void {
     for (const atom of this._atoms) {
       this.interactionManager.updateAtomType(atom);
+    }
+    this.handleDecays();
+    for (const atom of this._atoms) {
+      this.interactionManager.updateAtomType(atom);
       this.interactionManager.clearDistanceFactor(atom);
       this.interactionManager.clearElasticFactor(atom);
       this.interactionManager.moveAtom(atom);
@@ -205,6 +209,90 @@ export class Simulation implements SimulationInterface {
       this.summaryManager.noticeLink(link, this.config.worldConfig);
     }
     this.interactionManager.handleTime();
+  }
+
+  private handleDecays(): void {
+    const decays = this.config.typesConfig.DECAYS;
+    if (!decays) {
+      return;
+    }
+
+    const spawned: AtomInterface[] = [];
+    const kick = this.config.worldConfig.DECAY_SPLITS_VELOCITY ?? 0;
+
+    for (const atom of this._atoms) {
+      if (atom.toDelete) {
+        continue;
+      }
+      const rule = decays[atom.type];
+      if (!rule || !(rule.halfLife > 0)) {
+        continue;
+      }
+      if (this.isStabilized(atom, rule.stabilizers)) {
+        continue;
+      }
+      const p = 1 - Math.pow(0.5, 1 / rule.halfLife);
+      if (Math.random() >= p) {
+        continue;
+      }
+
+      if (rule.secondary === null || rule.secondary === undefined) {
+        if (rule.to !== atom.type) {
+          atom.newType = rule.to;
+        }
+        continue;
+      }
+
+      this.breakAtomLinks(atom);
+
+      const mass1 = this.config.typesConfig.RADIUS[rule.to] ** 3;
+      const mass2 = this.config.typesConfig.RADIUS[rule.secondary] ** 3;
+      const massSum = mass1 + mass2 || 1;
+      const dir = toVector(new Array(atom.position.length).fill(0)).random().normalize();
+      const u = dir.clone().mul(kick);
+      const offset = dir.clone().mul(
+        this.config.worldConfig.ATOM_RADIUS * (
+          this.config.typesConfig.RADIUS[rule.to] + this.config.typesConfig.RADIUS[rule.secondary]
+        ) / 2
+      );
+
+      const speed1 = atom.speed.clone().add(u.clone().mul(mass2 / massSum));
+      const speed2 = atom.speed.clone().sub(u.clone().mul(mass1 / massSum));
+      const pos1 = atom.position.clone().sub(offset.clone().mul(mass2 / massSum));
+      const pos2 = atom.position.clone().add(offset.clone().mul(mass1 / massSum));
+
+      atom.position.set(pos1);
+      atom.speed.set(speed1);
+      if (rule.to !== atom.type) {
+        atom.newType = rule.to;
+      }
+
+      spawned.push(createAtom(rule.secondary, [...pos2], [...speed2]));
+    }
+
+    if (spawned.length) {
+      this._atoms.push(...spawned);
+    }
+  }
+
+  private isStabilized(atom: AtomInterface, stabilizers?: number[]): boolean {
+    if (!stabilizers || stabilizers.length === 0) {
+      return false;
+    }
+    for (const type of stabilizers) {
+      if (atom.bonds.lengthOf(type) > 0) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private breakAtomLinks(atom: AtomInterface): void {
+    for (const link of [...this._links]) {
+      if (link.lhs === atom || link.rhs === atom) {
+        this._links.delete(link);
+      }
+    }
   }
 
   private removeDeletedAtoms(): void {

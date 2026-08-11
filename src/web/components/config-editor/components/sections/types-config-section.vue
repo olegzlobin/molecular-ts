@@ -10,6 +10,7 @@ import ConfigList from '@/web/components/inputs/config-list.vue';
 import InputHeader from "@/web/components/base/input-header.vue";
 import ConfigTensor from "@/web/components/inputs/config-tensor.vue";
 import TransformationConfig from "@/web/components/config-editor/components/widgets/transformation-config.vue";
+import DecayConfig from "@/web/components/config-editor/components/widgets/decay-config.vue";
 import { useRightBarStore } from '@/web/store/right-bar';
 import ConfigActions from "@/web/components/inputs/config-actions.vue";
 
@@ -206,11 +207,18 @@ const linkElasticFactorConfigDescription = computed(() => {
       <div style="margin-top: 30px;">
         <input-header
           name="Transformations on link creation"
-          tooltip="Experimental feature. A + B ➔ C means that when the particle of type A connects to a particle of type B,
-                   then the particle of type B changes its type to C."
+          tooltip="Experimental feature. A ↻ B ➔ C means that when A connects to B, A changes type to C. A + B ➔ C merges A and B into C."
         />
         <div style="margin-top: 10px;"></div>
         <transformation-config :colors="typesConfig.COLORS" v-model="typesConfig.TRANSFORMATION" />
+      </div>
+      <div style="margin-top: 30px;">
+        <input-header
+          name="Decay"
+          tooltip="A ⏳ T ➔ B — particle A becomes B with half-life T (ticks). A ⏳ T ➔ B + C — splits into B and C. Use ∅ instead of C for type change only. ⛓ types stabilize A: it does not decay while linked to at least one of them."
+        />
+        <div style="margin-top: 10px;"></div>
+        <decay-config :colors="typesConfig.COLORS" v-model="typesConfig.DECAYS" />
       </div>
     </template>
   </config-section>

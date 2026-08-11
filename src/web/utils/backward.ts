@@ -2,7 +2,11 @@ import type { TypesConfig, TypesSymmetricConfig, WorldConfig } from '@/lib/confi
 import { fullCopyObject } from '@/lib/utils/functions';
 
 export function convertWorldConfigForBackwardCompatibility(inputConfig: WorldConfig): WorldConfig {
-  return fullCopyObject(inputConfig);
+  const config = fullCopyObject(inputConfig);
+  if (config.DECAY_SPLITS_VELOCITY === undefined) {
+    config.DECAY_SPLITS_VELOCITY = 1;
+  }
+  return config;
 }
 
 export function convertTypesConfigForBackwardCompatibility(inputConfig: TypesConfig): TypesConfig {
@@ -10,6 +14,17 @@ export function convertTypesConfigForBackwardCompatibility(inputConfig: TypesCon
 
   renameKey(config, 'LINK_FACTOR_DISTANCE_EXTENDED', 'LINK_FACTOR_DISTANCE');
   deleteKey(config, 'LINK_FACTOR_DISTANCE_USE_EXTENDED');
+
+  if (config.DECAYS === undefined) {
+    config.DECAYS = {};
+  } else {
+    for (const key in config.DECAYS) {
+      const rule = config.DECAYS[Number(key)];
+      if (rule.stabilizers === undefined) {
+        rule.stabilizers = [];
+      }
+    }
+  }
 
   return config;
 }

@@ -76,78 +76,47 @@ export function createColors(count: number, randomize: boolean = false, usePrede
 }
 
 export function createDefaultTypesConfig(): TypesConfig {
+  // 0 = proton, 1 = neutron, 2 = electron
   return {
-    COLORS: createColors(5),
-    FREQUENCIES: [1, 1, 0.5, 0.5, 1],
-    RADIUS: [1, 1, 1, 1, 1],
+    COLORS: [
+      [220, 50, 50],
+      [190, 190, 200],
+      [70, 140, 255],
+    ],
+    FREQUENCIES: [1, 1.2, 1],
+    RADIUS: [1, 1, 0.55],
     GRAVITY: [
-      [-1.4, 0.7, 0.1, -4.7, -0.5],
-      [-1.9, -1, -1.9, -4.3, -4.2],
-      [-1, -1.9, -1.3, -0.9, -3.3],
-      [-0.4, -0.6, -4.8, -10, -1.4],
-      [0.4, 0.1, 0.2, -1.6, -1.8],
+      [-1.2, -0.7, 0],
+      [-0.7, -0.4, 0],
+      [0, 0, 0],
     ],
     LINK_GRAVITY: [
-      [0, -0.5, 0, -4.2, -7.8],
-      [1, 0, -5, -3, -3],
-      [0, -5, 0, -8.4, -2.3],
-      [-4.2, 0.5, -8.4, 0.7, 0],
-      [-7.8, -3, -2.3, 0, -1.2],
+      [0.3, 1.4, 0.5],
+      [1.4, 1.0, 0],
+      [0.5, 0, 0],
     ],
-    LINKS: [5, 6, 4, 3, 6],
+    LINKS: [5, 5, 1],
     TYPE_LINKS: [
-      [0, 1, 0, 1, 1],
-      [2, 0, 2, 2, 0],
-      [0, 1, 0, 2, 0],
-      [1, 1, 0, 0, 0],
-      [1, 1, 0, 0, 2],
+      [2, 3, 1],
+      [3, 2, 0],
+      [1, 0, 0],
     ],
     TYPE_LINK_WEIGHTS: [
-      [1, 1, 1, 1, 1],
-      [1, 1, 1, 1, 1],
-      [1, 1, 1, 1, 1],
-      [1, 1, 1, 1, 1],
-      [1, 1, 1, 1, 1],
+      [1, 1, 1],
+      [1, 1, 1],
+      [1, 1, 1],
     ],
-    LINK_FACTOR_DISTANCE: [
-      [
-        [1, 1, 1, 1.1, 1],
-        [1, 1, 1, 0.8, 0.7],
-        [1, 1, 1, 0.8, 1.2],
-        [1.1, 0.8, 0.8, 1, 0.8],
-        [1, 0.7, 1.2, 0.8, 1.1]
-      ],
-      [
-        [1, 1, 1, 0.7, 1],
-        [1, 1, 1, 1.1, 1],
-        [1, 1, 1, 0.8, 1.2],
-        [0.7, 1.1, 0.8, 0.9, 1.1],
-        [1, 1, 1.2, 1.1, 0.9]
-      ],
-      [
-        [1, 1, 1, 0.9, 1.1],
-        [1, 1, 1, 1, 0.8],
-        [1, 1, 1, 1, 1],
-        [0.9, 1, 1, 1.2, 1],
-        [1.1, 0.8, 1, 1, 0.9]
-      ],
-      [
-        [0.7, 0.9, 0.9, 1, 1],
-        [0.9, 1, 0.7, 0.7, 0.9],
-        [0.9, 0.7, 1, 0.7, 0.9],
-        [1, 0.7, 0.7, 1, 1],
-        [1, 0.9, 0.9, 1, 0.6]
-      ],
-      [
-        [0.8, 1, 0.8, 1, 1.1],
-        [1, 0.9, 1.1, 0.8, 0.7],
-        [0.8, 1.1, 0.7, 1, 1.2],
-        [1, 0.8, 1, 1, 1],
-        [1.1, 0.7, 1.2, 1, 1]
-      ]
-    ],
-    LINK_FACTOR_ELASTIC: createFilledTensor(5, 5, 5, 1),
+    LINK_FACTOR_DISTANCE: createFilledTensor(3, 3, 3, 1),
+    LINK_FACTOR_ELASTIC: createFilledTensor(3, 3, 3, 1),
     TRANSFORMATION: {},
+    DECAYS: {
+      1: {
+        halfLife: 40,
+        to: 0,
+        secondary: 2,
+        stabilizers: [0],
+      },
+    },
   };
 }
 
@@ -164,6 +133,7 @@ export function createTransparentTypesConfig(typesCount: number): TypesConfig {
     FREQUENCIES: createFilledArray(typesCount, 1),
     COLORS: createColors(typesCount),
     TRANSFORMATION: {},
+    DECAYS: {},
   }
 }
 
@@ -180,6 +150,7 @@ export function createSingleTypeConfig(): TypesConfig {
     LINK_FACTOR_DISTANCE: [[[1]]],
     LINK_FACTOR_ELASTIC: [[[1]]],
     TRANSFORMATION: {},
+    DECAYS: {},
   };
 }
 
@@ -295,7 +266,8 @@ export function createRandomTypesConfig({
     LINK_FACTOR_DISTANCE: linkFactorDistance,
     LINK_FACTOR_ELASTIC: linkFactorElastic,
     COLORS: createColors(TYPES_COUNT),
-    TRANSFORMATION: {}, // TODO randomize it
+    TRANSFORMATION: {},
+    DECAYS: {}, // TODO randomize it
   };
 }
 
@@ -409,7 +381,8 @@ export function createRandomIntTypesConfig({
     LINK_FACTOR_DISTANCE: linkFactorDistance,
     LINK_FACTOR_ELASTIC: linkFactorElastic,
     COLORS: createColors(TYPES_COUNT),
-    TRANSFORMATION: {}, // TODO randomize it
+    TRANSFORMATION: {},
+    DECAYS: {}, // TODO randomize it
   };
 }
 
@@ -536,6 +509,7 @@ export function randomizeTypesConfig(
   // TODO randomize transformations
   if (newConfig.FREQUENCIES.length === oldConfig.FREQUENCIES.length) {
     newConfig.TRANSFORMATION = fullCopyObject(oldConfig.TRANSFORMATION);
+    newConfig.DECAYS = fullCopyObject(oldConfig.DECAYS ?? {});
   }
 
   if (!randomTypesConfig.USE_GRAVITY_BOUNDS) {
@@ -715,6 +689,7 @@ export function removeIndexFromTypesConfig(input: TypesConfig, index: number): T
   result.LINK_FACTOR_ELASTIC = removeIndexFromTensor(input.LINK_FACTOR_ELASTIC, index);
 
   result.TRANSFORMATION = {};
+  result.DECAYS = {};
 
   return result;
 }

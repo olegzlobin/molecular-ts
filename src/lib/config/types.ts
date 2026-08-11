@@ -27,6 +27,15 @@ export function decodeTransformType(value: number): number {
 export function encodeTransform(type: number, merge: boolean): number {
   return merge ? -(type + 1) : type;
 }
+
+export type DecayRule = {
+  halfLife: number;
+  to: number;
+  secondary: number | null;
+  stabilizers: number[];
+};
+export type DecayConfig = Record<number, DecayRule>;
+
 export type BoundsConfig = {
   MIN_POSITION: NumericVector;
   MAX_POSITION: NumericVector;
@@ -52,6 +61,7 @@ export type TypesConfig = {
   FREQUENCIES: FrequenciesConfig;
   COLORS: ColorsConfig;
   TRANSFORMATION: TransformationConfig;
+  DECAYS: DecayConfig;
 };
 export type WorldConfig = {
   VIEW_MODE: ViewMode;
@@ -69,6 +79,7 @@ export type WorldConfig = {
   SIMPLIFIED_VIEW_MODE: boolean;
   SPEED: number;
   TEMPERATURE_MULTIPLIER: number;
+  DECAY_SPLITS_VELOCITY: number;
   TEMPERATURE_FUNCTION: (p: NumericVector, t: number) => number;
   CONFIG_2D: ViewModeConfig;
   CONFIG_3D: ViewModeConfig;

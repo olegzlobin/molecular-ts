@@ -155,6 +155,13 @@ watch(() => configStore.worldConfig.VIEW_MODE, () => {
         <input type="number" v-model="worldConfig.TEMPERATURE_MULTIPLIER" step="0.1" />
       </div>
       <div>
+        <input-header
+          name="Decay Split Velocity"
+          tooltip="Relative velocity of fragments when a particle decays into two."
+        />
+        <input type="number" v-model="worldConfig.DECAY_SPLITS_VELOCITY" step="0.1" min="0" />
+      </div>
+      <div>
         <div style="text-align: center;">
           <input-header
             name="Bounds"

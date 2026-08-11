@@ -29,6 +29,7 @@ export function extractExpressedTypesConfig(typesConfigs: TypesConfig[], express
     FREQUENCIES: express(typesConfigs.map((x) => x.FREQUENCIES), expressionIndices.FREQUENCIES),
     COLORS: express(typesConfigs.map((x) => x.COLORS), expressionIndices.COLORS),
     TRANSFORMATION: {}, // TODO implement
+    DECAYS: {},
   };
 }
 
