@@ -67,13 +67,19 @@ export class InteractionManager implements InteractionManagerInterface {
     ) {
       this.linkManager.delete(link);
       this.summaryManager.noticeLinkDeleted(link, this.WORLD_CONFIG);
+      return;
     }
 
     const radiusSum = this.physicModel.geometry.getAtomsRadiusSum(link.lhs, link.rhs);
-    if (dist2 > radiusSum ** 2) {
-      this.handleLinkInfluence(link.lhs, link.rhs, dist2, distVector);
-      this.handleLinkInfluence(link.rhs, link.lhs, dist2, distVector.inverse());
+    if (dist2 <= radiusSum ** 2) {
+      return;
     }
+
+    const elasticFactor = (
+      this.getElasticFactor(link.lhs, link.rhs) + this.getElasticFactor(link.rhs, link.lhs)
+    ) / 2;
+    this.handleLinkInfluence(link.lhs, link.rhs, dist2, distVector, elasticFactor);
+    this.handleLinkInfluence(link.rhs, link.lhs, dist2, distVector.inverse(), elasticFactor);
   }
 
   interactAtomsStep1(lhs: AtomInterface, rhs: AtomInterface): void {
@@ -229,8 +235,8 @@ export class InteractionManager implements InteractionManagerInterface {
     rhs: AtomInterface,
     dist2: number,
     distVector: VectorInterface,
+    elasticFactor: number,
   ): void {
-    const elasticFactor = this.getElasticFactor(rhs, lhs); // TODO check!
     const force = this.physicModel.getLinkForce(lhs, rhs, dist2, elasticFactor);
     lhs.speed.add(distVector.normalize().mul(this.normalizeForce(force)));
   }

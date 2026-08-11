@@ -110,7 +110,7 @@ watch(() => configStore.worldConfig.VIEW_MODE, () => {
           name="Link Force Multiplier"
           tooltip="Parameter by which the link elastic force is multiplied."
         />
-        <input type="number" v-model="worldConfig.LINK_FORCE_MULTIPLIER" step="0.005" min="0.005" />
+        <input type="number" v-model="worldConfig.LINK_FORCE_MULTIPLIER" step="0.0001" min="0" />
       </div>
       <div>
         <input-header

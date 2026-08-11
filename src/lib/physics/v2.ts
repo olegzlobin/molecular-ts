@@ -33,12 +33,15 @@ export class PhysicModelV2 implements PhysicModelInterface {
   }
 
   getLinkForce(lhs: AtomInterface, rhs: AtomInterface, dist2: number, elasticFactor: number): number {
-    const bounceDistance = this.geometry.getAtomsRadiusSum(lhs, rhs);
-    const factor = (dist2 < bounceDistance ** 2)
-      ? 1 - (bounceDistance - Math.sqrt(dist2)) / bounceDistance
-      : elasticFactor;
+    const lengths = this.TYPES_CONFIG.LINK_LENGTH;
+    const lengthMult = ((lengths?.[lhs.type] ?? 1) + (lengths?.[rhs.type] ?? 1)) / 2;
+    const restLength = this.geometry.getAtomsRadiusSum(lhs, rhs) * lengthMult;
+    const extension = Math.sqrt(dist2) - restLength;
 
-    return factor * this.WORLD_CONFIG.LINK_FORCE_MULTIPLIER * this.geometry.getMassMultiplier(lhs, rhs);
+    return this.WORLD_CONFIG.LINK_FORCE_MULTIPLIER
+      * elasticFactor
+      * this.geometry.getMassMultiplier(lhs, rhs)
+      * extension;
   }
 
   getBoundsForce(dist: number): number {
