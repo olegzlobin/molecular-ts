@@ -2,23 +2,30 @@ import type { TypesConfig } from './types';
 import {
   createFilledArray,
   createFilledMatrix,
+  createFilledTensor,
 } from '../math/factories';
 import {
   concatArrays,
   concatMatrices,
+  concatTensors,
   crossArrays,
   crossArraysByIndexes,
   crossMatrices,
   crossMatricesByIndexes,
+  crossTensors,
+  crossTensorsByIndexes,
   copyArrayIndex,
   copyMatrixIndex,
+  copyTensorIndex,
   randomCrossArrays,
   randomCrossMatrices,
+  randomCrossTensors,
   removeIndexFromArray,
   removeIndexFromMatrix,
+  removeIndexFromTensor,
 } from '../math/operations';
 
-type TypeFieldRank = 1 | 2;
+type TypeFieldRank = 1 | 2 | 3;
 
 export type TypeNumericField = {
   key: keyof TypesConfig;
@@ -38,13 +45,17 @@ export const TYPE_NUMERIC_FIELDS: TypeNumericField[] = [
   { key: 'TYPE_LINKS', rank: 2, fill: 0 },
   { key: 'TYPE_LINK_WEIGHTS', rank: 2, fill: 1 },
   { key: 'BOND_PREFERENCE', rank: 2, fill: 0 },
+  { key: 'BOND_PREFERENCE_FACTOR', rank: 3, fill: 1 },
 ];
 
 export function createFilledTypeField(field: TypeNumericField, typesCount: number): unknown {
   if (field.rank === 1) {
     return createFilledArray(typesCount, field.fill);
   }
-  return createFilledMatrix(typesCount, typesCount, field.fill);
+  if (field.rank === 2) {
+    return createFilledMatrix(typesCount, typesCount, field.fill);
+  }
+  return createFilledTensor(typesCount, typesCount, typesCount, field.fill);
 }
 
 function writeField(config: TypesConfig, field: TypeNumericField, value: unknown): void {
@@ -63,9 +74,17 @@ function ensureMatrix(config: TypesConfig, field: TypeNumericField, n: number): 
     : createFilledMatrix(n, n, field.fill);
 }
 
+function ensureTensor(config: TypesConfig, field: TypeNumericField, n: number): number[][][] {
+  const value = config[field.key] as number[][][] | undefined;
+  const ok = value?.length === n
+    && value.every((row) => row.length === n && row.every((col) => col.length === n));
+  return ok ? value! : createFilledTensor(n, n, n, field.fill);
+}
+
 type FieldOps = {
   list: (lhs: number[], rhs: number[], fill: number) => unknown;
   matrix: (lhs: number[][], rhs: number[][], fill: number) => unknown;
+  tensor: (lhs: number[][][], rhs: number[][][], fill: number) => unknown;
 };
 
 function mapNumericFields(
@@ -79,8 +98,10 @@ function mapNumericFields(
   for (const field of TYPE_NUMERIC_FIELDS) {
     if (field.rank === 1) {
       writeField(result, field, ops.list(ensureList(lhs, field, nL), ensureList(rhs, field, nR), field.fill));
-    } else {
+    } else if (field.rank === 2) {
       writeField(result, field, ops.matrix(ensureMatrix(lhs, field, nL), ensureMatrix(rhs, field, nR), field.fill));
+    } else {
+      writeField(result, field, ops.tensor(ensureTensor(lhs, field, nL), ensureTensor(rhs, field, nR), field.fill));
     }
   }
 }
@@ -88,6 +109,7 @@ function mapNumericFields(
 type UnaryFieldOps = {
   list: (value: number[], fill: number) => unknown;
   matrix: (value: number[][], fill: number) => unknown;
+  tensor: (value: number[][][], fill: number) => unknown;
 };
 
 function mapNumericFieldsUnary(
@@ -99,8 +121,10 @@ function mapNumericFieldsUnary(
   for (const field of TYPE_NUMERIC_FIELDS) {
     if (field.rank === 1) {
       writeField(result, field, ops.list(ensureList(input, field, n), field.fill));
-    } else {
+    } else if (field.rank === 2) {
       writeField(result, field, ops.matrix(ensureMatrix(input, field, n), field.fill));
+    } else {
+      writeField(result, field, ops.tensor(ensureTensor(input, field, n), field.fill));
     }
   }
 }
@@ -119,8 +143,10 @@ export function ensureNumericTypesFields(config: TypesConfig): void {
   for (const field of TYPE_NUMERIC_FIELDS) {
     if (field.rank === 1) {
       writeField(config, field, ensureList(config, field, typesCount));
-    } else {
+    } else if (field.rank === 2) {
       writeField(config, field, ensureMatrix(config, field, typesCount));
+    } else {
+      writeField(config, field, ensureTensor(config, field, typesCount));
     }
   }
 }
@@ -129,6 +155,7 @@ export function concatNumericTypesFields(result: TypesConfig, lhs: TypesConfig, 
   mapNumericFields(result, lhs, rhs, {
     list: (a, b) => concatArrays(a, b),
     matrix: (a, b, fill) => concatMatrices(a, b, fill),
+    tensor: (a, b, fill) => concatTensors(a, b, fill),
   });
 }
 
@@ -141,6 +168,7 @@ export function crossNumericTypesFields(
   mapNumericFields(result, lhs, rhs, {
     list: (a, b) => crossArrays(a, b, separator),
     matrix: (a, b, fill) => crossMatrices(a, b, separator, fill),
+    tensor: (a, b, fill) => crossTensors(a, b, separator, fill),
   });
 }
 
@@ -153,6 +181,7 @@ export function randomCrossNumericTypesFields(
   mapNumericFields(result, lhs, rhs, {
     list: (a, b) => randomCrossArrays(a, b, separator),
     matrix: (a, b) => randomCrossMatrices(a, b, separator),
+    tensor: (a, b) => randomCrossTensors(a, b, separator),
   });
 }
 
@@ -165,6 +194,7 @@ export function crossNumericTypesFieldsByIndexes(
   mapNumericFields(result, lhs, rhs, {
     list: (a, b) => crossArraysByIndexes(a, b, indexes),
     matrix: (a, b) => crossMatricesByIndexes(a, b, indexes),
+    tensor: (a, b) => crossTensorsByIndexes(a, b, indexes),
   });
 }
 
@@ -172,6 +202,7 @@ export function removeNumericTypesFieldIndex(result: TypesConfig, input: TypesCo
   mapNumericFieldsUnary(result, input, {
     list: (value) => removeIndexFromArray(value, index),
     matrix: (value) => removeIndexFromMatrix(value, index),
+    tensor: (value) => removeIndexFromTensor(value, index),
   });
 }
 
@@ -184,5 +215,6 @@ export function copyNumericTypesFieldIndex(
   mapNumericFieldsUnary(result, input, {
     list: (value) => copyArrayIndex(value, indexFrom, indexTo),
     matrix: (value) => copyMatrixIndex(value, indexFrom, indexTo),
+    tensor: (value) => copyTensorIndex(value, indexFrom, indexTo),
   });
 }

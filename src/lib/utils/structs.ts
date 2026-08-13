@@ -155,13 +155,18 @@ export class RulesHelper implements RulesHelperInterface {
     const needWeight = weights[newPartner.type];
     const maxLinks = this.TYPES_CONFIG.LINKS[atom.type];
     const maxToType = this.TYPES_CONFIG.TYPE_LINKS[atom.type][newPartner.type];
-    const newPref = this._bondPreference(atom.type, newPartner.type);
+    const newPref = this._bondPreference(atom, newPartner);
+    const factors = this.TYPES_CONFIG.BOND_PREFERENCE_FACTOR;
 
     const candidates = Object.values(atom.bonds.getStorage())
       .filter((partner) => partner !== newPartner)
+      .filter((partner) => {
+        const boost = factors?.[partner.type]?.[atom.type]?.[newPartner.type] ?? 1;
+        return !(boost > 1);
+      })
       .map((partner) => ({
         partner,
-        preference: this._bondPreference(atom.type, partner.type),
+        preference: this._bondPreference(atom, partner),
       }))
       .filter(({ preference }) => newPref > preference)
       .sort((a, b) => a.preference - b.preference || a.partner.id - b.partner.id);
@@ -189,9 +194,30 @@ export class RulesHelper implements RulesHelperInterface {
     return null;
   }
 
-  private _bondPreference(fromType: number, toType: number): number {
+  private _bondPreference(atom: AtomInterface, partner: AtomInterface): number {
     const matrix = this.TYPES_CONFIG.BOND_PREFERENCE;
-    return matrix?.[fromType]?.[toType] ?? 0;
+    let preference = matrix?.[atom.type]?.[partner.type] ?? 0;
+    const factors = this.TYPES_CONFIG.BOND_PREFERENCE_FACTOR;
+    if (!factors) {
+      return preference;
+    }
+
+    const agents = new Set<number>();
+    for (const neighbor of Object.values(atom.bonds.getStorage())) {
+      if (neighbor !== partner) {
+        agents.add(neighbor.type);
+      }
+    }
+    for (const neighbor of Object.values(partner.bonds.getStorage())) {
+      if (neighbor !== atom) {
+        agents.add(neighbor.type);
+      }
+    }
+
+    for (const agentType of agents) {
+      preference *= factors[agentType]?.[atom.type]?.[partner.type] ?? 1;
+    }
+    return preference;
   }
 
   private _isLinkRedundant(lhs: AtomInterface, rhs: AtomInterface): boolean {

@@ -7,6 +7,7 @@ import ConfigSection from '@/web/components/config-editor/components/containers/
 import ConfigMatrix from '@/web/components/inputs/config-matrix.vue';
 import ConfigList from '@/web/components/inputs/config-list.vue';
 import InputHeader from "@/web/components/base/input-header.vue";
+import ConfigTensor from "@/web/components/inputs/config-tensor.vue";
 import TransformationConfig from "@/web/components/config-editor/components/widgets/transformation-config.vue";
 import DecayConfig from "@/web/components/config-editor/components/widgets/decay-config.vue";
 import { useRightBarStore } from '@/web/store/right-bar';
@@ -200,6 +201,23 @@ const refill = () => {
         />
         <config-list :values="typesConfig.LINK_STIFFNESS" :colors="typesConfig.COLORS" :step="0.1" :min="0" />
       </div>
+      <details class="bond-preference-factor">
+        <summary>Bond Preference Factor (catalysts / inhibitors)</summary>
+        <input-header
+          name="Agent → bond A ⟷ B"
+          tooltip="Tabs choose the agent type. The matrix multiplies Bond Preference of A–B while that agent is bonded to A or B. Values >1 catalyze, <1 inhibit, 0 blocks the swap path. Default 1 = no effect."
+          position="center"
+        />
+        <config-tensor
+          :values="typesConfig.BOND_PREFERENCE_FACTOR"
+          :colors="typesConfig.COLORS"
+          :step="0.1"
+          :min="0"
+          tab-label="Agent (bonded catalyst / inhibitor)"
+          matrix-hint="While the selected agent is bonded to A or B, multiply preference of bond A ⟷ B."
+          v-model:symmetric="typesSymmetricConfig.BOND_PREFERENCE_FACTOR_MATRIX_SYMMETRIC"
+        />
+      </details>
       <div style="margin-top: 30px;">
         <input-header
           name="Transformations on link creation"
@@ -223,5 +241,16 @@ const refill = () => {
 <style scoped lang="scss">
 
 @use "../../assets/config-editor";
+
+.bond-preference-factor {
+  margin-top: 16px;
+  padding: 8px 0;
+}
+
+.bond-preference-factor > summary {
+  cursor: pointer;
+  margin-bottom: 12px;
+  opacity: 0.85;
+}
 
 </style>

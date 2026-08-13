@@ -13,13 +13,16 @@ import {
   concatArrays,
   createFilledMatrix,
   createFilledArray,
+  createFilledTensor,
   createRandomFloat,
   createRandomInteger,
   randomizeMatrix,
+  setMatrixMainDiagonal,
 } from '../math';
 import {
   copyArrayIndex,
   makeMatrixSymmetric,
+  makeTensorSymmetric,
   removeIndexFromArray,
 } from '../math/operations';
 import {
@@ -119,6 +122,7 @@ export function createDefaultTypesConfig(): TypesConfig {
     ],
     LINK_LENGTH: [1, 0.7, 1, 1],
     LINK_STIFFNESS: [1, 1, 1, 1],
+    BOND_PREFERENCE_FACTOR: createFilledTensor(4, 4, 4, 1),
     TRANSFORMATION: {},
     DECAYS: {},
   };
@@ -161,6 +165,7 @@ export function createRandomTypesConfig({
   LINK_TYPE_BOUNDS,
   LINK_TYPE_WEIGHT_BOUNDS,
   BOND_PREFERENCE_BOUNDS,
+  BOND_PREFERENCE_FACTOR_BOUNDS,
   LINK_LENGTH_BOUNDS,
   LINK_STIFFNESS_BOUNDS,
   GRAVITY_MATRIX_SYMMETRIC,
@@ -168,6 +173,8 @@ export function createRandomTypesConfig({
   LINK_TYPE_MATRIX_SYMMETRIC,
   LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC,
   BOND_PREFERENCE_MATRIX_SYMMETRIC,
+  BOND_PREFERENCE_FACTOR_MATRIX_SYMMETRIC,
+  BOND_PREFERENCE_FACTOR_IGNORE_SELF_TYPE,
 }: RandomTypesConfig): TypesConfig {
   const precision = 8;
 
@@ -242,6 +249,21 @@ export function createRandomTypesConfig({
   }
 
 
+  const bondPreferenceFactor: number[][][] = [];
+  for (let i = 0; i < TYPES_COUNT; ++i) {
+    bondPreferenceFactor.push(randomizeMatrix(
+      TYPES_COUNT,
+      BOND_PREFERENCE_FACTOR_BOUNDS,
+      createRandomFloat,
+      BOND_PREFERENCE_FACTOR_MATRIX_SYMMETRIC,
+      precision,
+    ));
+    if (BOND_PREFERENCE_FACTOR_IGNORE_SELF_TYPE) {
+      setMatrixMainDiagonal(bondPreferenceFactor[i], 1);
+    }
+  }
+
+
   return {
     RADIUS: radius,
     CHARGE: charge,
@@ -252,6 +274,7 @@ export function createRandomTypesConfig({
     TYPE_LINKS: typeLinks,
     TYPE_LINK_WEIGHTS: typeLinkWeights,
     BOND_PREFERENCE: bondPreference,
+    BOND_PREFERENCE_FACTOR: bondPreferenceFactor,
     LINK_LENGTH: linkLength,
     LINK_STIFFNESS: linkStiffness,
     COLORS: createColors(TYPES_COUNT),
@@ -271,6 +294,7 @@ export function createRandomIntTypesConfig({
   LINK_TYPE_BOUNDS,
   LINK_TYPE_WEIGHT_BOUNDS,
   BOND_PREFERENCE_BOUNDS,
+  BOND_PREFERENCE_FACTOR_BOUNDS,
   LINK_LENGTH_BOUNDS,
   LINK_STIFFNESS_BOUNDS,
   GRAVITY_MATRIX_SYMMETRIC,
@@ -278,6 +302,8 @@ export function createRandomIntTypesConfig({
   LINK_TYPE_MATRIX_SYMMETRIC,
   LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC,
   BOND_PREFERENCE_MATRIX_SYMMETRIC,
+  BOND_PREFERENCE_FACTOR_MATRIX_SYMMETRIC,
+  BOND_PREFERENCE_FACTOR_IGNORE_SELF_TYPE,
 }: RandomTypesConfig): TypesConfig {
   const radius: number[] = [];
   for (let i=0; i<TYPES_COUNT; ++i) {
@@ -350,6 +376,21 @@ export function createRandomIntTypesConfig({
   }
 
 
+  const bondPreferenceFactor: number[][][] = [];
+  for (let i = 0; i < TYPES_COUNT; ++i) {
+    bondPreferenceFactor.push(randomizeMatrix(
+      TYPES_COUNT,
+      BOND_PREFERENCE_FACTOR_BOUNDS,
+      createRandomInteger,
+      BOND_PREFERENCE_FACTOR_MATRIX_SYMMETRIC,
+      0,
+    ));
+    if (BOND_PREFERENCE_FACTOR_IGNORE_SELF_TYPE) {
+      setMatrixMainDiagonal(bondPreferenceFactor[i], 1);
+    }
+  }
+
+
   return {
     RADIUS: radius,
     CHARGE: charge,
@@ -360,6 +401,7 @@ export function createRandomIntTypesConfig({
     TYPE_LINKS: typeLinks,
     TYPE_LINK_WEIGHTS: typeLinkWeights,
     BOND_PREFERENCE: bondPreference,
+    BOND_PREFERENCE_FACTOR: bondPreferenceFactor,
     LINK_LENGTH: linkLength,
     LINK_STIFFNESS: linkStiffness,
     COLORS: createColors(TYPES_COUNT),
@@ -381,6 +423,7 @@ export function createDefaultRandomTypesConfig(typesCount: number): RandomTypesC
     USE_LINK_TYPE_BOUNDS: true,
     USE_LINK_TYPE_WEIGHT_BOUNDS: true,
     USE_BOND_PREFERENCE_BOUNDS: false,
+    USE_BOND_PREFERENCE_FACTOR_BOUNDS: false,
     USE_LINK_LENGTH_BOUNDS: true,
     USE_LINK_STIFFNESS_BOUNDS: true,
 
@@ -393,6 +436,7 @@ export function createDefaultRandomTypesConfig(typesCount: number): RandomTypesC
     LINK_TYPE_BOUNDS: [0, 4, 2],
     LINK_TYPE_WEIGHT_BOUNDS: [0.5, 2, 1, 0.5],
     BOND_PREFERENCE_BOUNDS: [0, 4, 1.5, 0.1],
+    BOND_PREFERENCE_FACTOR_BOUNDS: [0.5, 2, 1, 0.1],
     LINK_LENGTH_BOUNDS: [0.7, 1.3, 1, 0.1],
     LINK_STIFFNESS_BOUNDS: [0.5, 1.2, 1, 0.1],
 
@@ -401,6 +445,8 @@ export function createDefaultRandomTypesConfig(typesCount: number): RandomTypesC
     LINK_TYPE_MATRIX_SYMMETRIC: false,
     LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC: false,
     BOND_PREFERENCE_MATRIX_SYMMETRIC: true,
+    BOND_PREFERENCE_FACTOR_MATRIX_SYMMETRIC: true,
+    BOND_PREFERENCE_FACTOR_IGNORE_SELF_TYPE: true,
   };
 }
 
@@ -411,6 +457,7 @@ export function createDisabledTypesSymmetricConfig(): TypesSymmetricConfig {
     LINK_TYPE_MATRIX_SYMMETRIC: false,
     LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC: false,
     BOND_PREFERENCE_MATRIX_SYMMETRIC: false,
+    BOND_PREFERENCE_FACTOR_MATRIX_SYMMETRIC: false,
   };
 }
 
@@ -442,6 +489,31 @@ export function copyConfigMatrixValue(
   }
 }
 
+
+
+export function copyConfigTensorValue(
+  copyFrom: unknown[][][],
+  copyTo: unknown[][][],
+  defaultValue: number,
+  skipSubMatricesBoundaryIndex?: number,
+) {
+  for (let i=0; i<copyTo.length; ++i) {
+    for (let j=0; j<copyTo[i].length; ++j) {
+      for (let k=0; k<copyTo[i][j].length; ++k) {
+        if (
+          skipSubMatricesBoundaryIndex !== undefined &&
+          !(i < skipSubMatricesBoundaryIndex && j < skipSubMatricesBoundaryIndex && k < skipSubMatricesBoundaryIndex) &&
+          !(i >= skipSubMatricesBoundaryIndex && j >= skipSubMatricesBoundaryIndex && k >= skipSubMatricesBoundaryIndex)
+        ) continue;
+        if (copyFrom[i] === undefined || copyFrom[i][j] === undefined) {
+          copyTo[i][j][k] = defaultValue;
+        } else {
+          copyTo[i][j][k] = copyFrom[i][j][k] ?? defaultValue;
+        }
+      }
+    }
+  }
+}
 
 export function randomizeTypesConfig(
   randomTypesConfig: RandomTypesConfig,
@@ -546,6 +618,28 @@ export function randomizeTypesConfig(
         oldConfig.BOND_PREFERENCE ?? createFilledMatrix(oldConfig.RADIUS.length, oldConfig.RADIUS.length, 0),
         newConfig.BOND_PREFERENCE,
         0,
+        skipSubMatricesBoundaryIndex,
+      );
+    }
+  }
+
+  if (!randomTypesConfig.USE_BOND_PREFERENCE_FACTOR_BOUNDS) {
+    copyConfigTensorValue(
+      oldConfig.BOND_PREFERENCE_FACTOR
+        ?? createFilledTensor(oldConfig.RADIUS.length, oldConfig.RADIUS.length, oldConfig.RADIUS.length, 1),
+      newConfig.BOND_PREFERENCE_FACTOR,
+      1,
+    );
+  } else {
+    if (randomTypesConfig.BOND_PREFERENCE_FACTOR_MATRIX_SYMMETRIC) {
+      makeTensorSymmetric(newConfig.BOND_PREFERENCE_FACTOR);
+    }
+    if (skipSubMatricesBoundaryIndex !== undefined) {
+      copyConfigTensorValue(
+        oldConfig.BOND_PREFERENCE_FACTOR
+          ?? createFilledTensor(oldConfig.RADIUS.length, oldConfig.RADIUS.length, oldConfig.RADIUS.length, 1),
+        newConfig.BOND_PREFERENCE_FACTOR,
+        1,
         skipSubMatricesBoundaryIndex,
       );
     }

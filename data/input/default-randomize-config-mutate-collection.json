@@ -65,7 +65,31 @@
     "GRAVITY_MATRIX_SYMMETRIC": false,
     "LINK_GRAVITY_MATRIX_SYMMETRIC": false,
     "LINK_TYPE_MATRIX_SYMMETRIC": false,
-    "LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC": false
+    "LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC": false,
+    "USE_CHARGE_BOUNDS": false,
+    "USE_BOND_PREFERENCE_BOUNDS": false,
+    "USE_BOND_PREFERENCE_FACTOR_BOUNDS": false,
+    "CHARGE_BOUNDS": [
+      -2,
+      2,
+      0,
+      0.5
+    ],
+    "BOND_PREFERENCE_BOUNDS": [
+      0,
+      4,
+      1.5,
+      0.1
+    ],
+    "BOND_PREFERENCE_FACTOR_BOUNDS": [
+      0.5,
+      2,
+      1,
+      0.1
+    ],
+    "BOND_PREFERENCE_MATRIX_SYMMETRIC": true,
+    "BOND_PREFERENCE_FACTOR_MATRIX_SYMMETRIC": true,
+    "BOND_PREFERENCE_FACTOR_IGNORE_SELF_TYPE": true
   },
   {
     "TYPES_COUNT": 0,
@@ -133,7 +157,31 @@
     "GRAVITY_MATRIX_SYMMETRIC": false,
     "LINK_GRAVITY_MATRIX_SYMMETRIC": false,
     "LINK_TYPE_MATRIX_SYMMETRIC": false,
-    "LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC": false
+    "LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC": false,
+    "USE_CHARGE_BOUNDS": false,
+    "USE_BOND_PREFERENCE_BOUNDS": false,
+    "USE_BOND_PREFERENCE_FACTOR_BOUNDS": false,
+    "CHARGE_BOUNDS": [
+      -2,
+      2,
+      0,
+      0.5
+    ],
+    "BOND_PREFERENCE_BOUNDS": [
+      0,
+      4,
+      1.5,
+      0.1
+    ],
+    "BOND_PREFERENCE_FACTOR_BOUNDS": [
+      0.5,
+      2,
+      1,
+      0.1
+    ],
+    "BOND_PREFERENCE_MATRIX_SYMMETRIC": true,
+    "BOND_PREFERENCE_FACTOR_MATRIX_SYMMETRIC": true,
+    "BOND_PREFERENCE_FACTOR_IGNORE_SELF_TYPE": true
   },
   {
     "TYPES_COUNT": 0,
@@ -201,7 +249,31 @@
     "GRAVITY_MATRIX_SYMMETRIC": false,
     "LINK_GRAVITY_MATRIX_SYMMETRIC": false,
     "LINK_TYPE_MATRIX_SYMMETRIC": false,
-    "LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC": false
+    "LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC": false,
+    "USE_CHARGE_BOUNDS": false,
+    "USE_BOND_PREFERENCE_BOUNDS": false,
+    "USE_BOND_PREFERENCE_FACTOR_BOUNDS": false,
+    "CHARGE_BOUNDS": [
+      -2,
+      2,
+      0,
+      0.5
+    ],
+    "BOND_PREFERENCE_BOUNDS": [
+      0,
+      4,
+      1.5,
+      0.1
+    ],
+    "BOND_PREFERENCE_FACTOR_BOUNDS": [
+      0.5,
+      2,
+      1,
+      0.1
+    ],
+    "BOND_PREFERENCE_MATRIX_SYMMETRIC": true,
+    "BOND_PREFERENCE_FACTOR_MATRIX_SYMMETRIC": true,
+    "BOND_PREFERENCE_FACTOR_IGNORE_SELF_TYPE": true
   },
   {
     "TYPES_COUNT": 0,
@@ -269,7 +341,31 @@
     "GRAVITY_MATRIX_SYMMETRIC": false,
     "LINK_GRAVITY_MATRIX_SYMMETRIC": false,
     "LINK_TYPE_MATRIX_SYMMETRIC": false,
-    "LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC": false
+    "LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC": false,
+    "USE_CHARGE_BOUNDS": false,
+    "USE_BOND_PREFERENCE_BOUNDS": false,
+    "USE_BOND_PREFERENCE_FACTOR_BOUNDS": false,
+    "CHARGE_BOUNDS": [
+      -2,
+      2,
+      0,
+      0.5
+    ],
+    "BOND_PREFERENCE_BOUNDS": [
+      0,
+      4,
+      1.5,
+      0.1
+    ],
+    "BOND_PREFERENCE_FACTOR_BOUNDS": [
+      0.5,
+      2,
+      1,
+      0.1
+    ],
+    "BOND_PREFERENCE_MATRIX_SYMMETRIC": true,
+    "BOND_PREFERENCE_FACTOR_MATRIX_SYMMETRIC": true,
+    "BOND_PREFERENCE_FACTOR_IGNORE_SELF_TYPE": true
   },
   {
     "TYPES_COUNT": 0,
@@ -337,7 +433,31 @@
     "GRAVITY_MATRIX_SYMMETRIC": false,
     "LINK_GRAVITY_MATRIX_SYMMETRIC": false,
     "LINK_TYPE_MATRIX_SYMMETRIC": false,
-    "LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC": false
+    "LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC": false,
+    "USE_CHARGE_BOUNDS": false,
+    "USE_BOND_PREFERENCE_BOUNDS": false,
+    "USE_BOND_PREFERENCE_FACTOR_BOUNDS": false,
+    "CHARGE_BOUNDS": [
+      -2,
+      2,
+      0,
+      0.5
+    ],
+    "BOND_PREFERENCE_BOUNDS": [
+      0,
+      4,
+      1.5,
+      0.1
+    ],
+    "BOND_PREFERENCE_FACTOR_BOUNDS": [
+      0.5,
+      2,
+      1,
+      0.1
+    ],
+    "BOND_PREFERENCE_MATRIX_SYMMETRIC": true,
+    "BOND_PREFERENCE_FACTOR_MATRIX_SYMMETRIC": true,
+    "BOND_PREFERENCE_FACTOR_IGNORE_SELF_TYPE": true
   },
   {
     "TYPES_COUNT": 0,
@@ -405,6 +525,30 @@
     "GRAVITY_MATRIX_SYMMETRIC": false,
     "LINK_GRAVITY_MATRIX_SYMMETRIC": false,
     "LINK_TYPE_MATRIX_SYMMETRIC": false,
-    "LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC": false
+    "LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC": false,
+    "USE_CHARGE_BOUNDS": false,
+    "USE_BOND_PREFERENCE_BOUNDS": false,
+    "USE_BOND_PREFERENCE_FACTOR_BOUNDS": false,
+    "CHARGE_BOUNDS": [
+      -2,
+      2,
+      0,
+      0.5
+    ],
+    "BOND_PREFERENCE_BOUNDS": [
+      0,
+      4,
+      1.5,
+      0.1
+    ],
+    "BOND_PREFERENCE_FACTOR_BOUNDS": [
+      0.5,
+      2,
+      1,
+      0.1
+    ],
+    "BOND_PREFERENCE_MATRIX_SYMMETRIC": true,
+    "BOND_PREFERENCE_FACTOR_MATRIX_SYMMETRIC": true,
+    "BOND_PREFERENCE_FACTOR_IGNORE_SELF_TYPE": true
   }
 ]
