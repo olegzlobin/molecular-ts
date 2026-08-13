@@ -13,35 +13,29 @@ import {
 } from '../utils/functions';
 import {
   concatArrays,
-  concatMatrices,
-  concatTensors,
   createFilledMatrix,
   createFilledArray,
   createRandomFloat,
   createRandomInteger,
-  crossArrays,
-  crossMatrices,
-  crossTensors,
-  randomCrossArrays,
-  randomCrossMatrices,
-  randomCrossTensors,
   randomizeMatrix,
   setTensorMainDiagonal,
   createFilledTensor,
 } from '../math';
 import {
   copyArrayIndex,
-  copyMatrixIndex,
-  copyTensorIndex,
-  crossArraysByIndexes,
-  crossMatricesByIndexes,
-  crossTensorsByIndexes,
   makeMatrixSymmetric,
   makeTensorSymmetric,
   removeIndexFromArray,
-  removeIndexFromMatrix,
-  removeIndexFromTensor,
 } from '../math/operations';
+import {
+  concatNumericTypesFields,
+  copyNumericTypesFieldIndex,
+  crossNumericTypesFields,
+  crossNumericTypesFieldsByIndexes,
+  fillNumericTypesFields,
+  randomCrossNumericTypesFields,
+  removeNumericTypesFieldIndex,
+} from './types-config-fields';
 
 export const COLORS_PREDEFINED: Array<ColorVector> = [
   [250, 20, 20],
@@ -138,24 +132,13 @@ export function createDefaultTypesConfig(): TypesConfig {
 }
 
 export function createTransparentTypesConfig(typesCount: number): TypesConfig {
-  return {
-    RADIUS: createFilledArray(typesCount, 1),
-    CHARGE: createFilledArray(typesCount, 0),
-    GRAVITY: createFilledMatrix(typesCount, typesCount, 0),
-    LINK_GRAVITY: createFilledMatrix(typesCount, typesCount, 0),
-    LINKS: createFilledArray(typesCount, 0),
-    TYPE_LINKS: createFilledMatrix(typesCount, typesCount, 0),
-    TYPE_LINK_WEIGHTS: createFilledMatrix(typesCount, typesCount, 1),
-    BOND_PREFERENCE: createFilledMatrix(typesCount, typesCount, 0),
-    LINK_LENGTH: createFilledArray(typesCount, 1),
-    LINK_STIFFNESS: createFilledArray(typesCount, 1),
-    LINK_FACTOR_DISTANCE: createFilledTensor(typesCount, typesCount, typesCount, 1),
-    LINK_FACTOR_ELASTIC: createFilledTensor(typesCount, typesCount, typesCount, 1),
-    FREQUENCIES: createFilledArray(typesCount, 1),
+  const config = {
     COLORS: createColors(typesCount),
     TRANSFORMATION: {},
     DECAYS: {},
-  }
+  } as TypesConfig;
+  fillNumericTypesFields(config, typesCount);
+  return config;
 }
 
 export function pickUnusedTypeColor(existing: ColorVector[]): ColorVector {
@@ -169,24 +152,9 @@ export function pickUnusedTypeColor(existing: ColorVector[]): ColorVector {
 }
 
 export function createSingleTypeConfig(existingColors: ColorVector[] = []): TypesConfig {
-  return {
-    RADIUS: [1],
-    FREQUENCIES: [1],
-    COLORS: [pickUnusedTypeColor(existingColors)],
-    CHARGE: [0],
-    GRAVITY: [[0]],
-    LINK_GRAVITY: [[0]],
-    LINKS: [0],
-    TYPE_LINKS: [[0]],
-    TYPE_LINK_WEIGHTS: [[1]],
-    BOND_PREFERENCE: [[0]],
-    LINK_LENGTH: [1],
-    LINK_STIFFNESS: [1],
-    LINK_FACTOR_DISTANCE: [[[1]]],
-    LINK_FACTOR_ELASTIC: [[[1]]],
-    TRANSFORMATION: {},
-    DECAYS: {},
-  };
+  const config = createTransparentTypesConfig(1);
+  config.COLORS = [pickUnusedTypeColor(existingColors)];
+  return config;
 }
 
 export function createRandomTypesConfig({
@@ -681,195 +649,45 @@ export function randomizeTypesConfig(
 
 export function concatTypesConfigs(lhs: TypesConfig, rhs: TypesConfig): TypesConfig {
   const result = fullCopyObject(lhs);
-
   result.COLORS = concatArrays(lhs.COLORS, rhs.COLORS);
-  result.RADIUS = concatArrays(lhs.RADIUS, rhs.RADIUS);
-  result.CHARGE = concatArrays(
-    lhs.CHARGE ?? createFilledArray(lhs.RADIUS.length, 0),
-    rhs.CHARGE ?? createFilledArray(rhs.RADIUS.length, 0),
-  );
-  result.FREQUENCIES = concatArrays(lhs.FREQUENCIES, rhs.FREQUENCIES);
-
-  result.GRAVITY = concatMatrices(lhs.GRAVITY, rhs.GRAVITY, 0);
-  result.LINK_GRAVITY = concatMatrices(lhs.LINK_GRAVITY, rhs.LINK_GRAVITY, 0);
-
-  result.LINKS = concatArrays(lhs.LINKS, rhs.LINKS);
-  result.TYPE_LINKS = concatMatrices(lhs.TYPE_LINKS, rhs.TYPE_LINKS, 0);
-  result.TYPE_LINK_WEIGHTS = concatMatrices(lhs.TYPE_LINK_WEIGHTS, rhs.TYPE_LINK_WEIGHTS, 1);
-  result.BOND_PREFERENCE = concatMatrices(
-    lhs.BOND_PREFERENCE ?? createFilledMatrix(lhs.RADIUS.length, lhs.RADIUS.length, 0),
-    rhs.BOND_PREFERENCE ?? createFilledMatrix(rhs.RADIUS.length, rhs.RADIUS.length, 0),
-    0,
-  );
-
-  result.LINK_LENGTH = concatArrays(lhs.LINK_LENGTH ?? createFilledArray(lhs.RADIUS.length, 1), rhs.LINK_LENGTH ?? createFilledArray(rhs.RADIUS.length, 1));
-  result.LINK_STIFFNESS = concatArrays(lhs.LINK_STIFFNESS ?? createFilledArray(lhs.RADIUS.length, 1), rhs.LINK_STIFFNESS ?? createFilledArray(rhs.RADIUS.length, 1));
-
-  result.LINK_FACTOR_DISTANCE = concatTensors(lhs.LINK_FACTOR_DISTANCE, rhs.LINK_FACTOR_DISTANCE, 1);
-  result.LINK_FACTOR_ELASTIC = concatTensors(lhs.LINK_FACTOR_ELASTIC, rhs.LINK_FACTOR_ELASTIC, 1);
-
+  concatNumericTypesFields(result, lhs, rhs);
   return result;
 }
 
 export function crossTypesConfigs(lhs: TypesConfig, rhs: TypesConfig, separator: number): TypesConfig {
   const result = fullCopyObject(lhs);
-
   result.COLORS = createColors(lhs.COLORS.length);
-  result.RADIUS = crossArrays(lhs.RADIUS, rhs.RADIUS, separator);
-  result.CHARGE = crossArrays(
-    lhs.CHARGE ?? createFilledArray(lhs.RADIUS.length, 0),
-    rhs.CHARGE ?? createFilledArray(rhs.RADIUS.length, 0),
-    separator,
-  );
-  result.FREQUENCIES = crossArrays(lhs.FREQUENCIES, rhs.FREQUENCIES, separator);
-
-  result.GRAVITY = crossMatrices(lhs.GRAVITY, rhs.GRAVITY, separator, 0);
-  result.LINK_GRAVITY = crossMatrices(lhs.LINK_GRAVITY, rhs.LINK_GRAVITY, separator, 0);
-
-  result.LINKS = crossArrays(lhs.LINKS, rhs.LINKS, separator);
-  result.TYPE_LINKS = crossMatrices(lhs.TYPE_LINKS, rhs.TYPE_LINKS, separator, 0);
-  result.TYPE_LINK_WEIGHTS = crossMatrices(lhs.TYPE_LINK_WEIGHTS, rhs.TYPE_LINK_WEIGHTS, separator, 1);
-  result.BOND_PREFERENCE = crossMatrices(
-    lhs.BOND_PREFERENCE ?? createFilledMatrix(lhs.RADIUS.length, lhs.RADIUS.length, 0),
-    rhs.BOND_PREFERENCE ?? createFilledMatrix(rhs.RADIUS.length, rhs.RADIUS.length, 0),
-    separator,
-    0,
-  );
-
-  result.LINK_LENGTH = crossArrays(lhs.LINK_LENGTH ?? createFilledArray(lhs.RADIUS.length, 1), rhs.LINK_LENGTH ?? createFilledArray(rhs.RADIUS.length, 1), separator);
-  result.LINK_STIFFNESS = crossArrays(lhs.LINK_STIFFNESS ?? createFilledArray(lhs.RADIUS.length, 1), rhs.LINK_STIFFNESS ?? createFilledArray(rhs.RADIUS.length, 1), separator);
-
-  result.LINK_FACTOR_DISTANCE = crossTensors(lhs.LINK_FACTOR_DISTANCE, rhs.LINK_FACTOR_DISTANCE, separator, 1);
-  result.LINK_FACTOR_ELASTIC = crossTensors(lhs.LINK_FACTOR_ELASTIC, rhs.LINK_FACTOR_ELASTIC, separator, 1);
-
+  crossNumericTypesFields(result, lhs, rhs, separator);
   return result;
 }
 
 export function randomCrossTypesConfigs(lhs: TypesConfig, rhs: TypesConfig, separator: number): TypesConfig {
   const result = fullCopyObject(lhs);
-
   result.COLORS = createColors(lhs.COLORS.length);
-  result.RADIUS = randomCrossArrays(lhs.RADIUS, rhs.RADIUS, separator);
-  result.CHARGE = randomCrossArrays(
-    lhs.CHARGE ?? createFilledArray(lhs.RADIUS.length, 0),
-    rhs.CHARGE ?? createFilledArray(rhs.RADIUS.length, 0),
-    separator,
-  );
-  result.FREQUENCIES = randomCrossArrays(lhs.FREQUENCIES, rhs.FREQUENCIES, separator);
-
-  result.GRAVITY = randomCrossMatrices(lhs.GRAVITY, rhs.GRAVITY, separator);
-  result.LINK_GRAVITY = randomCrossMatrices(lhs.LINK_GRAVITY, rhs.LINK_GRAVITY, separator);
-
-  result.LINKS = randomCrossArrays(lhs.LINKS, rhs.LINKS, separator);
-  result.TYPE_LINKS = randomCrossMatrices(lhs.TYPE_LINKS, rhs.TYPE_LINKS, separator);
-  result.TYPE_LINK_WEIGHTS = randomCrossMatrices(lhs.TYPE_LINK_WEIGHTS, rhs.TYPE_LINK_WEIGHTS, separator);
-  result.BOND_PREFERENCE = randomCrossMatrices(
-    lhs.BOND_PREFERENCE ?? createFilledMatrix(lhs.RADIUS.length, lhs.RADIUS.length, 0),
-    rhs.BOND_PREFERENCE ?? createFilledMatrix(rhs.RADIUS.length, rhs.RADIUS.length, 0),
-    separator,
-  );
-
-  result.LINK_LENGTH = randomCrossArrays(lhs.LINK_LENGTH ?? createFilledArray(lhs.RADIUS.length, 1), rhs.LINK_LENGTH ?? createFilledArray(rhs.RADIUS.length, 1), separator);
-  result.LINK_STIFFNESS = randomCrossArrays(lhs.LINK_STIFFNESS ?? createFilledArray(lhs.RADIUS.length, 1), rhs.LINK_STIFFNESS ?? createFilledArray(rhs.RADIUS.length, 1), separator);
-
-  result.LINK_FACTOR_DISTANCE = randomCrossTensors(lhs.LINK_FACTOR_DISTANCE, rhs.LINK_FACTOR_DISTANCE, separator);
-  result.LINK_FACTOR_ELASTIC = randomCrossTensors(lhs.LINK_FACTOR_ELASTIC, rhs.LINK_FACTOR_ELASTIC, separator);
-
+  randomCrossNumericTypesFields(result, lhs, rhs, separator);
   return result;
 }
 
 export function crossTypesConfigsByIndexes(lhs: TypesConfig, rhs: TypesConfig, indexes: number[]): TypesConfig {
   const result = fullCopyObject(lhs);
-
   result.COLORS = createColors(lhs.COLORS.length);
-  result.RADIUS = crossArraysByIndexes(lhs.RADIUS, rhs.RADIUS, indexes);
-  result.CHARGE = crossArraysByIndexes(
-    lhs.CHARGE ?? createFilledArray(lhs.RADIUS.length, 0),
-    rhs.CHARGE ?? createFilledArray(rhs.RADIUS.length, 0),
-    indexes,
-  );
-  result.FREQUENCIES = crossArraysByIndexes(lhs.FREQUENCIES, rhs.FREQUENCIES, indexes);
-
-  result.GRAVITY = crossMatricesByIndexes(lhs.GRAVITY, rhs.GRAVITY, indexes);
-  result.LINK_GRAVITY = crossMatricesByIndexes(lhs.LINK_GRAVITY, rhs.LINK_GRAVITY, indexes);
-
-  result.LINKS = crossArraysByIndexes(lhs.LINKS, rhs.LINKS, indexes);
-  result.TYPE_LINKS = crossMatricesByIndexes(lhs.TYPE_LINKS, rhs.TYPE_LINKS, indexes);
-  result.TYPE_LINK_WEIGHTS = crossMatricesByIndexes(lhs.TYPE_LINK_WEIGHTS, rhs.TYPE_LINK_WEIGHTS, indexes);
-  result.BOND_PREFERENCE = crossMatricesByIndexes(
-    lhs.BOND_PREFERENCE ?? createFilledMatrix(lhs.RADIUS.length, lhs.RADIUS.length, 0),
-    rhs.BOND_PREFERENCE ?? createFilledMatrix(rhs.RADIUS.length, rhs.RADIUS.length, 0),
-    indexes,
-  );
-
-  result.LINK_LENGTH = crossArraysByIndexes(lhs.LINK_LENGTH ?? createFilledArray(lhs.RADIUS.length, 1), rhs.LINK_LENGTH ?? createFilledArray(rhs.RADIUS.length, 1), indexes);
-  result.LINK_STIFFNESS = crossArraysByIndexes(lhs.LINK_STIFFNESS ?? createFilledArray(lhs.RADIUS.length, 1), rhs.LINK_STIFFNESS ?? createFilledArray(rhs.RADIUS.length, 1), indexes);
-
-  result.LINK_FACTOR_DISTANCE = crossTensorsByIndexes(lhs.LINK_FACTOR_DISTANCE, rhs.LINK_FACTOR_DISTANCE, indexes);
-  result.LINK_FACTOR_ELASTIC = crossTensorsByIndexes(lhs.LINK_FACTOR_ELASTIC, rhs.LINK_FACTOR_ELASTIC, indexes);
-
+  crossNumericTypesFieldsByIndexes(result, lhs, rhs, indexes);
   return result;
 }
 
 export function removeIndexFromTypesConfig(input: TypesConfig, index: number): TypesConfig {
   const result = fullCopyObject(input);
-
   result.COLORS = removeIndexFromArray(input.COLORS, index);
-  result.RADIUS = removeIndexFromArray(input.RADIUS, index);
-  result.CHARGE = removeIndexFromArray(input.CHARGE ?? createFilledArray(input.RADIUS.length, 0), index);
-  result.FREQUENCIES = removeIndexFromArray(input.FREQUENCIES, index);
-
-  result.GRAVITY = removeIndexFromMatrix(input.GRAVITY, index);
-  result.LINK_GRAVITY = removeIndexFromMatrix(input.LINK_GRAVITY, index);
-
-  result.LINKS = removeIndexFromArray(input.LINKS, index);
-  result.TYPE_LINKS = removeIndexFromMatrix(input.TYPE_LINKS, index);
-  result.TYPE_LINK_WEIGHTS = removeIndexFromMatrix(input.TYPE_LINK_WEIGHTS, index);
-  result.BOND_PREFERENCE = removeIndexFromMatrix(
-    input.BOND_PREFERENCE ?? createFilledMatrix(input.RADIUS.length, input.RADIUS.length, 0),
-    index,
-  );
-
-  result.LINK_LENGTH = removeIndexFromArray(input.LINK_LENGTH ?? createFilledArray(input.RADIUS.length, 1), index);
-  result.LINK_STIFFNESS = removeIndexFromArray(input.LINK_STIFFNESS ?? createFilledArray(input.RADIUS.length, 1), index);
-
-  result.LINK_FACTOR_DISTANCE = removeIndexFromTensor(input.LINK_FACTOR_DISTANCE, index);
-  result.LINK_FACTOR_ELASTIC = removeIndexFromTensor(input.LINK_FACTOR_ELASTIC, index);
-
+  removeNumericTypesFieldIndex(result, input, index);
   result.TRANSFORMATION = {};
   result.DECAYS = {};
-
   return result;
 }
 
 export function copyIndexInTypesConfig(input: TypesConfig, indexFrom: number, indexTo: number): TypesConfig {
   const result = fullCopyObject(input);
-
   result.COLORS = copyArrayIndex(input.COLORS, indexFrom, indexTo);
-  result.RADIUS = copyArrayIndex(input.RADIUS, indexFrom, indexTo);
-  result.CHARGE = copyArrayIndex(input.CHARGE ?? createFilledArray(input.RADIUS.length, 0), indexFrom, indexTo);
-  result.FREQUENCIES = copyArrayIndex(input.FREQUENCIES, indexFrom, indexTo);
-
-  result.GRAVITY = copyMatrixIndex(input.GRAVITY, indexFrom, indexTo);
-  result.LINK_GRAVITY = copyMatrixIndex(input.LINK_GRAVITY, indexFrom, indexTo);
-
-  result.LINKS = copyArrayIndex(input.LINKS, indexFrom, indexTo);
-  result.TYPE_LINKS = copyMatrixIndex(input.TYPE_LINKS, indexFrom, indexTo);
-  result.TYPE_LINK_WEIGHTS = copyMatrixIndex(input.TYPE_LINK_WEIGHTS, indexFrom, indexTo);
-  result.BOND_PREFERENCE = copyMatrixIndex(
-    input.BOND_PREFERENCE ?? createFilledMatrix(input.RADIUS.length, input.RADIUS.length, 0),
-    indexFrom,
-    indexTo,
-  );
-
-  result.LINK_LENGTH = copyArrayIndex(input.LINK_LENGTH ?? createFilledArray(input.RADIUS.length, 1), indexFrom, indexTo);
-  result.LINK_STIFFNESS = copyArrayIndex(input.LINK_STIFFNESS ?? createFilledArray(input.RADIUS.length, 1), indexFrom, indexTo);
-
-  result.LINK_FACTOR_DISTANCE = copyTensorIndex(input.LINK_FACTOR_DISTANCE, indexFrom, indexTo);
-  result.LINK_FACTOR_ELASTIC = copyTensorIndex(input.LINK_FACTOR_ELASTIC, indexFrom, indexTo);
-
-  // TODO do not need to clear transformation, but maybe need to copy it
-
+  copyNumericTypesFieldIndex(result, input, indexFrom, indexTo);
   return result;
 }
 

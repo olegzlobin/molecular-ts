@@ -1,5 +1,6 @@
 import type { RandomTypesConfig, TypesConfig, TypesSymmetricConfig, WorldConfig } from '@/lib/config/types';
 import { fullCopyObject } from '@/lib/utils/functions';
+import { ensureNumericTypesFields } from '@/lib/config/types-config-fields';
 
 export function convertWorldConfigForBackwardCompatibility(inputConfig: WorldConfig): WorldConfig {
   const config = fullCopyObject(inputConfig);
@@ -36,23 +37,7 @@ export function convertTypesConfigForBackwardCompatibility(inputConfig: TypesCon
     config.TRANSFORMATION = {};
   }
 
-  const typesCount = config.FREQUENCIES?.length ?? config.RADIUS?.length ?? 0;
-  if (!config.LINK_LENGTH || config.LINK_LENGTH.length !== typesCount) {
-    config.LINK_LENGTH = Array(typesCount).fill(1);
-  }
-  if (!config.LINK_STIFFNESS || config.LINK_STIFFNESS.length !== typesCount) {
-    config.LINK_STIFFNESS = Array(typesCount).fill(1);
-  }
-  if (
-    !config.BOND_PREFERENCE
-    || config.BOND_PREFERENCE.length !== typesCount
-    || config.BOND_PREFERENCE.some((row) => row.length !== typesCount)
-  ) {
-    config.BOND_PREFERENCE = Array.from({ length: typesCount }, () => Array(typesCount).fill(0));
-  }
-  if (!config.CHARGE || config.CHARGE.length !== typesCount) {
-    config.CHARGE = Array(typesCount).fill(0);
-  }
+  ensureNumericTypesFields(config);
 
   return config;
 }
