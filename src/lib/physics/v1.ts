@@ -16,13 +16,22 @@ export class PhysicModelV1 implements PhysicModelInterface {
 
   getGravityForce(lhs: AtomInterface, rhs: AtomInterface, dist2: number): number {
     let multiplier: number;
+    const bounce = dist2 < this.geometry.getAtomsRadiusSum(lhs, rhs) ** 2;
 
-    if (dist2 < this.geometry.getAtomsRadiusSum(lhs, rhs) ** 2) {
+    if (bounce) {
       multiplier = -this.WORLD_CONFIG.BOUNCE_FORCE_MULTIPLIER;
     } else if (!lhs.bonds.has(rhs)) {
       multiplier = this.WORLD_CONFIG.GRAVITY_FORCE_MULTIPLIER * this.TYPES_CONFIG.GRAVITY[lhs.type][rhs.type];
     } else {
       multiplier = this.WORLD_CONFIG.GRAVITY_FORCE_MULTIPLIER * this.TYPES_CONFIG.LINK_GRAVITY[lhs.type][rhs.type];
+    }
+
+    if (!bounce) {
+      const qi = this.TYPES_CONFIG.CHARGE?.[lhs.type] ?? 0;
+      const qj = this.TYPES_CONFIG.CHARGE?.[rhs.type] ?? 0;
+      if (qi !== 0 && qj !== 0) {
+        multiplier -= this.WORLD_CONFIG.COULOMB_FORCE_MULTIPLIER * qi * qj;
+      }
     }
 
     return multiplier * this.geometry.getMassMultiplier(lhs, rhs) / dist2;

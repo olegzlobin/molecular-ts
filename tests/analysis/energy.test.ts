@@ -8,6 +8,7 @@ import type { LinkInterface } from '@/lib/simulation/types/atomic';
 function typesStub(): TypesConfig {
   return {
     RADIUS: [1, 1],
+    CHARGE: [0, 0],
     GRAVITY: [[0, 1], [1, 0]],
     LINK_GRAVITY: [[0, 0], [0, 0]],
     LINKS: [0, 0],
@@ -43,6 +44,7 @@ describe('computeEnergy', () => {
     const worldConfig = createBaseWorldConfig();
     worldConfig.WORLD_GRAVITY = 0;
     worldConfig.GRAVITY_FORCE_MULTIPLIER = 0;
+    worldConfig.COULOMB_FORCE_MULTIPLIER = 0;
     worldConfig.BOUNCE_FORCE_MULTIPLIER = 0;
     worldConfig.BOUNDS_FORCE_MULTIPLIER = 0;
 
@@ -70,6 +72,7 @@ describe('computeEnergy', () => {
     worldConfig.ATOM_RADIUS = 5;
     worldConfig.WORLD_GRAVITY = 0;
     worldConfig.GRAVITY_FORCE_MULTIPLIER = 0;
+    worldConfig.COULOMB_FORCE_MULTIPLIER = 0;
     worldConfig.BOUNCE_FORCE_MULTIPLIER = 2;
     worldConfig.BOUNDS_FORCE_MULTIPLIER = 0;
 
@@ -100,6 +103,7 @@ describe('computeEnergy', () => {
     worldConfig.ATOM_RADIUS = 5;
     worldConfig.WORLD_GRAVITY = 0;
     worldConfig.GRAVITY_FORCE_MULTIPLIER = 0;
+    worldConfig.COULOMB_FORCE_MULTIPLIER = 0;
     worldConfig.BOUNCE_FORCE_MULTIPLIER = 0;
     worldConfig.BOUNDS_FORCE_MULTIPLIER = 0;
     worldConfig.LINK_FORCE_MULTIPLIER = 0.5;

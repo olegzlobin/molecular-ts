@@ -9,6 +9,9 @@ export function convertWorldConfigForBackwardCompatibility(inputConfig: WorldCon
   if (config.WORLD_GRAVITY === undefined) {
     config.WORLD_GRAVITY = 0;
   }
+  if (config.COULOMB_FORCE_MULTIPLIER === undefined) {
+    config.COULOMB_FORCE_MULTIPLIER = 0.6;
+  }
   return config;
 }
 
@@ -46,6 +49,9 @@ export function convertTypesConfigForBackwardCompatibility(inputConfig: TypesCon
     || config.BOND_PREFERENCE.some((row) => row.length !== typesCount)
   ) {
     config.BOND_PREFERENCE = Array.from({ length: typesCount }, () => Array(typesCount).fill(0));
+  }
+  if (!config.CHARGE || config.CHARGE.length !== typesCount) {
+    config.CHARGE = Array(typesCount).fill(0);
   }
 
   return config;

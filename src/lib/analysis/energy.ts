@@ -140,7 +140,12 @@ export function computeEnergy(input: ComputeEnergyInput): EnergySnapshot {
     }
 
     const g = worldConfig.GRAVITY_FORCE_MULTIPLIER * gravityCoeff(typesConfig, lhs, rhs);
-    snapshot.gravity += gravityPotentialV2(g, dist);
+    const qi = typesConfig.CHARGE?.[lhs.type] ?? 0;
+    const qj = typesConfig.CHARGE?.[rhs.type] ?? 0;
+    const coulomb = (qi !== 0 && qj !== 0)
+      ? -worldConfig.COULOMB_FORCE_MULTIPLIER * qi * qj
+      : 0;
+    snapshot.gravity += gravityPotentialV2(g + coulomb, dist);
   });
 
   for (const link of links) {

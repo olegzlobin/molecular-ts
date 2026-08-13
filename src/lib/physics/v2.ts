@@ -27,7 +27,14 @@ export class PhysicModelV2 implements PhysicModelInterface {
     const gravity = lhs.bonds.has(rhs)
       ? this.TYPES_CONFIG.LINK_GRAVITY[lhs.type][rhs.type]
       : this.TYPES_CONFIG.GRAVITY[lhs.type][rhs.type];
-    const multiplier = this.WORLD_CONFIG.GRAVITY_FORCE_MULTIPLIER * gravity;
+    let multiplier = this.WORLD_CONFIG.GRAVITY_FORCE_MULTIPLIER * gravity;
+
+    const qi = this.TYPES_CONFIG.CHARGE?.[lhs.type] ?? 0;
+    const qj = this.TYPES_CONFIG.CHARGE?.[rhs.type] ?? 0;
+    if (qi !== 0 && qj !== 0) {
+      // Same signs repel (negative force), opposite attract — matches gravity convention.
+      multiplier -= this.WORLD_CONFIG.COULOMB_FORCE_MULTIPLIER * qi * qj;
+    }
 
     return (multiplier / Math.max(dist2, 1)) * massMult;
   }

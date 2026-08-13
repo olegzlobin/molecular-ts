@@ -97,6 +97,7 @@ export function createDefaultTypesConfig(): TypesConfig {
     ],
     FREQUENCIES: [1, 2, 1, 0.2],
     RADIUS: [1, 0.6, 1, 1],
+    CHARGE: [0, 0, 0, 0],
     GRAVITY: createFilledMatrix(4, 4, 0),
     // Strong C–C repulsion while bonded keeps carbon networks from collapsing into mush
     LINK_GRAVITY: [
@@ -139,6 +140,7 @@ export function createDefaultTypesConfig(): TypesConfig {
 export function createTransparentTypesConfig(typesCount: number): TypesConfig {
   return {
     RADIUS: createFilledArray(typesCount, 1),
+    CHARGE: createFilledArray(typesCount, 0),
     GRAVITY: createFilledMatrix(typesCount, typesCount, 0),
     LINK_GRAVITY: createFilledMatrix(typesCount, typesCount, 0),
     LINKS: createFilledArray(typesCount, 0),
@@ -171,6 +173,7 @@ export function createSingleTypeConfig(existingColors: ColorVector[] = []): Type
     RADIUS: [1],
     FREQUENCIES: [1],
     COLORS: [pickUnusedTypeColor(existingColors)],
+    CHARGE: [0],
     GRAVITY: [[0]],
     LINK_GRAVITY: [[0]],
     LINKS: [0],
@@ -301,6 +304,7 @@ export function createRandomTypesConfig({
 
   return {
     RADIUS: radius,
+    CHARGE: createFilledArray(TYPES_COUNT, 0),
     GRAVITY: gravity,
     FREQUENCIES: frequencies,
     LINK_GRAVITY: linkGravity,
@@ -431,6 +435,7 @@ export function createRandomIntTypesConfig({
 
   return {
     RADIUS: radius,
+    CHARGE: createFilledArray(TYPES_COUNT, 0),
     GRAVITY: gravity,
     FREQUENCIES: frequencies,
     LINK_GRAVITY: linkGravity,
@@ -560,6 +565,7 @@ export function randomizeTypesConfig(
   const newConfig = createRandomTypesConfig(randomTypesConfig);
 
   newConfig.COLORS = fullCopyObject(oldConfig.COLORS);
+  newConfig.CHARGE = fullCopyObject(oldConfig.CHARGE ?? createFilledArray(oldConfig.RADIUS.length, 0));
 
   if (!randomTypesConfig.USE_FREQUENCY_BOUNDS || skipSubMatricesBoundaryIndex !== undefined) {
     copyConfigListValue(oldConfig.FREQUENCIES, newConfig.FREQUENCIES, 1);
@@ -678,6 +684,10 @@ export function concatTypesConfigs(lhs: TypesConfig, rhs: TypesConfig): TypesCon
 
   result.COLORS = concatArrays(lhs.COLORS, rhs.COLORS);
   result.RADIUS = concatArrays(lhs.RADIUS, rhs.RADIUS);
+  result.CHARGE = concatArrays(
+    lhs.CHARGE ?? createFilledArray(lhs.RADIUS.length, 0),
+    rhs.CHARGE ?? createFilledArray(rhs.RADIUS.length, 0),
+  );
   result.FREQUENCIES = concatArrays(lhs.FREQUENCIES, rhs.FREQUENCIES);
 
   result.GRAVITY = concatMatrices(lhs.GRAVITY, rhs.GRAVITY, 0);
@@ -706,6 +716,11 @@ export function crossTypesConfigs(lhs: TypesConfig, rhs: TypesConfig, separator:
 
   result.COLORS = createColors(lhs.COLORS.length);
   result.RADIUS = crossArrays(lhs.RADIUS, rhs.RADIUS, separator);
+  result.CHARGE = crossArrays(
+    lhs.CHARGE ?? createFilledArray(lhs.RADIUS.length, 0),
+    rhs.CHARGE ?? createFilledArray(rhs.RADIUS.length, 0),
+    separator,
+  );
   result.FREQUENCIES = crossArrays(lhs.FREQUENCIES, rhs.FREQUENCIES, separator);
 
   result.GRAVITY = crossMatrices(lhs.GRAVITY, rhs.GRAVITY, separator, 0);
@@ -735,6 +750,11 @@ export function randomCrossTypesConfigs(lhs: TypesConfig, rhs: TypesConfig, sepa
 
   result.COLORS = createColors(lhs.COLORS.length);
   result.RADIUS = randomCrossArrays(lhs.RADIUS, rhs.RADIUS, separator);
+  result.CHARGE = randomCrossArrays(
+    lhs.CHARGE ?? createFilledArray(lhs.RADIUS.length, 0),
+    rhs.CHARGE ?? createFilledArray(rhs.RADIUS.length, 0),
+    separator,
+  );
   result.FREQUENCIES = randomCrossArrays(lhs.FREQUENCIES, rhs.FREQUENCIES, separator);
 
   result.GRAVITY = randomCrossMatrices(lhs.GRAVITY, rhs.GRAVITY, separator);
@@ -763,6 +783,11 @@ export function crossTypesConfigsByIndexes(lhs: TypesConfig, rhs: TypesConfig, i
 
   result.COLORS = createColors(lhs.COLORS.length);
   result.RADIUS = crossArraysByIndexes(lhs.RADIUS, rhs.RADIUS, indexes);
+  result.CHARGE = crossArraysByIndexes(
+    lhs.CHARGE ?? createFilledArray(lhs.RADIUS.length, 0),
+    rhs.CHARGE ?? createFilledArray(rhs.RADIUS.length, 0),
+    indexes,
+  );
   result.FREQUENCIES = crossArraysByIndexes(lhs.FREQUENCIES, rhs.FREQUENCIES, indexes);
 
   result.GRAVITY = crossMatricesByIndexes(lhs.GRAVITY, rhs.GRAVITY, indexes);
@@ -791,6 +816,7 @@ export function removeIndexFromTypesConfig(input: TypesConfig, index: number): T
 
   result.COLORS = removeIndexFromArray(input.COLORS, index);
   result.RADIUS = removeIndexFromArray(input.RADIUS, index);
+  result.CHARGE = removeIndexFromArray(input.CHARGE ?? createFilledArray(input.RADIUS.length, 0), index);
   result.FREQUENCIES = removeIndexFromArray(input.FREQUENCIES, index);
 
   result.GRAVITY = removeIndexFromMatrix(input.GRAVITY, index);
@@ -821,6 +847,7 @@ export function copyIndexInTypesConfig(input: TypesConfig, indexFrom: number, in
 
   result.COLORS = copyArrayIndex(input.COLORS, indexFrom, indexTo);
   result.RADIUS = copyArrayIndex(input.RADIUS, indexFrom, indexTo);
+  result.CHARGE = copyArrayIndex(input.CHARGE ?? createFilledArray(input.RADIUS.length, 0), indexFrom, indexTo);
   result.FREQUENCIES = copyArrayIndex(input.FREQUENCIES, indexFrom, indexTo);
 
   result.GRAVITY = copyMatrixIndex(input.GRAVITY, indexFrom, indexTo);

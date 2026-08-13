@@ -107,6 +107,14 @@ const linkElasticFactorConfigDescription = computed(() => {
       </div>
       <div>
         <input-header
+          name="Charge"
+          tooltip="Coulomb charge of each type. Same signs repel, opposite attract. Works together with the Gravity matrix."
+          position="center"
+        />
+        <config-list :values="typesConfig.CHARGE" :colors="typesConfig.COLORS" :step="0.1" />
+      </div>
+      <div>
+        <input-header
           name="Gravity"
           tooltip="Gravity coefficient matrix for unlinked particles shows whether a particle of one type will attract or
                    repel a particle of another type in the case when they are not linked to each other, and with what force."

@@ -107,6 +107,13 @@ watch(() => configStore.worldConfig.VIEW_MODE, () => {
       </div>
       <div>
         <input-header
+          name="Coulomb Multiplier"
+          tooltip="Parameter by which Coulomb forces (from type charges) are multiplied."
+        />
+        <input type="number" v-model="worldConfig.COULOMB_FORCE_MULTIPLIER" step="0.1" />
+      </div>
+      <div>
+        <input-header
           name="World Gravity"
           tooltip="Constant downward acceleration (positive Y). 0 disables it. Scaled by Speed."
         />

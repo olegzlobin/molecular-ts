@@ -51,6 +51,7 @@ export type ViewModeConfig = {
 };
 export type TypesConfig = {
   RADIUS: RadiusConfig;
+  CHARGE: number[];
   GRAVITY: GravityConfig;
   LINK_GRAVITY: GravityConfig;
   LINKS: LinksConfig;
@@ -74,6 +75,7 @@ export type WorldConfig = {
   MAX_LINK_RADIUS: number;
   MAX_FORCE: number,
   GRAVITY_FORCE_MULTIPLIER: number;
+  COULOMB_FORCE_MULTIPLIER: number;
   WORLD_GRAVITY: number;
   LINK_FORCE_MULTIPLIER: number;
   BOUNCE_FORCE_MULTIPLIER: number;
