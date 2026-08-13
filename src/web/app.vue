@@ -4,7 +4,6 @@ import { onMounted } from "vue";
 import { useConfigStore } from "@/web/store/config";
 import { useSimulationStore } from "@/web/store/simulation";
 import ConfigEditor from "@/web/components/config-editor/config-editor.vue";
-import EnergyMeter from "@/web/components/energy-meter.vue";
 import type { ViewMode } from "@/lib/config/types";
 
 const configStore = useConfigStore();
@@ -31,7 +30,6 @@ onMounted(() => {
 
 <template>
   <config-editor />
-  <energy-meter />
   <canvas id="canvas3d" class="canvas" :style="getCanvasStyle('3d')"></canvas>
   <canvas id="canvas2d" class="canvas" :style="getCanvasStyle('2d')"></canvas>
 </template>

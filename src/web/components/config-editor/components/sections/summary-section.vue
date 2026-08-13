@@ -1,15 +1,65 @@
 <script setup lang="ts">
 
-import { ref, type Ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref, type Ref } from 'vue';
 import ConfigSection from '@/web/components/config-editor/components/containers/config-section.vue';
 import { useSimulationStore } from '@/web/store/simulation';
 import type { TimeSeriesConfig } from "@/web/components/config-editor/components/widgets/chart-flow.vue";
 import ChartFlow from "@/web/components/config-editor/components/widgets/chart-flow.vue";
 import Flag from '@/web/components/inputs/flag.vue';
+import { emptyEnergyReport } from '@/lib/analysis/energy';
 
 const { getCurrentSimulation } = useSimulationStore();
 
 const showMean: Ref<boolean> = ref(false);
+
+const getEnergy = () => {
+  try {
+    return getCurrentSimulation().energy;
+  } catch {
+    return emptyEnergyReport();
+  }
+};
+
+const fmt = (value: number, digits = 2): string => {
+  if (!Number.isFinite(value)) {
+    return '—';
+  }
+  const abs = Math.abs(value);
+  if (abs !== 0 && (abs >= 1e5 || abs < 1e-3)) {
+    return value.toExponential(2);
+  }
+  return value.toFixed(digits);
+};
+
+const energySnapshot = ref(emptyEnergyReport());
+
+const energyPotential = computed(() => {
+  const c = energySnapshot.value.current;
+  return c.gravity + c.bounce + c.link + c.bounds;
+});
+
+const energyDeltaPct = computed(() => {
+  const rel = energySnapshot.value.deltaRel;
+  if (!Number.isFinite(rel)) {
+    return '—';
+  }
+  return `${(rel * 100).toFixed(3)}%`;
+});
+
+const refreshEnergyReadout = () => {
+  energySnapshot.value = getEnergy();
+};
+
+const resetEnergyBaseline = () => {
+  try {
+    getCurrentSimulation().resetEnergyBaseline();
+    refreshEnergyReadout();
+  } catch {
+    // simulation not ready
+  }
+};
+
+let energyReadoutTimer: ReturnType<typeof setInterval> | undefined;
 
 type ChartConfig = {
   id: string;
@@ -20,6 +70,63 @@ type ChartConfig = {
   period?: number;
   config: TimeSeriesConfig[];
 }
+
+const timeSeriesEnergyTotalConfig: ChartConfig = {
+  id: 'energy-total',
+  name: 'Total Energy',
+  data: () => [getEnergy().current.total],
+  config: [
+    {
+      name: 'E',
+      options: {
+        strokeStyle: 'rgb(255, 193, 7)',
+        fillStyle: 'rgba(255, 193, 7, 0.25)',
+        lineWidth: 3,
+      },
+    },
+  ],
+};
+
+const timeSeriesEnergyPartsConfig: ChartConfig = {
+  id: 'energy-parts',
+  name: 'Kinetic / Potential',
+  data: () => {
+    const e = getEnergy().current;
+    return [e.kinetic, e.gravity + e.bounce + e.link + e.bounds];
+  },
+  config: [
+    {
+      name: 'KE',
+      options: {
+        strokeStyle: 'rgb(13, 110, 253)',
+        lineWidth: 2,
+      },
+    },
+    {
+      name: 'U',
+      options: {
+        strokeStyle: 'rgb(220, 53, 69)',
+        lineWidth: 2,
+      },
+    },
+  ],
+};
+
+const timeSeriesEnergyDeltaConfig: ChartConfig = {
+  id: 'energy-delta-rel',
+  name: 'ΔE / E₀ (%)',
+  data: () => [getEnergy().deltaRel * 100],
+  config: [
+    {
+      name: 'ΔE/E₀',
+      options: {
+        strokeStyle: 'rgb(25, 135, 84)',
+        fillStyle: 'rgba(25, 135, 84, 0.25)',
+        lineWidth: 3,
+      },
+    },
+  ],
+};
 
 const timeSeriesFpsConfig: ChartConfig = {
   id: 'fps',
@@ -357,6 +464,9 @@ const timeSeriesTransformationsTypeToMeanCountConfig = {
 }
 
 const timeSeriesConfigBase: ChartConfig[] = [
+  timeSeriesEnergyTotalConfig,
+  timeSeriesEnergyPartsConfig,
+  timeSeriesEnergyDeltaConfig,
   timeSeriesFpsConfig,
   timeSeriesAtomsMeanSpeedConfig,
   timeSeriesLinksCountConfig,
@@ -385,11 +495,64 @@ const timeSeriesConfigMean: ChartConfig[] = [
   timeSeriesTransformationsTypeToMeanCountConfig,
 ];
 
+onMounted(() => {
+  try {
+    getCurrentSimulation().setEnergyTracking(true);
+  } catch {
+    // simulation not ready
+  }
+  refreshEnergyReadout();
+  energyReadoutTimer = setInterval(refreshEnergyReadout, 200);
+});
+
+onUnmounted(() => {
+  if (energyReadoutTimer !== undefined) {
+    clearInterval(energyReadoutTimer);
+    energyReadoutTimer = undefined;
+  }
+  try {
+    getCurrentSimulation().setEnergyTracking(false);
+  } catch {
+    // simulation not ready
+  }
+});
+
 </script>
 
 <template>
   <config-section>
     <template #body>
+      <div class="energy-readout">
+        <div class="energy-readout-header">
+          <h5 class="mb-0">Energy</h5>
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-secondary"
+            title="Reset baseline E₀"
+            @click="resetEnergyBaseline"
+          >
+            E₀
+          </button>
+        </div>
+        <dl class="energy-readout-rows">
+          <div>
+            <dt>E</dt>
+            <dd>{{ fmt(energySnapshot.current.total) }}</dd>
+          </div>
+          <div>
+            <dt>KE</dt>
+            <dd>{{ fmt(energySnapshot.current.kinetic) }}</dd>
+          </div>
+          <div>
+            <dt>U</dt>
+            <dd>{{ fmt(energyPotential) }}</dd>
+          </div>
+          <div>
+            <dt>ΔE/E₀</dt>
+            <dd>{{ energyDeltaPct }}</dd>
+          </div>
+        </dl>
+      </div>
       <div v-for="config in timeSeriesConfigBase">
         <chart-flow
           :id="config.id"
@@ -433,5 +596,38 @@ const timeSeriesConfigMean: ChartConfig[] = [
 <style scoped lang="scss">
 
 @use "../../assets/config-editor";
+
+.energy-readout {
+  margin-bottom: 1rem;
+}
+
+.energy-readout-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.energy-readout-rows {
+  display: grid;
+  gap: 0.2rem;
+  margin: 0;
+
+  > div {
+    display: grid;
+    grid-template-columns: 3.5rem 1fr;
+    gap: 0.5rem;
+  }
+
+  dt,
+  dd {
+    margin: 0;
+  }
+
+  dd {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+}
 
 </style>
