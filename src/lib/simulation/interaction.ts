@@ -116,14 +116,17 @@ export class InteractionManager implements InteractionManagerInterface {
       return;
     }
 
-    const dist = Math.sqrt(dist2);
-    if (dist > 0) {
-      const forceLhs = this.normalizeForce(this.physicModel.getGravityForce(lhs, rhs, dist2));
-      const forceRhs = this.normalizeForce(this.physicModel.getGravityForce(rhs, lhs, dist2));
-      for (let i = 0; i < this.bufVector.length; ++i) {
-        const dir = this.bufVector[i] / dist;
-        lhs.speed[i] += dir * forceLhs;
-        rhs.speed[i] -= dir * forceRhs;
+    if (dist2 > 0) {
+      const [rawLhs, rawRhs] = this.physicModel.getGravityForces(lhs, rhs, dist2);
+      if (rawLhs !== 0 || rawRhs !== 0) {
+        const forceLhs = this.normalizeForce(rawLhs);
+        const forceRhs = this.normalizeForce(rawRhs);
+        const invDist = 1 / Math.sqrt(dist2);
+        for (let i = 0; i < this.bufVector.length; ++i) {
+          const dir = this.bufVector[i] * invDist;
+          lhs.speed[i] += dir * forceLhs;
+          rhs.speed[i] -= dir * forceRhs;
+        }
       }
     }
 

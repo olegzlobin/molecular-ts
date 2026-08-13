@@ -15,28 +15,40 @@ export class PhysicModelV2 implements PhysicModelInterface {
   }
 
   getGravityForce(lhs: AtomInterface, rhs: AtomInterface, dist2: number): number {
+    return this.getGravityForces(lhs, rhs, dist2)[0];
+  }
+
+  getGravityForces(lhs: AtomInterface, rhs: AtomInterface, dist2: number): [number, number] {
     const bounceDistance = this.geometry.getAtomsRadiusSum(lhs, rhs);
-    const massMult = this.geometry.getMassMultiplier(lhs, rhs);
+    const massL = this.geometry.getMassMultiplier(lhs, rhs);
+    const massR = this.geometry.getMassMultiplier(rhs, lhs);
 
     if (dist2 < bounceDistance ** 2) {
       const bounceForce = (bounceDistance - Math.sqrt(dist2))
         * (-this.WORLD_CONFIG.BOUNCE_FORCE_MULTIPLIER);
-      return bounceForce * massMult;
+      return [bounceForce * massL, bounceForce * massR];
     }
 
-    const gravity = lhs.bonds.has(rhs)
-      ? this.TYPES_CONFIG.LINK_GRAVITY[lhs.type][rhs.type]
-      : this.TYPES_CONFIG.GRAVITY[lhs.type][rhs.type];
-    let multiplier = this.WORLD_CONFIG.GRAVITY_FORCE_MULTIPLIER * gravity;
-
+    const bonded = lhs.bonds.has(rhs);
+    const gravityMatrix = bonded ? this.TYPES_CONFIG.LINK_GRAVITY : this.TYPES_CONFIG.GRAVITY;
+    const gL = gravityMatrix[lhs.type][rhs.type];
+    const gR = gravityMatrix[rhs.type][lhs.type];
     const qi = this.TYPES_CONFIG.CHARGE?.[lhs.type] ?? 0;
     const qj = this.TYPES_CONFIG.CHARGE?.[rhs.type] ?? 0;
-    if (qi !== 0 && qj !== 0) {
-      // Same signs repel (negative force), opposite attract — matches gravity convention.
-      multiplier -= this.WORLD_CONFIG.COULOMB_FORCE_MULTIPLIER * qi * qj;
+    const coulomb = (qi !== 0 && qj !== 0)
+      ? this.WORLD_CONFIG.COULOMB_FORCE_MULTIPLIER * qi * qj
+      : 0;
+
+    if (gL === 0 && gR === 0 && coulomb === 0) {
+      return [0, 0];
     }
 
-    return (multiplier / Math.max(dist2, 1)) * massMult;
+    const invDist2 = 1 / Math.max(dist2, 1);
+    const gravityMult = this.WORLD_CONFIG.GRAVITY_FORCE_MULTIPLIER;
+    return [
+      (gravityMult * gL - coulomb) * invDist2 * massL,
+      (gravityMult * gR - coulomb) * invDist2 * massR,
+    ];
   }
 
   getLinkForce(lhs: AtomInterface, rhs: AtomInterface, dist2: number, elasticFactor: number): number {
