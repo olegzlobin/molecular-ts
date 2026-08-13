@@ -9,12 +9,19 @@ export interface LinkManagerInterface extends Iterable<LinkInterface> {
   length: number;
   create(lhs: AtomInterface, rhs: AtomInterface): LinkInterface;
   delete(link: LinkInterface): void;
+  find(lhs: AtomInterface, rhs: AtomInterface): LinkInterface | undefined;
   clear(): void;
   has(link: LinkInterface): boolean;
 }
 
+export type LinkSwapPlan = {
+  breakLhsWith?: AtomInterface;
+  breakRhsWith?: AtomInterface;
+};
+
 export interface RulesHelperInterface {
   canLink(lhs: AtomInterface, rhs: AtomInterface): boolean;
+  getLinkSwapPlan(lhs: AtomInterface, rhs: AtomInterface): LinkSwapPlan | null;
   isLinkRedundant(lhs: AtomInterface, rhs: AtomInterface): boolean;
   hasMergeTransform(lhs: AtomInterface, rhs: AtomInterface): boolean;
   handleTransform(lhs: AtomInterface, rhs: AtomInterface): [number, number][];

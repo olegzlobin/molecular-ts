@@ -56,6 +56,7 @@ export type TypesConfig = {
   LINKS: LinksConfig;
   TYPE_LINKS: TypeLinksConfig;
   TYPE_LINK_WEIGHTS: TypeLinkWeightsConfig;
+  BOND_PREFERENCE: GravityConfig;
   LINK_LENGTH: number[];
   LINK_STIFFNESS: number[];
   LINK_FACTOR_DISTANCE: LinkFactorDistanceConfig;
@@ -129,6 +130,7 @@ export type TypesSymmetricConfig = {
   LINK_GRAVITY_MATRIX_SYMMETRIC: boolean;
   LINK_TYPE_MATRIX_SYMMETRIC: boolean;
   LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC: boolean;
+  BOND_PREFERENCE_MATRIX_SYMMETRIC: boolean;
   LINK_FACTOR_DISTANCE_MATRIX_SYMMETRIC: boolean;
   LINK_FACTOR_ELASTIC_MATRIX_SYMMETRIC: boolean;
 }

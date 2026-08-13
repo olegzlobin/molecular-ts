@@ -46,10 +46,11 @@ export const useConfigStore = defineStore("config", () => {
   const FLASH_IMPORT_STARTED = Symbol();
 
   const typesSymmetricConfig: Ref<TypesSymmetricConfig> = ref({
-    GRAVITY_MATRIX_SYMMETRIC: false,
-    LINK_GRAVITY_MATRIX_SYMMETRIC: false,
-    LINK_TYPE_MATRIX_SYMMETRIC: false,
-    LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC: false,
+    GRAVITY_MATRIX_SYMMETRIC: true,
+    LINK_GRAVITY_MATRIX_SYMMETRIC: true,
+    LINK_TYPE_MATRIX_SYMMETRIC: true,
+    LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC: true,
+    BOND_PREFERENCE_MATRIX_SYMMETRIC: true,
     LINK_FACTOR_DISTANCE_MATRIX_SYMMETRIC: true,
     LINK_FACTOR_ELASTIC_MATRIX_SYMMETRIC: true,
   });
@@ -278,8 +279,14 @@ export const useConfigStore = defineStore("config", () => {
     if (typesSymmetricConfig.value.LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC) {
       makeMatrixSymmetric(typesConfig.value.TYPE_LINK_WEIGHTS);
     }
+    if (typesSymmetricConfig.value.BOND_PREFERENCE_MATRIX_SYMMETRIC) {
+      makeMatrixSymmetric(typesConfig.value.BOND_PREFERENCE);
+    }
     if (typesSymmetricConfig.value.LINK_FACTOR_DISTANCE_MATRIX_SYMMETRIC) {
       makeTensorSymmetric(typesConfig.value.LINK_FACTOR_DISTANCE);
+    }
+    if (typesSymmetricConfig.value.LINK_FACTOR_ELASTIC_MATRIX_SYMMETRIC) {
+      makeTensorSymmetric(typesConfig.value.LINK_FACTOR_ELASTIC);
     }
   }
 

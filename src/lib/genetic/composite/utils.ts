@@ -24,6 +24,7 @@ export function extractExpressedTypesConfig(typesConfigs: TypesConfig[], express
     LINKS: express(typesConfigs.map((x) => x.LINKS), expressionIndices.LINKS),
     TYPE_LINKS: express(typesConfigs.map((x) => x.TYPE_LINKS), expressionIndices.TYPE_LINKS),
     TYPE_LINK_WEIGHTS: express(typesConfigs.map((x) => x.TYPE_LINK_WEIGHTS), expressionIndices.TYPE_LINK_WEIGHTS),
+    BOND_PREFERENCE: express(typesConfigs.map((x) => x.BOND_PREFERENCE ?? x.RADIUS.map(() => x.RADIUS.map(() => 0))), expressionIndices.GRAVITY),
     LINK_LENGTH: express(typesConfigs.map((x) => x.LINK_LENGTH ?? x.RADIUS.map(() => 1)), expressionIndices.LINK_LENGTH ?? expressionIndices.RADIUS),
     LINK_STIFFNESS: express(typesConfigs.map((x) => x.LINK_STIFFNESS ?? x.RADIUS.map(() => 1)), expressionIndices.LINK_STIFFNESS ?? expressionIndices.RADIUS),
     LINK_FACTOR_DISTANCE: express(typesConfigs.map((x) => x.LINK_FACTOR_DISTANCE), expressionIndices.LINK_FACTOR_DISTANCE),

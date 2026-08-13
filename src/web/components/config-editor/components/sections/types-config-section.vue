@@ -177,6 +177,19 @@ const linkElasticFactorConfigDescription = computed(() => {
       </div>
       <div>
         <input-header
+          name="Bond Preference"
+          tooltip="Higher values are preferred. When valence is full, a new bond can replace the weakest existing bond if it has a strictly higher preference."
+          position="center"
+        />
+        <config-matrix
+          :values="typesConfig.BOND_PREFERENCE"
+          :colors="typesConfig.COLORS"
+          :step="0.1"
+          v-model:symmetric="typesSymmetricConfig.BOND_PREFERENCE_MATRIX_SYMMETRIC"
+        />
+      </div>
+      <div>
+        <input-header
           name="Link Length"
           tooltip="Preferred link length multiplier for this type. For a bond A–B the length is the average of both types."
           position="center"

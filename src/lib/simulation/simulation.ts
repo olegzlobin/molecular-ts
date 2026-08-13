@@ -8,6 +8,14 @@ import type { WorldSummary, SummaryManagerInterface } from '../analysis/types';
 import type { GraphInterface } from "../graph/types";
 import type { NumericVector } from '../math/types';
 import type { Compound } from '../analysis/types';
+import {
+  buildEnergyReport,
+  computeEnergy,
+  emptyEnergyReport,
+  emptyEnergySnapshot,
+  type EnergyReport,
+  type EnergySnapshot,
+} from '../analysis/energy';
 import { SpatialGridManager } from './spatial';
 import { LinkManager, RulesHelper, RunningState } from '../utils/structs';
 import { InteractionManager } from './interaction';
@@ -37,6 +45,10 @@ export class Simulation implements SimulationInterface {
   private readonly spatialGridManager: SpatialGridManagerManagerInterface;
   private readonly summaryManager: SummaryManagerInterface;
   private readonly runningState: RunningStateInterface;
+  private _energy: EnergyReport = emptyEnergyReport();
+  private _energyInitial: EnergySnapshot | null = null;
+  private _energyTracking: boolean = false;
+  private _energyFrameCounter: number = 0;
 
   constructor(config: SimulationConfig) {
     this.config = config;
@@ -71,6 +83,10 @@ export class Simulation implements SimulationInterface {
     return this.summaryManager.summary;
   }
 
+  get energy(): EnergyReport {
+    return this._energy;
+  }
+
   get isPaused(): boolean {
     return this.runningState.isPaused;
   }
@@ -92,6 +108,12 @@ export class Simulation implements SimulationInterface {
     if (this.config.worldConfig.SPEED > 0 && !this.runningState.isPaused) {
       for (let i=0; i<this.config.worldConfig.PLAYBACK_SPEED; ++i) {
         this.interact();
+      }
+      if (this._energyTracking) {
+        this._energyFrameCounter++;
+        if (this._energyFrameCounter % 4 === 0) {
+          this.refreshEnergy();
+        }
       }
     }
 
@@ -119,10 +141,24 @@ export class Simulation implements SimulationInterface {
     this.spatialGridManager.clear();
     this._links.clear();
     this.drawer.clear();
+    this._energyInitial = null;
+    this._energy = emptyEnergyReport();
+  }
+
+  resetEnergyBaseline(): void {
+    this.refreshEnergy(true);
+  }
+
+  setEnergyTracking(enabled: boolean): void {
+    this._energyTracking = enabled;
+    if (enabled) {
+      this.refreshEnergy();
+    }
   }
 
   setPhysicModel(model: PhysicModelInterface): void {
     this.interactionManager.setPhysicModel(model);
+    this._energyInitial = null;
   }
 
   async exportState(): Promise<Record<string, unknown>> {
@@ -173,12 +209,41 @@ export class Simulation implements SimulationInterface {
     if (needToStart) {
       this.start();
     }
+
+    this._energyInitial = null;
   }
 
   exportCompounds(): Compound[] {
     const collector = new CompoundsCollector();
     collector.handleAtoms(this._atoms);
     return collector.getCompounds();
+  }
+
+  private refreshEnergy(resetBaseline: boolean = false): void {
+    for (const atom of this._atoms) {
+      this.spatialGridManager.updateAtomCell(atom);
+    }
+
+    const current = this._atoms.length === 0
+      ? emptyEnergySnapshot()
+      : computeEnergy({
+        atoms: this._atoms,
+        links: this._links,
+        forEachPair: (callback) => {
+          for (const atom of this._atoms) {
+            this.spatialGridManager.handleAtom(atom, callback);
+          }
+        },
+        worldConfig: this.config.worldConfig,
+        typesConfig: this.config.typesConfig,
+        viewMode: this.config.viewMode,
+      });
+
+    if (resetBaseline || !this._energyInitial) {
+      this._energyInitial = { ...current };
+    }
+
+    this._energy = buildEnergyReport(current, this._energyInitial);
   }
 
   private interact(): void {

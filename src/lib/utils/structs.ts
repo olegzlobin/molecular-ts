@@ -2,6 +2,7 @@ import type {
   LinksPoolInterface,
   LinkManagerInterface,
   RulesHelperInterface,
+  LinkSwapPlan,
   GeometryHelperInterface,
   QueueInterface,
   RunningStateInterface,
@@ -56,6 +57,18 @@ export class LinkManager implements LinkManagerInterface {
     this.pool.free(link);
   }
 
+  find(lhs: AtomInterface, rhs: AtomInterface): LinkInterface | undefined {
+    for (const link of this.storage) {
+      if (
+        (link.lhs === lhs && link.rhs === rhs)
+        || (link.lhs === rhs && link.rhs === lhs)
+      ) {
+        return link;
+      }
+    }
+    return undefined;
+  }
+
   clear(): void {
     this.storage.clear();
   }
@@ -84,6 +97,43 @@ export class RulesHelper implements RulesHelperInterface {
     return this._canLink(lhs, rhs) && this._canLink(rhs, lhs);
   }
 
+  getLinkSwapPlan(lhs: AtomInterface, rhs: AtomInterface): LinkSwapPlan | null {
+    if (this.canLink(lhs, rhs)) {
+      return {};
+    }
+
+    let breakLhsWith: AtomInterface | undefined;
+    let breakRhsWith: AtomInterface | undefined;
+
+    if (!this._canLink(lhs, rhs)) {
+      const victim = this._findWeakestBondPartner(lhs);
+      if (
+        !victim
+        || victim === rhs
+        || !(this._bondPreference(lhs.type, rhs.type) > this._bondPreference(lhs.type, victim.type))
+        || !this._canLinkAfterBreak(lhs, rhs, victim)
+      ) {
+        return null;
+      }
+      breakLhsWith = victim;
+    }
+
+    if (!this._canLink(rhs, lhs)) {
+      const victim = this._findWeakestBondPartner(rhs);
+      if (
+        !victim
+        || victim === lhs
+        || !(this._bondPreference(rhs.type, lhs.type) > this._bondPreference(rhs.type, victim.type))
+        || !this._canLinkAfterBreak(rhs, lhs, victim)
+      ) {
+        return null;
+      }
+      breakRhsWith = victim;
+    }
+
+    return { breakLhsWith, breakRhsWith };
+  }
+
   isLinkRedundant(lhs: AtomInterface, rhs: AtomInterface): boolean {
     return this._isLinkRedundant(lhs, rhs) || this._isLinkRedundant(rhs, lhs);
   }
@@ -105,6 +155,43 @@ export class RulesHelper implements RulesHelperInterface {
       return false;
     }
     return lhs.bonds.lengthOf(rhs.type) < this.TYPES_CONFIG.TYPE_LINKS[lhs.type][rhs.type];
+  }
+
+  private _canLinkAfterBreak(
+    atom: AtomInterface,
+    newPartner: AtomInterface,
+    victim: AtomInterface,
+  ): boolean {
+    const weights = this.TYPES_CONFIG.TYPE_LINK_WEIGHTS[atom.type];
+    const used = this._countWeightedBonds(atom) - weights[victim.type];
+    if (this.TYPES_CONFIG.LINKS[atom.type] - used < weights[newPartner.type]) {
+      return false;
+    }
+    let countToNew = atom.bonds.lengthOf(newPartner.type);
+    if (victim.type === newPartner.type) {
+      countToNew -= 1;
+    }
+    return countToNew < this.TYPES_CONFIG.TYPE_LINKS[atom.type][newPartner.type];
+  }
+
+  private _bondPreference(fromType: number, toType: number): number {
+    const matrix = this.TYPES_CONFIG.BOND_PREFERENCE;
+    return matrix?.[fromType]?.[toType] ?? 0;
+  }
+
+  private _findWeakestBondPartner(atom: AtomInterface): AtomInterface | null {
+    const storage = atom.bonds.getStorage();
+    let weakest: AtomInterface | null = null;
+    let worst = Infinity;
+    for (const id in storage) {
+      const other = storage[id];
+      const preference = this._bondPreference(atom.type, other.type);
+      if (preference < worst) {
+        worst = preference;
+        weakest = other;
+      }
+    }
+    return weakest;
   }
 
   private _isLinkRedundant(lhs: AtomInterface, rhs: AtomInterface): boolean {

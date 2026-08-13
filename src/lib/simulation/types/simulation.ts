@@ -3,6 +3,7 @@ import type { AtomInterface } from './atomic';
 import type { DrawerInterface } from '../../drawer/types';
 import type { PhysicModelInterface } from './interaction';
 import type { WorldSummary, Compound } from '../../analysis/types';
+import type { EnergyReport } from '../../analysis/energy';
 import type { LinkManagerInterface } from './utils';
 
 export type SimulationConfig = {
@@ -22,6 +23,7 @@ export interface SimulationInterface {
   readonly atoms: AtomInterface[];
   readonly links: LinkManagerInterface;
   readonly summary: WorldSummary<number[]>;
+  readonly energy: EnergyReport;
   readonly isPaused: boolean;
   start(): void;
   stop(onStop?: () => void): Promise<void>;
@@ -29,6 +31,8 @@ export interface SimulationInterface {
   togglePause(): void;
   refill(): void;
   clear(): void;
+  resetEnergyBaseline(): void;
+  setEnergyTracking(enabled: boolean): void;
   setPhysicModel(model: PhysicModelInterface): void;
   exportState(): Promise<Record<string, unknown>>;
   importState(state: Record<string, unknown>): Promise<void>;

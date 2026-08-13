@@ -147,13 +147,32 @@ export class InteractionManager implements InteractionManagerInterface {
 
     if (
       !lhs.bonds.has(rhs) &&
-      this.ruleHelper.canLink(lhs, rhs) &&
       dist2 <= linkRadius2
     ) {
+      const swapPlan = this.ruleHelper.getLinkSwapPlan(lhs, rhs);
+      if (!swapPlan) {
+        return;
+      }
+
       if (this.ruleHelper.hasMergeTransform(lhs, rhs)) {
         const radiusSum = this.physicModel.geometry.getAtomsRadiusSum(lhs, rhs);
         if (dist2 > radiusSum ** 2) {
           return;
+        }
+      }
+
+      if (swapPlan.breakLhsWith) {
+        const broken = this.linkManager.find(lhs, swapPlan.breakLhsWith);
+        if (broken) {
+          this.linkManager.delete(broken);
+          this.summaryManager.noticeLinkDeleted(broken, this.WORLD_CONFIG);
+        }
+      }
+      if (swapPlan.breakRhsWith) {
+        const broken = this.linkManager.find(rhs, swapPlan.breakRhsWith);
+        if (broken) {
+          this.linkManager.delete(broken);
+          this.summaryManager.noticeLinkDeleted(broken, this.WORLD_CONFIG);
         }
       }
 

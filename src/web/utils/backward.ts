@@ -40,6 +40,13 @@ export function convertTypesConfigForBackwardCompatibility(inputConfig: TypesCon
   if (!config.LINK_STIFFNESS || config.LINK_STIFFNESS.length !== typesCount) {
     config.LINK_STIFFNESS = Array(typesCount).fill(1);
   }
+  if (
+    !config.BOND_PREFERENCE
+    || config.BOND_PREFERENCE.length !== typesCount
+    || config.BOND_PREFERENCE.some((row) => row.length !== typesCount)
+  ) {
+    config.BOND_PREFERENCE = Array.from({ length: typesCount }, () => Array(typesCount).fill(0));
+  }
 
   return config;
 }
@@ -62,7 +69,11 @@ export function convertRandomTypesConfigForBackwardCompatibility(inputConfig: Ra
 }
 
 export function convertTypesSymmetricConfigForBackwardCompatibility(inputConfig: TypesSymmetricConfig): TypesSymmetricConfig {
-  return fullCopyObject(inputConfig);
+  const config = fullCopyObject(inputConfig);
+  if (config.BOND_PREFERENCE_MATRIX_SYMMETRIC === undefined) {
+    config.BOND_PREFERENCE_MATRIX_SYMMETRIC = true;
+  }
+  return config;
 }
 
 function renameKey<T extends Record<string, unknown>>(input: T, oldKey: string, newKey: string): T {
