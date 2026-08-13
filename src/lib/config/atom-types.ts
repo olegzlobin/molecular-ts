@@ -57,13 +57,24 @@ export const COLORS_PREDEFINED: Array<ColorVector> = [
 ];
 
 export function createColors(count: number, randomize: boolean = false, usePredefined: boolean = true, smartChoice: boolean = false): Array<ColorVector> {
+  const result: Array<ColorVector> = [];
+
   if (!randomize) {
-    return fullCopyObject(COLORS_PREDEFINED).slice(0, count);
+    const predefined = fullCopyObject(COLORS_PREDEFINED) as Array<ColorVector>;
+    for (let i = 0; i < count; ++i) {
+      if (i < predefined.length) {
+        result.push(predefined[i]);
+      } else {
+        result.push(getRandomColor());
+      }
+    }
+    return result;
   }
 
-  const predefined: Array<ColorVector> = usePredefined ? fullCopyObject(COLORS_PREDEFINED.reverse()) as Array<ColorVector> : [];
-  const result: Array<ColorVector> = [];
-  for (let i=0; i<count; ++i) {
+  const predefined: Array<ColorVector> = usePredefined
+    ? (fullCopyObject(COLORS_PREDEFINED) as Array<ColorVector>).reverse()
+    : [];
+  for (let i = 0; i < count; ++i) {
     if (predefined.length) {
       result.push(predefined.pop() as ColorVector);
     } else if (smartChoice) {
@@ -145,11 +156,21 @@ export function createTransparentTypesConfig(typesCount: number): TypesConfig {
   }
 }
 
-export function createSingleTypeConfig(): TypesConfig {
+export function pickUnusedTypeColor(existing: ColorVector[]): ColorVector {
+  const used = new Set(existing.map((color) => color.join(',')));
+  for (const color of COLORS_PREDEFINED) {
+    if (!used.has(color.join(','))) {
+      return [color[0], color[1], color[2]];
+    }
+  }
+  return getDifferentRandomColor(existing);
+}
+
+export function createSingleTypeConfig(existingColors: ColorVector[] = []): TypesConfig {
   return {
     RADIUS: [1],
     FREQUENCIES: [1],
-    COLORS: createColors(1),
+    COLORS: [pickUnusedTypeColor(existingColors)],
     GRAVITY: [[0]],
     LINK_GRAVITY: [[0]],
     LINKS: [0],
@@ -655,7 +676,7 @@ export function randomizeTypesConfig(
 export function concatTypesConfigs(lhs: TypesConfig, rhs: TypesConfig): TypesConfig {
   const result = fullCopyObject(lhs);
 
-  result.COLORS = createColors(lhs.COLORS.length + rhs.COLORS.length);
+  result.COLORS = concatArrays(lhs.COLORS, rhs.COLORS);
   result.RADIUS = concatArrays(lhs.RADIUS, rhs.RADIUS);
   result.FREQUENCIES = concatArrays(lhs.FREQUENCIES, rhs.FREQUENCIES);
 
@@ -798,6 +819,7 @@ export function removeIndexFromTypesConfig(input: TypesConfig, index: number): T
 export function copyIndexInTypesConfig(input: TypesConfig, indexFrom: number, indexTo: number): TypesConfig {
   const result = fullCopyObject(input);
 
+  result.COLORS = copyArrayIndex(input.COLORS, indexFrom, indexTo);
   result.RADIUS = copyArrayIndex(input.RADIUS, indexFrom, indexTo);
   result.FREQUENCIES = copyArrayIndex(input.FREQUENCIES, indexFrom, indexTo);
 

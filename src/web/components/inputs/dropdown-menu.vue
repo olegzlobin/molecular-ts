@@ -52,7 +52,11 @@ const deactivate = () => {
     color: black;
     font-size: 20px;
     padding: 0;
-    border: 0
+    border: 0;
+
+    &::after {
+      display: none;
+    }
   }
 
   .dropdown-menu {

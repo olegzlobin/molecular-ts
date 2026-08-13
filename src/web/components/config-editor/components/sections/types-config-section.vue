@@ -79,8 +79,8 @@ const linkElasticFactorConfigDescription = computed(() => {
       </div>
       <div>
         <input-header
-          name="Actions"
-          tooltip="Dropdown menu of actions for each type."
+          name="Colors / Actions"
+          tooltip="Click a color swatch to change it. Use ⋯ under a type to clone or remove it."
           position="center"
         />
         <config-actions :colors="typesConfig.COLORS" />
