@@ -86,21 +86,17 @@ export class Drawer2d implements DrawerInterface {
         const linkWidth = this.getLinkWidth(link) * this.viewConfig.scale[0];
 
         // Проверяем, попадает ли линия в видимую область
-        // Используем AABB (axis-aligned bounding box) линии с учетом ширины
-        const minX = Math.min(lhsX, rhsX) - linkWidth;
-        const maxX = Math.max(lhsX, rhsX) + linkWidth;
-        const minY = Math.min(lhsY, rhsY) - linkWidth;
-        const maxY = Math.max(lhsY, rhsY) + linkWidth;
+        // Используем AABB (axis-aligned bounding box) линии с учетом ширины и кратности
+        const bondOrder = this.getBondOrder(link);
+        const bondSpread = this.getBondSpread(bondOrder);
+        const minX = Math.min(lhsX, rhsX) - linkWidth - bondSpread * this.viewConfig.scale[0];
+        const maxX = Math.max(lhsX, rhsX) + linkWidth + bondSpread * this.viewConfig.scale[0];
+        const minY = Math.min(lhsY, rhsY) - linkWidth - bondSpread * this.viewConfig.scale[1];
+        const maxY = Math.max(lhsY, rhsY) + linkWidth + bondSpread * this.viewConfig.scale[1];
 
         // Проверяем пересечение с видимой областью
         if (maxX >= 0 && minX <= canvasWidth && maxY >= 0 && minY <= canvasHeight) {
-          // Рисуем только отфильтрованные связи
-          this.drawLine(
-            link.lhs.position,
-            link.rhs.position,
-            this.getLinkWidth(link),
-            `rgb(${this.getLinkColor(link).join(', ')})`,
-          );
+          this.drawBond(link);
         }
       }
     }
@@ -158,6 +154,56 @@ export class Drawer2d implements DrawerInterface {
     this.context.lineTo(...to as [number, number]);
     this.context.stroke();
     this.context.closePath();
+  }
+
+  private getBondOrder(link: LinkInterface): number {
+    const weights = this.TYPES_CONFIG.TYPE_LINK_WEIGHTS;
+    const forward = weights?.[link.lhs.type]?.[link.rhs.type] ?? 1;
+    const backward = weights?.[link.rhs.type]?.[link.lhs.type] ?? 1;
+    return Math.max(1, Math.min(3, Math.round(Math.max(forward, backward))));
+  }
+
+  private getBondSpread(order: number): number {
+    if (order <= 1) {
+      return 0;
+    }
+    return this.WORLD_CONFIG.ATOM_RADIUS * 0.55 * (order - 1);
+  }
+
+  private drawBond(link: LinkInterface): void {
+    const from = link.lhs.position;
+    const to = link.rhs.position;
+    const dx = to[0] - from[0];
+    const dy = to[1] - from[1];
+    const len = Math.hypot(dx, dy);
+    if (!(len > 0)) {
+      return;
+    }
+
+    const order = this.getBondOrder(link);
+    const color = `rgb(${this.getLinkColor(link).join(', ')})`;
+    const nx = -dy / len;
+    const ny = dx / len;
+
+    // Multiple strokes need thin lines + gap > stroke width, otherwise they fuse into one sausage.
+    const width = order === 1
+      ? this.getLinkWidth(link)
+      : Math.min(4.8, Math.max(2.4, this.getLinkWidth(link) * 0.7));
+    const spacing = order === 1
+      ? 0
+      : Math.max(width * 1.35, this.WORLD_CONFIG.ATOM_RADIUS * 0.55);
+
+    for (let i = 0; i < order; ++i) {
+      const offset = (i - (order - 1) / 2) * spacing;
+      const ox = nx * offset;
+      const oy = ny * offset;
+      this.drawLine(
+        [from[0] + ox, from[1] + oy],
+        [to[0] + ox, to[1] + oy],
+        width,
+        color,
+      );
+    }
   }
 
   private getLinkColor(link: LinkInterface): ColorVector {

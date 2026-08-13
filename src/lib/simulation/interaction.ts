@@ -161,15 +161,15 @@ export class InteractionManager implements InteractionManagerInterface {
         }
       }
 
-      if (swapPlan.breakLhsWith) {
-        const broken = this.linkManager.find(lhs, swapPlan.breakLhsWith);
+      for (const victim of swapPlan.breakLhsWith) {
+        const broken = this.linkManager.find(lhs, victim);
         if (broken) {
           this.linkManager.delete(broken);
           this.summaryManager.noticeLinkDeleted(broken, this.WORLD_CONFIG);
         }
       }
-      if (swapPlan.breakRhsWith) {
-        const broken = this.linkManager.find(rhs, swapPlan.breakRhsWith);
+      for (const victim of swapPlan.breakRhsWith) {
+        const broken = this.linkManager.find(rhs, victim);
         if (broken) {
           this.linkManager.delete(broken);
           this.summaryManager.noticeLinkDeleted(broken, this.WORLD_CONFIG);

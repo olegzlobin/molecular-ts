@@ -97,16 +97,24 @@ export function createDefaultTypesConfig(): TypesConfig {
     LINKS: [4, 1, 2, 3],
     TYPE_LINKS: [
       [4, 4, 2, 3],
-      [4, 1, 1, 1],
-      [2, 1, 1, 1],
-      [3, 1, 1, 1],
+      [4, 1, 2, 1],
+      [2, 2, 2, 1],
+      [3, 1, 1, 3],
     ],
-    TYPE_LINK_WEIGHTS: createFilledMatrix(4, 4, 1),
+    TYPE_LINK_WEIGHTS: [
+      // C–O=2 (CO₂); O–O=2 (O₂); N–N=3 (N₂)
+      [1, 1, 2, 1],
+      [1, 1, 1, 1],
+      [2, 1, 2, 1],
+      [1, 1, 1, 3],
+    ],
     BOND_PREFERENCE: [
-      [1.5, 2.2, 2.4, 2.1],
-      [2.2, 0.3, 2.5, 2.3],
-      [2.4, 2.5, 0.8, 1.6],
-      [2.1, 2.3, 1.6, 1.2],
+      // Roughly follows bond strength: N≡N ≫ O–H / C=O > C–H / H–H > C–C > O=O > N–O
+      // So H₂O and CO₂ win over H₂/O₂/C-networks; N₂ stays inert.
+      [2.0, 2.5, 2.9, 1.9],
+      [2.5, 2.2, 3.0, 2.4],
+      [2.9, 3.0, 1.7, 1.1],
+      [1.9, 2.4, 1.1, 3.8],
     ],
     LINK_LENGTH: [1, 0.7, 1, 1],
     LINK_STIFFNESS: [1, 1, 1, 1],

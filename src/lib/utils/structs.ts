@@ -99,36 +99,26 @@ export class RulesHelper implements RulesHelperInterface {
 
   getLinkSwapPlan(lhs: AtomInterface, rhs: AtomInterface): LinkSwapPlan | null {
     if (this.canLink(lhs, rhs)) {
-      return {};
+      return { breakLhsWith: [], breakRhsWith: [] };
     }
 
-    let breakLhsWith: AtomInterface | undefined;
-    let breakRhsWith: AtomInterface | undefined;
+    let breakLhsWith: AtomInterface[] = [];
+    let breakRhsWith: AtomInterface[] = [];
 
     if (!this._canLink(lhs, rhs)) {
-      const victim = this._findWeakestBondPartner(lhs);
-      if (
-        !victim
-        || victim === rhs
-        || !(this._bondPreference(lhs.type, rhs.type) > this._bondPreference(lhs.type, victim.type))
-        || !this._canLinkAfterBreak(lhs, rhs, victim)
-      ) {
+      const victims = this._findVictimsForSwap(lhs, rhs);
+      if (!victims) {
         return null;
       }
-      breakLhsWith = victim;
+      breakLhsWith = victims;
     }
 
     if (!this._canLink(rhs, lhs)) {
-      const victim = this._findWeakestBondPartner(rhs);
-      if (
-        !victim
-        || victim === lhs
-        || !(this._bondPreference(rhs.type, lhs.type) > this._bondPreference(rhs.type, victim.type))
-        || !this._canLinkAfterBreak(rhs, lhs, victim)
-      ) {
+      const victims = this._findVictimsForSwap(rhs, lhs);
+      if (!victims) {
         return null;
       }
-      breakRhsWith = victim;
+      breakRhsWith = victims;
     }
 
     return { breakLhsWith, breakRhsWith };
@@ -157,41 +147,51 @@ export class RulesHelper implements RulesHelperInterface {
     return lhs.bonds.lengthOf(rhs.type) < this.TYPES_CONFIG.TYPE_LINKS[lhs.type][rhs.type];
   }
 
-  private _canLinkAfterBreak(
+  private _findVictimsForSwap(
     atom: AtomInterface,
     newPartner: AtomInterface,
-    victim: AtomInterface,
-  ): boolean {
+  ): AtomInterface[] | null {
     const weights = this.TYPES_CONFIG.TYPE_LINK_WEIGHTS[atom.type];
-    const used = this._countWeightedBonds(atom) - weights[victim.type];
-    if (this.TYPES_CONFIG.LINKS[atom.type] - used < weights[newPartner.type]) {
-      return false;
-    }
+    const needWeight = weights[newPartner.type];
+    const maxLinks = this.TYPES_CONFIG.LINKS[atom.type];
+    const maxToType = this.TYPES_CONFIG.TYPE_LINKS[atom.type][newPartner.type];
+    const newPref = this._bondPreference(atom.type, newPartner.type);
+
+    const candidates = Object.values(atom.bonds.getStorage())
+      .filter((partner) => partner !== newPartner)
+      .map((partner) => ({
+        partner,
+        preference: this._bondPreference(atom.type, partner.type),
+      }))
+      .filter(({ preference }) => newPref > preference)
+      .sort((a, b) => a.preference - b.preference || a.partner.id - b.partner.id);
+
+    let used = this._countWeightedBonds(atom);
     let countToNew = atom.bonds.lengthOf(newPartner.type);
-    if (victim.type === newPartner.type) {
-      countToNew -= 1;
+    const victims: AtomInterface[] = [];
+
+    const fits = () => maxLinks - used >= needWeight && countToNew < maxToType;
+    if (fits()) {
+      return [];
     }
-    return countToNew < this.TYPES_CONFIG.TYPE_LINKS[atom.type][newPartner.type];
+
+    for (const { partner } of candidates) {
+      used -= weights[partner.type];
+      if (partner.type === newPartner.type) {
+        countToNew -= 1;
+      }
+      victims.push(partner);
+      if (fits()) {
+        return victims;
+      }
+    }
+
+    return null;
   }
 
   private _bondPreference(fromType: number, toType: number): number {
     const matrix = this.TYPES_CONFIG.BOND_PREFERENCE;
     return matrix?.[fromType]?.[toType] ?? 0;
-  }
-
-  private _findWeakestBondPartner(atom: AtomInterface): AtomInterface | null {
-    const storage = atom.bonds.getStorage();
-    let weakest: AtomInterface | null = null;
-    let worst = Infinity;
-    for (const id in storage) {
-      const other = storage[id];
-      const preference = this._bondPreference(atom.type, other.type);
-      if (preference < worst) {
-        worst = preference;
-        weakest = other;
-      }
-    }
-    return weakest;
   }
 
   private _isLinkRedundant(lhs: AtomInterface, rhs: AtomInterface): boolean {

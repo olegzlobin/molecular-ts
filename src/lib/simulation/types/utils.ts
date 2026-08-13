@@ -15,8 +15,8 @@ export interface LinkManagerInterface extends Iterable<LinkInterface> {
 }
 
 export type LinkSwapPlan = {
-  breakLhsWith?: AtomInterface;
-  breakRhsWith?: AtomInterface;
+  breakLhsWith: AtomInterface[];
+  breakRhsWith: AtomInterface[];
 };
 
 export interface RulesHelperInterface {
