@@ -103,6 +103,19 @@ const randomizeTypesConfig = () => {
         </div>
       </div>
 
+      <div v-show="!useIgnoreSubMatricesBoundaryIndex">
+        <input-header
+          name="Charge"
+          tooltip="Coulomb charge of each type. Same signs repel, opposite attract."
+          tooltip-position="left"
+        >
+          <input type="checkbox" class="title-flag" v-model="randomTypesConfig.USE_CHARGE_BOUNDS" />
+        </input-header>
+        <div v-show="randomTypesConfig.USE_CHARGE_BOUNDS">
+          <config-bounds :step="0.5" :values="randomTypesConfig.CHARGE_BOUNDS" />
+        </div>
+      </div>
+
       <div>
         <input-header
           name="Gravity"
@@ -179,6 +192,20 @@ const randomizeTypesConfig = () => {
         <div v-show="randomTypesConfig.USE_LINK_TYPE_WEIGHT_BOUNDS">
           <config-bounds :step="0.1" :values="randomTypesConfig.LINK_TYPE_WEIGHT_BOUNDS" />
           <flag title="Symmetric" v-model="randomTypesConfig.LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC" />
+        </div>
+      </div>
+
+      <div>
+        <input-header
+          name="Bond Preference"
+          tooltip="Higher values are preferred when swapping bonds under full valence."
+          tooltip-position="left"
+        >
+          <input type="checkbox" class="title-flag" v-model="randomTypesConfig.USE_BOND_PREFERENCE_BOUNDS" />
+        </input-header>
+        <div v-show="randomTypesConfig.USE_BOND_PREFERENCE_BOUNDS">
+          <config-bounds :step="0.1" :values="randomTypesConfig.BOND_PREFERENCE_BOUNDS" />
+          <flag title="Symmetric" v-model="randomTypesConfig.BOND_PREFERENCE_MATRIX_SYMMETRIC" />
         </div>
       </div>
 

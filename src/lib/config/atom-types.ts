@@ -105,7 +105,7 @@ export function createDefaultTypesConfig(): TypesConfig {
       [4, 4, 2, 3],
       [4, 1, 2, 1],
       [2, 2, 2, 1],
-      [3, 1, 1, 3],
+      [3, 3, 1, 3],
     ],
     TYPE_LINK_WEIGHTS: [
       // C–O=2 (CO₂); O–O=2 (O₂); N–N=3 (N₂)
@@ -161,11 +161,13 @@ export function createRandomTypesConfig({
   TYPES_COUNT,
   RADIUS_BOUNDS,
   FREQUENCY_BOUNDS,
+  CHARGE_BOUNDS,
   GRAVITY_BOUNDS,
   LINK_GRAVITY_BOUNDS,
   LINK_BOUNDS,
   LINK_TYPE_BOUNDS,
   LINK_TYPE_WEIGHT_BOUNDS,
+  BOND_PREFERENCE_BOUNDS,
   LINK_LENGTH_BOUNDS,
   LINK_STIFFNESS_BOUNDS,
   LINK_FACTOR_DISTANCE_BOUNDS,
@@ -174,6 +176,7 @@ export function createRandomTypesConfig({
   LINK_GRAVITY_MATRIX_SYMMETRIC,
   LINK_TYPE_MATRIX_SYMMETRIC,
   LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC,
+  BOND_PREFERENCE_MATRIX_SYMMETRIC,
   LINK_FACTOR_DISTANCE_MATRIX_SYMMETRIC,
   LINK_FACTOR_DISTANCE_IGNORE_SELF_TYPE,
   LINK_FACTOR_ELASTIC_MATRIX_SYMMETRIC,
@@ -198,6 +201,19 @@ export function createRandomTypesConfig({
   for (let i=0; i<TYPES_COUNT; ++i) {
     frequencies.push(createRandomFloat(FREQUENCY_BOUNDS, precision));
   }
+
+  const charge: number[] = [];
+  for (let i=0; i<TYPES_COUNT; ++i) {
+    charge.push(createRandomFloat(CHARGE_BOUNDS, precision));
+  }
+
+  const bondPreference = randomizeMatrix(
+    TYPES_COUNT,
+    BOND_PREFERENCE_BOUNDS,
+    createRandomFloat,
+    BOND_PREFERENCE_MATRIX_SYMMETRIC,
+    precision,
+  );
 
   const linkGravity = randomizeMatrix(
     TYPES_COUNT,
@@ -272,14 +288,14 @@ export function createRandomTypesConfig({
 
   return {
     RADIUS: radius,
-    CHARGE: createFilledArray(TYPES_COUNT, 0),
+    CHARGE: charge,
     GRAVITY: gravity,
     FREQUENCIES: frequencies,
     LINK_GRAVITY: linkGravity,
     LINKS: links,
     TYPE_LINKS: typeLinks,
     TYPE_LINK_WEIGHTS: typeLinkWeights,
-    BOND_PREFERENCE: createFilledMatrix(TYPES_COUNT, TYPES_COUNT, 0),
+    BOND_PREFERENCE: bondPreference,
     LINK_LENGTH: linkLength,
     LINK_STIFFNESS: linkStiffness,
     LINK_FACTOR_DISTANCE: linkFactorDistance,
@@ -294,11 +310,13 @@ export function createRandomIntTypesConfig({
   TYPES_COUNT,
   RADIUS_BOUNDS,
   FREQUENCY_BOUNDS,
+  CHARGE_BOUNDS,
   GRAVITY_BOUNDS,
   LINK_GRAVITY_BOUNDS,
   LINK_BOUNDS,
   LINK_TYPE_BOUNDS,
   LINK_TYPE_WEIGHT_BOUNDS,
+  BOND_PREFERENCE_BOUNDS,
   LINK_LENGTH_BOUNDS,
   LINK_STIFFNESS_BOUNDS,
   LINK_FACTOR_DISTANCE_BOUNDS,
@@ -307,6 +325,7 @@ export function createRandomIntTypesConfig({
   LINK_GRAVITY_MATRIX_SYMMETRIC,
   LINK_TYPE_MATRIX_SYMMETRIC,
   LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC,
+  BOND_PREFERENCE_MATRIX_SYMMETRIC,
   LINK_FACTOR_DISTANCE_MATRIX_SYMMETRIC,
   LINK_FACTOR_DISTANCE_IGNORE_SELF_TYPE,
   LINK_FACTOR_ELASTIC_MATRIX_SYMMETRIC,
@@ -329,6 +348,19 @@ export function createRandomIntTypesConfig({
   for (let i=0; i<TYPES_COUNT; ++i) {
     frequencies.push(createRandomInteger([FREQUENCY_BOUNDS[0], FREQUENCY_BOUNDS[1]]));
   }
+
+  const charge: number[] = [];
+  for (let i=0; i<TYPES_COUNT; ++i) {
+    charge.push(createRandomInteger([CHARGE_BOUNDS[0], CHARGE_BOUNDS[1]]));
+  }
+
+  const bondPreference = randomizeMatrix(
+    TYPES_COUNT,
+    BOND_PREFERENCE_BOUNDS,
+    createRandomInteger,
+    BOND_PREFERENCE_MATRIX_SYMMETRIC,
+    0,
+  );
 
   const linkGravity = randomizeMatrix(
     TYPES_COUNT,
@@ -403,14 +435,14 @@ export function createRandomIntTypesConfig({
 
   return {
     RADIUS: radius,
-    CHARGE: createFilledArray(TYPES_COUNT, 0),
+    CHARGE: charge,
     GRAVITY: gravity,
     FREQUENCIES: frequencies,
     LINK_GRAVITY: linkGravity,
     LINKS: links,
     TYPE_LINKS: typeLinks,
     TYPE_LINK_WEIGHTS: typeLinkWeights,
-    BOND_PREFERENCE: createFilledMatrix(TYPES_COUNT, TYPES_COUNT, 0),
+    BOND_PREFERENCE: bondPreference,
     LINK_LENGTH: linkLength,
     LINK_STIFFNESS: linkStiffness,
     LINK_FACTOR_DISTANCE: linkFactorDistance,
@@ -427,11 +459,13 @@ export function createDefaultRandomTypesConfig(typesCount: number): RandomTypesC
 
     USE_RADIUS_BOUNDS: false,
     USE_FREQUENCY_BOUNDS: false,
+    USE_CHARGE_BOUNDS: false,
     USE_GRAVITY_BOUNDS: true,
     USE_LINK_GRAVITY_BOUNDS: true,
     USE_LINK_BOUNDS: true,
     USE_LINK_TYPE_BOUNDS: true,
     USE_LINK_TYPE_WEIGHT_BOUNDS: true,
+    USE_BOND_PREFERENCE_BOUNDS: false,
     USE_LINK_LENGTH_BOUNDS: true,
     USE_LINK_STIFFNESS_BOUNDS: true,
     USE_LINK_FACTOR_DISTANCE_BOUNDS: true,
@@ -439,11 +473,13 @@ export function createDefaultRandomTypesConfig(typesCount: number): RandomTypesC
 
     RADIUS_BOUNDS: [0.8, 1.3, 1, 0.1],
     FREQUENCY_BOUNDS: [0.1, 1, 0.5, 0.1],
+    CHARGE_BOUNDS: [-2, 2, 0, 0.5],
     GRAVITY_BOUNDS: [-15, 1, -1, 0.1],
     LINK_GRAVITY_BOUNDS: [-20, -1, -1, 0.1],
     LINK_BOUNDS: [1, 8, 3],
     LINK_TYPE_BOUNDS: [0, 4, 2],
     LINK_TYPE_WEIGHT_BOUNDS: [0.5, 2, 1, 0.5],
+    BOND_PREFERENCE_BOUNDS: [0, 4, 1.5, 0.1],
     LINK_LENGTH_BOUNDS: [0.7, 1.3, 1, 0.1],
     LINK_STIFFNESS_BOUNDS: [0.5, 1.2, 1, 0.1],
     LINK_FACTOR_DISTANCE_BOUNDS: [0.7, 1.2, 1, 0.1],
@@ -453,6 +489,7 @@ export function createDefaultRandomTypesConfig(typesCount: number): RandomTypesC
     LINK_GRAVITY_MATRIX_SYMMETRIC: false,
     LINK_TYPE_MATRIX_SYMMETRIC: false,
     LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC: false,
+    BOND_PREFERENCE_MATRIX_SYMMETRIC: true,
     LINK_FACTOR_DISTANCE_MATRIX_SYMMETRIC: true,
     LINK_FACTOR_DISTANCE_IGNORE_SELF_TYPE: true,
     LINK_FACTOR_ELASTIC_MATRIX_SYMMETRIC: true,
@@ -533,7 +570,6 @@ export function randomizeTypesConfig(
   const newConfig = createRandomTypesConfig(randomTypesConfig);
 
   newConfig.COLORS = fullCopyObject(oldConfig.COLORS);
-  newConfig.CHARGE = fullCopyObject(oldConfig.CHARGE ?? createFilledArray(oldConfig.RADIUS.length, 0));
 
   if (!randomTypesConfig.USE_FREQUENCY_BOUNDS || skipSubMatricesBoundaryIndex !== undefined) {
     copyConfigListValue(oldConfig.FREQUENCIES, newConfig.FREQUENCIES, 1);
@@ -541,6 +577,14 @@ export function randomizeTypesConfig(
 
   if (!randomTypesConfig.USE_RADIUS_BOUNDS || skipSubMatricesBoundaryIndex !== undefined) {
     copyConfigListValue(oldConfig.RADIUS, newConfig.RADIUS, 1);
+  }
+
+  if (!randomTypesConfig.USE_CHARGE_BOUNDS || skipSubMatricesBoundaryIndex !== undefined) {
+    copyConfigListValue(
+      oldConfig.CHARGE ?? createFilledArray(oldConfig.RADIUS.length, 0),
+      newConfig.CHARGE,
+      0,
+    );
   }
 
   if (!randomTypesConfig.USE_LINK_BOUNDS || skipSubMatricesBoundaryIndex !== undefined) {
@@ -605,12 +649,25 @@ export function randomizeTypesConfig(
     }
   }
 
-  copyConfigMatrixValue(
-    oldConfig.BOND_PREFERENCE ?? createFilledMatrix(oldConfig.RADIUS.length, oldConfig.RADIUS.length, 0),
-    newConfig.BOND_PREFERENCE,
-    0,
-    skipSubMatricesBoundaryIndex,
-  );
+  if (!randomTypesConfig.USE_BOND_PREFERENCE_BOUNDS) {
+    copyConfigMatrixValue(
+      oldConfig.BOND_PREFERENCE ?? createFilledMatrix(oldConfig.RADIUS.length, oldConfig.RADIUS.length, 0),
+      newConfig.BOND_PREFERENCE,
+      0,
+    );
+  } else {
+    if (randomTypesConfig.BOND_PREFERENCE_MATRIX_SYMMETRIC) {
+      makeMatrixSymmetric(newConfig.BOND_PREFERENCE);
+    }
+    if (skipSubMatricesBoundaryIndex !== undefined) {
+      copyConfigMatrixValue(
+        oldConfig.BOND_PREFERENCE ?? createFilledMatrix(oldConfig.RADIUS.length, oldConfig.RADIUS.length, 0),
+        newConfig.BOND_PREFERENCE,
+        0,
+        skipSubMatricesBoundaryIndex,
+      );
+    }
+  }
 
   if (!randomTypesConfig.USE_LINK_FACTOR_DISTANCE_BOUNDS) {
     copyConfigTensorValue(oldConfig.LINK_FACTOR_DISTANCE, newConfig.LINK_FACTOR_DISTANCE, 1);

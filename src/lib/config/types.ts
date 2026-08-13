@@ -95,11 +95,13 @@ export type RandomTypesConfig = {
 
   USE_RADIUS_BOUNDS: boolean;
   USE_FREQUENCY_BOUNDS: boolean;
+  USE_CHARGE_BOUNDS: boolean;
   USE_GRAVITY_BOUNDS: boolean;
   USE_LINK_GRAVITY_BOUNDS: boolean;
   USE_LINK_BOUNDS: boolean;
   USE_LINK_TYPE_BOUNDS: boolean;
   USE_LINK_TYPE_WEIGHT_BOUNDS: boolean;
+  USE_BOND_PREFERENCE_BOUNDS: boolean;
   USE_LINK_LENGTH_BOUNDS: boolean;
   USE_LINK_STIFFNESS_BOUNDS: boolean;
   USE_LINK_FACTOR_DISTANCE_BOUNDS: boolean;
@@ -107,11 +109,13 @@ export type RandomTypesConfig = {
 
   RADIUS_BOUNDS: [number, number, number?, number?];
   FREQUENCY_BOUNDS: [number, number, number?, number?];
+  CHARGE_BOUNDS: [number, number, number?, number?];
   GRAVITY_BOUNDS: [number, number, number?, number?];
   LINK_GRAVITY_BOUNDS: [number, number, number?, number?];
   LINK_BOUNDS: [number, number, number?];
   LINK_TYPE_BOUNDS: [number, number, number?];
   LINK_TYPE_WEIGHT_BOUNDS: [number, number, number?, number?];
+  BOND_PREFERENCE_BOUNDS: [number, number, number?, number?];
   LINK_LENGTH_BOUNDS: [number, number, number?, number?];
   LINK_STIFFNESS_BOUNDS: [number, number, number?, number?];
   LINK_FACTOR_DISTANCE_BOUNDS: [number, number, number?, number?];
@@ -121,6 +125,7 @@ export type RandomTypesConfig = {
   LINK_GRAVITY_MATRIX_SYMMETRIC: boolean;
   LINK_TYPE_MATRIX_SYMMETRIC: boolean;
   LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC: boolean;
+  BOND_PREFERENCE_MATRIX_SYMMETRIC: boolean;
   LINK_FACTOR_DISTANCE_MATRIX_SYMMETRIC: boolean;
   LINK_FACTOR_DISTANCE_IGNORE_SELF_TYPE: boolean;
   LINK_FACTOR_ELASTIC_MATRIX_SYMMETRIC: boolean;

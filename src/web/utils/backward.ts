@@ -50,11 +50,26 @@ export function convertRandomTypesConfigForBackwardCompatibility(inputConfig: Ra
   if (config.USE_LINK_STIFFNESS_BOUNDS === undefined) {
     config.USE_LINK_STIFFNESS_BOUNDS = false;
   }
+  if (config.USE_CHARGE_BOUNDS === undefined) {
+    config.USE_CHARGE_BOUNDS = false;
+  }
+  if (config.USE_BOND_PREFERENCE_BOUNDS === undefined) {
+    config.USE_BOND_PREFERENCE_BOUNDS = false;
+  }
   if (!config.LINK_LENGTH_BOUNDS) {
     config.LINK_LENGTH_BOUNDS = [0.7, 1.3, 1, 0.1];
   }
   if (!config.LINK_STIFFNESS_BOUNDS) {
     config.LINK_STIFFNESS_BOUNDS = [0.5, 1.2, 1, 0.1];
+  }
+  if (!config.CHARGE_BOUNDS) {
+    config.CHARGE_BOUNDS = [-2, 2, 0, 0.5];
+  }
+  if (!config.BOND_PREFERENCE_BOUNDS) {
+    config.BOND_PREFERENCE_BOUNDS = [0, 4, 1.5, 0.1];
+  }
+  if (config.BOND_PREFERENCE_MATRIX_SYMMETRIC === undefined) {
+    config.BOND_PREFERENCE_MATRIX_SYMMETRIC = true;
   }
   return config;
 }

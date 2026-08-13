@@ -258,10 +258,13 @@ export const useConfigStore = defineStore("config", () => {
     if (config.USE_LINK_TYPE_WEIGHT_BOUNDS) {
       typesSymmetricConfig.value.LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC = config.LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC;
     }
+    if (config.USE_BOND_PREFERENCE_BOUNDS) {
+      typesSymmetricConfig.value.BOND_PREFERENCE_MATRIX_SYMMETRIC = config.BOND_PREFERENCE_MATRIX_SYMMETRIC;
+    }
     if (config.USE_LINK_FACTOR_DISTANCE_BOUNDS) {
       typesSymmetricConfig.value.LINK_FACTOR_DISTANCE_MATRIX_SYMMETRIC = config.LINK_FACTOR_DISTANCE_MATRIX_SYMMETRIC;
     }
-    if (config.USE_LINK_FACTOR_DISTANCE_BOUNDS) {
+    if (config.USE_LINK_FACTOR_ELASTIC_BOUNDS) {
       typesSymmetricConfig.value.LINK_FACTOR_ELASTIC_MATRIX_SYMMETRIC = config.LINK_FACTOR_ELASTIC_MATRIX_SYMMETRIC;
     }
   }
