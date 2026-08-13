@@ -11,6 +11,7 @@ export type ViewConfig = {
 export type ShowConfig = {
   showAtoms: boolean;
   showLinks: boolean;
+  showBounds: boolean;
 }
 
 export type MouseEventData = {

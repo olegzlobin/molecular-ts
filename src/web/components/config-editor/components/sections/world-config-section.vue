@@ -249,6 +249,12 @@ watch(() => configStore.worldConfig.VIEW_MODE, () => {
               Show links
             </label>
           </div>
+          <div>
+            <label>
+              <input type="checkbox" v-model="showConfig.showBounds" />
+              Show bounds
+            </label>
+          </div>
         </div>
     </template>
   </config-section>

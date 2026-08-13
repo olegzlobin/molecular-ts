@@ -129,6 +129,10 @@ export class Drawer2d implements DrawerInterface {
       }
     }
 
+    if (this.showConfig.showBounds) {
+      this.drawBounds();
+    }
+
     this.context.restore();
   }
 
@@ -136,6 +140,21 @@ export class Drawer2d implements DrawerInterface {
     this.context.fillStyle = 'rgb(51, 51, 76, 0.8)';
     this.context.rect(0, 0, this.width, this.height);
     this.context.fill();
+  }
+
+  private drawBounds(): void {
+    const bounds = this.WORLD_CONFIG.CONFIG_2D.BOUNDS;
+    const minX = bounds.MIN_POSITION[0];
+    const minY = bounds.MIN_POSITION[1];
+    const width = bounds.MAX_POSITION[0] - minX;
+    const height = bounds.MAX_POSITION[1] - minY;
+    const scale = Math.max(this.viewConfig.scale[0], this.viewConfig.scale[1], 1e-6);
+
+    this.context.beginPath();
+    this.context.strokeStyle = 'rgba(210, 215, 230, 0.2)';
+    this.context.lineWidth = 1.25 / scale;
+    this.context.strokeRect(minX, minY, width, height);
+    this.context.closePath();
   }
 
   private drawCircle(position: NumericVector, radius: number, color: ColorVector) {
@@ -413,5 +432,6 @@ export function createDefaultShowConfig(): ShowConfig {
   return {
     showAtoms: true,
     showLinks: true,
+    showBounds: true,
   }
 }
