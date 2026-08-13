@@ -1,7 +1,5 @@
 import type {
   ColorVector,
-  LinkFactorDistanceConfig,
-  LinkFactorElasticConfig,
   RandomTypesConfig,
   TypesConfig,
   TypesSymmetricConfig,
@@ -18,13 +16,10 @@ import {
   createRandomFloat,
   createRandomInteger,
   randomizeMatrix,
-  setTensorMainDiagonal,
-  createFilledTensor,
 } from '../math';
 import {
   copyArrayIndex,
   makeMatrixSymmetric,
-  makeTensorSymmetric,
   removeIndexFromArray,
 } from '../math/operations';
 import {
@@ -124,8 +119,6 @@ export function createDefaultTypesConfig(): TypesConfig {
     ],
     LINK_LENGTH: [1, 0.7, 1, 1],
     LINK_STIFFNESS: [1, 1, 1, 1],
-    LINK_FACTOR_DISTANCE: createFilledTensor(4, 4, 4, 1),
-    LINK_FACTOR_ELASTIC: createFilledTensor(4, 4, 4, 1),
     TRANSFORMATION: {},
     DECAYS: {},
   };
@@ -170,17 +163,11 @@ export function createRandomTypesConfig({
   BOND_PREFERENCE_BOUNDS,
   LINK_LENGTH_BOUNDS,
   LINK_STIFFNESS_BOUNDS,
-  LINK_FACTOR_DISTANCE_BOUNDS,
-  LINK_FACTOR_ELASTIC_BOUNDS,
   GRAVITY_MATRIX_SYMMETRIC,
   LINK_GRAVITY_MATRIX_SYMMETRIC,
   LINK_TYPE_MATRIX_SYMMETRIC,
   LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC,
   BOND_PREFERENCE_MATRIX_SYMMETRIC,
-  LINK_FACTOR_DISTANCE_MATRIX_SYMMETRIC,
-  LINK_FACTOR_DISTANCE_IGNORE_SELF_TYPE,
-  LINK_FACTOR_ELASTIC_MATRIX_SYMMETRIC,
-  LINK_FACTOR_ELASTIC_IGNORE_SELF_TYPE,
 }: RandomTypesConfig): TypesConfig {
   const precision = 8;
 
@@ -254,37 +241,6 @@ export function createRandomTypesConfig({
     linkStiffness.push(createRandomFloat(LINK_STIFFNESS_BOUNDS, precision));
   }
 
-  const linkFactorDistance: LinkFactorDistanceConfig = [];
-
-  for (let i=0; i<TYPES_COUNT; ++i) {
-    linkFactorDistance.push(randomizeMatrix(
-      TYPES_COUNT,
-      LINK_FACTOR_DISTANCE_BOUNDS,
-      createRandomFloat,
-      LINK_FACTOR_DISTANCE_MATRIX_SYMMETRIC,
-      precision,
-    ));
-
-    if (LINK_FACTOR_DISTANCE_IGNORE_SELF_TYPE) {
-      setTensorMainDiagonal(linkFactorDistance, 1);
-    }
-  }
-
-  const linkFactorElastic: LinkFactorElasticConfig = [];
-
-  for (let i=0; i<TYPES_COUNT; ++i) {
-    linkFactorElastic.push(randomizeMatrix(
-      TYPES_COUNT,
-      LINK_FACTOR_ELASTIC_BOUNDS,
-      createRandomFloat,
-      LINK_FACTOR_ELASTIC_MATRIX_SYMMETRIC,
-      precision,
-    ));
-
-    if (LINK_FACTOR_ELASTIC_IGNORE_SELF_TYPE) {
-      setTensorMainDiagonal(linkFactorElastic, 1);
-    }
-  }
 
   return {
     RADIUS: radius,
@@ -298,8 +254,6 @@ export function createRandomTypesConfig({
     BOND_PREFERENCE: bondPreference,
     LINK_LENGTH: linkLength,
     LINK_STIFFNESS: linkStiffness,
-    LINK_FACTOR_DISTANCE: linkFactorDistance,
-    LINK_FACTOR_ELASTIC: linkFactorElastic,
     COLORS: createColors(TYPES_COUNT),
     TRANSFORMATION: {},
     DECAYS: {}, // TODO randomize it
@@ -319,17 +273,11 @@ export function createRandomIntTypesConfig({
   BOND_PREFERENCE_BOUNDS,
   LINK_LENGTH_BOUNDS,
   LINK_STIFFNESS_BOUNDS,
-  LINK_FACTOR_DISTANCE_BOUNDS,
-  LINK_FACTOR_ELASTIC_BOUNDS,
   GRAVITY_MATRIX_SYMMETRIC,
   LINK_GRAVITY_MATRIX_SYMMETRIC,
   LINK_TYPE_MATRIX_SYMMETRIC,
   LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC,
   BOND_PREFERENCE_MATRIX_SYMMETRIC,
-  LINK_FACTOR_DISTANCE_MATRIX_SYMMETRIC,
-  LINK_FACTOR_DISTANCE_IGNORE_SELF_TYPE,
-  LINK_FACTOR_ELASTIC_MATRIX_SYMMETRIC,
-  LINK_FACTOR_ELASTIC_IGNORE_SELF_TYPE,
 }: RandomTypesConfig): TypesConfig {
   const radius: number[] = [];
   for (let i=0; i<TYPES_COUNT; ++i) {
@@ -401,37 +349,6 @@ export function createRandomIntTypesConfig({
     linkStiffness.push(createRandomInteger([LINK_STIFFNESS_BOUNDS[0], LINK_STIFFNESS_BOUNDS[1]]));
   }
 
-  const linkFactorDistance: LinkFactorDistanceConfig = [];
-
-  for (let i=0; i<TYPES_COUNT; ++i) {
-    linkFactorDistance.push(randomizeMatrix(
-      TYPES_COUNT,
-      LINK_FACTOR_DISTANCE_BOUNDS,
-      createRandomInteger,
-      LINK_FACTOR_DISTANCE_MATRIX_SYMMETRIC,
-      0,
-    ));
-
-    if (LINK_FACTOR_DISTANCE_IGNORE_SELF_TYPE) {
-      setTensorMainDiagonal(linkFactorDistance, 1);
-    }
-  }
-
-  const linkFactorElastic: LinkFactorElasticConfig = [];
-
-  for (let i=0; i<TYPES_COUNT; ++i) {
-    linkFactorElastic.push(randomizeMatrix(
-      TYPES_COUNT,
-      LINK_FACTOR_ELASTIC_BOUNDS,
-      createRandomInteger,
-      LINK_FACTOR_ELASTIC_MATRIX_SYMMETRIC,
-      0,
-    ));
-
-    if (LINK_FACTOR_ELASTIC_IGNORE_SELF_TYPE) {
-      setTensorMainDiagonal(linkFactorElastic, 1);
-    }
-  }
 
   return {
     RADIUS: radius,
@@ -445,8 +362,6 @@ export function createRandomIntTypesConfig({
     BOND_PREFERENCE: bondPreference,
     LINK_LENGTH: linkLength,
     LINK_STIFFNESS: linkStiffness,
-    LINK_FACTOR_DISTANCE: linkFactorDistance,
-    LINK_FACTOR_ELASTIC: linkFactorElastic,
     COLORS: createColors(TYPES_COUNT),
     TRANSFORMATION: {},
     DECAYS: {}, // TODO randomize it
@@ -468,8 +383,6 @@ export function createDefaultRandomTypesConfig(typesCount: number): RandomTypesC
     USE_BOND_PREFERENCE_BOUNDS: false,
     USE_LINK_LENGTH_BOUNDS: true,
     USE_LINK_STIFFNESS_BOUNDS: true,
-    USE_LINK_FACTOR_DISTANCE_BOUNDS: true,
-    USE_LINK_FACTOR_ELASTIC_BOUNDS: true,
 
     RADIUS_BOUNDS: [0.8, 1.3, 1, 0.1],
     FREQUENCY_BOUNDS: [0.1, 1, 0.5, 0.1],
@@ -482,18 +395,12 @@ export function createDefaultRandomTypesConfig(typesCount: number): RandomTypesC
     BOND_PREFERENCE_BOUNDS: [0, 4, 1.5, 0.1],
     LINK_LENGTH_BOUNDS: [0.7, 1.3, 1, 0.1],
     LINK_STIFFNESS_BOUNDS: [0.5, 1.2, 1, 0.1],
-    LINK_FACTOR_DISTANCE_BOUNDS: [0.7, 1.2, 1, 0.1],
-    LINK_FACTOR_ELASTIC_BOUNDS: [0.5, 1, 1, 0.1],
 
     GRAVITY_MATRIX_SYMMETRIC: false,
     LINK_GRAVITY_MATRIX_SYMMETRIC: false,
     LINK_TYPE_MATRIX_SYMMETRIC: false,
     LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC: false,
     BOND_PREFERENCE_MATRIX_SYMMETRIC: true,
-    LINK_FACTOR_DISTANCE_MATRIX_SYMMETRIC: true,
-    LINK_FACTOR_DISTANCE_IGNORE_SELF_TYPE: true,
-    LINK_FACTOR_ELASTIC_MATRIX_SYMMETRIC: true,
-    LINK_FACTOR_ELASTIC_IGNORE_SELF_TYPE: true,
   };
 }
 
@@ -504,8 +411,6 @@ export function createDisabledTypesSymmetricConfig(): TypesSymmetricConfig {
     LINK_TYPE_MATRIX_SYMMETRIC: false,
     LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC: false,
     BOND_PREFERENCE_MATRIX_SYMMETRIC: false,
-    LINK_FACTOR_DISTANCE_MATRIX_SYMMETRIC: false,
-    LINK_FACTOR_ELASTIC_MATRIX_SYMMETRIC: false,
   };
 }
 
@@ -537,29 +442,6 @@ export function copyConfigMatrixValue(
   }
 }
 
-export function copyConfigTensorValue(
-  copyFrom: unknown[][][],
-  copyTo: unknown[][][],
-  defaultValue: number,
-  skipSubMatricesBoundaryIndex?: number,
-) {
-  for (let i=0; i<copyTo.length; ++i) {
-    for (let j=0; j<copyTo[i].length; ++j) {
-      for (let k=0; k<copyTo[i][j].length; ++k) {
-        if (
-          skipSubMatricesBoundaryIndex !== undefined &&
-          !(i < skipSubMatricesBoundaryIndex && j < skipSubMatricesBoundaryIndex && k < skipSubMatricesBoundaryIndex) &&
-          !(i >= skipSubMatricesBoundaryIndex && j >= skipSubMatricesBoundaryIndex && k >= skipSubMatricesBoundaryIndex)
-        ) continue;
-        if (copyFrom[i] === undefined || copyFrom[i][j] === undefined) {
-          copyTo[i][j][k] = defaultValue;
-        } else {
-          copyTo[i][j][k] = copyFrom[i][j][k] ?? defaultValue;
-        }
-      }
-    }
-  }
-}
 
 export function randomizeTypesConfig(
   randomTypesConfig: RandomTypesConfig,
@@ -669,37 +551,6 @@ export function randomizeTypesConfig(
     }
   }
 
-  if (!randomTypesConfig.USE_LINK_FACTOR_DISTANCE_BOUNDS) {
-    copyConfigTensorValue(oldConfig.LINK_FACTOR_DISTANCE, newConfig.LINK_FACTOR_DISTANCE, 1);
-  } else {
-    if (randomTypesConfig.LINK_FACTOR_DISTANCE_MATRIX_SYMMETRIC) {
-      makeTensorSymmetric(newConfig.LINK_FACTOR_DISTANCE);
-    }
-    if (skipSubMatricesBoundaryIndex !== undefined) {
-      copyConfigTensorValue(
-        oldConfig.LINK_FACTOR_DISTANCE,
-        newConfig.LINK_FACTOR_DISTANCE,
-        1,
-        skipSubMatricesBoundaryIndex,
-      );
-    }
-  }
-
-  if (!randomTypesConfig.USE_LINK_FACTOR_ELASTIC_BOUNDS) {
-    copyConfigTensorValue(oldConfig.LINK_FACTOR_ELASTIC, newConfig.LINK_FACTOR_ELASTIC, 1);
-  } else {
-    if (randomTypesConfig.LINK_FACTOR_ELASTIC_MATRIX_SYMMETRIC) {
-      makeTensorSymmetric(newConfig.LINK_FACTOR_ELASTIC);
-    }
-    if (skipSubMatricesBoundaryIndex !== undefined) {
-      copyConfigTensorValue(
-        oldConfig.LINK_FACTOR_ELASTIC,
-        newConfig.LINK_FACTOR_ELASTIC,
-        1,
-        skipSubMatricesBoundaryIndex,
-      );
-    }
-  }
 
   return newConfig;
 }
@@ -779,11 +630,5 @@ export function clearInactiveParams(config: TypesConfig) {
     config.TYPE_LINKS[i][j] = 0;
     config.TYPE_LINK_WEIGHTS[i][j] = 1;
     config.LINK_GRAVITY[i][j] = 0;
-    for (const matrix of config.LINK_FACTOR_DISTANCE) {
-      matrix[i][j] = 1;
-    }
-    for (const matrix of config.LINK_FACTOR_ELASTIC) {
-      matrix[i][j] = 1;
-    }
   }
 }

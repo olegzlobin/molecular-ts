@@ -6,13 +6,8 @@ export interface InteractionManagerInterface {
   handleTime(): void;
   moveAtom(atom: AtomInterface): void;
   interactLink(link: LinkInterface): void;
-  interactAtomsStep1(atom: AtomInterface, neighbour: AtomInterface): void;
-  interactAtomsStep2(atom: AtomInterface, neighbour: AtomInterface): void;
+  interactAtoms(atom: AtomInterface, neighbour: AtomInterface): void;
   setPhysicModel(model: PhysicModelInterface): void;
-  clearDistanceFactor(atom: AtomInterface): void;
-  clearElasticFactor(atom: AtomInterface): void;
-  getDistanceFactor(lhs: AtomInterface, rhs: AtomInterface): number;
-  updateDistanceFactor(lhs: AtomInterface, rhs: AtomInterface): void;
   updateAtomType(atom: AtomInterface): void;
 }
 

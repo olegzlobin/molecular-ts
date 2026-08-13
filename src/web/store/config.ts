@@ -22,7 +22,7 @@ import {
 import { fullCopyObject, getViewModeConfig } from "@/lib/utils/functions";
 import { useFlash } from '@/web/hooks/use-flash';
 import { concatTypesConfigs, randomizeTypesConfig as partlyRandomizeTypesConfig } from '@/lib/config/atom-types';
-import { makeMatrixSymmetric, makeTensorSymmetric } from '@/lib/math/operations';
+import { makeMatrixSymmetric } from '@/lib/math/operations';
 import {
   convertTypesConfigForBackwardCompatibility,
   convertWorldConfigForBackwardCompatibility,
@@ -51,8 +51,6 @@ export const useConfigStore = defineStore("config", () => {
     LINK_TYPE_MATRIX_SYMMETRIC: true,
     LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC: true,
     BOND_PREFERENCE_MATRIX_SYMMETRIC: true,
-    LINK_FACTOR_DISTANCE_MATRIX_SYMMETRIC: true,
-    LINK_FACTOR_ELASTIC_MATRIX_SYMMETRIC: true,
   });
 
   const syncConfigBounds = ref(true);
@@ -261,12 +259,6 @@ export const useConfigStore = defineStore("config", () => {
     if (config.USE_BOND_PREFERENCE_BOUNDS) {
       typesSymmetricConfig.value.BOND_PREFERENCE_MATRIX_SYMMETRIC = config.BOND_PREFERENCE_MATRIX_SYMMETRIC;
     }
-    if (config.USE_LINK_FACTOR_DISTANCE_BOUNDS) {
-      typesSymmetricConfig.value.LINK_FACTOR_DISTANCE_MATRIX_SYMMETRIC = config.LINK_FACTOR_DISTANCE_MATRIX_SYMMETRIC;
-    }
-    if (config.USE_LINK_FACTOR_ELASTIC_BOUNDS) {
-      typesSymmetricConfig.value.LINK_FACTOR_ELASTIC_MATRIX_SYMMETRIC = config.LINK_FACTOR_ELASTIC_MATRIX_SYMMETRIC;
-    }
   }
 
   const applySymmetricTypesConfig = () => {
@@ -284,12 +276,6 @@ export const useConfigStore = defineStore("config", () => {
     }
     if (typesSymmetricConfig.value.BOND_PREFERENCE_MATRIX_SYMMETRIC) {
       makeMatrixSymmetric(typesConfig.value.BOND_PREFERENCE);
-    }
-    if (typesSymmetricConfig.value.LINK_FACTOR_DISTANCE_MATRIX_SYMMETRIC) {
-      makeTensorSymmetric(typesConfig.value.LINK_FACTOR_DISTANCE);
-    }
-    if (typesSymmetricConfig.value.LINK_FACTOR_ELASTIC_MATRIX_SYMMETRIC) {
-      makeTensorSymmetric(typesConfig.value.LINK_FACTOR_ELASTIC);
     }
   }
 

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 
-import { computed } from "vue";
 import { useConfigStore } from '@/web/store/config';
 import { useSimulationStore } from "@/web/store/simulation";
 import { clearInactiveParams, createDefaultTypesConfig } from "@/lib/config/atom-types";
@@ -8,7 +7,6 @@ import ConfigSection from '@/web/components/config-editor/components/containers/
 import ConfigMatrix from '@/web/components/inputs/config-matrix.vue';
 import ConfigList from '@/web/components/inputs/config-list.vue';
 import InputHeader from "@/web/components/base/input-header.vue";
-import ConfigTensor from "@/web/components/inputs/config-tensor.vue";
 import TransformationConfig from "@/web/components/config-editor/components/widgets/transformation-config.vue";
 import DecayConfig from "@/web/components/config-editor/components/widgets/decay-config.vue";
 import { useRightBarStore } from '@/web/store/right-bar';
@@ -53,16 +51,6 @@ const refill = () => {
     refillAtoms!();
   }
 };
-
-const linkDistanceFactorConfigDescription = computed(() => {
-  return "Tensor of influence on neighbors links shows how particles of each type affect " +
-      "the maximum length of links of neighboring particles of different types with particles of specific types."
-});
-
-const linkElasticFactorConfigDescription = computed(() => {
-  return "Tensor of influence on neighbors links shows how particles of each type affect " +
-      "the elastic force of links of neighboring particles of different types with particles of specific types."
-});
 
 </script>
 
@@ -212,37 +200,6 @@ const linkElasticFactorConfigDescription = computed(() => {
         />
         <config-list :values="typesConfig.LINK_STIFFNESS" :colors="typesConfig.COLORS" :step="0.1" :min="0" />
       </div>
-      <details class="advanced-link-factors">
-        <summary>Advanced link influence tensors</summary>
-        <div>
-          <input-header
-            name="Links Distance Factor"
-            :tooltip="linkDistanceFactorConfigDescription"
-            position="center"
-          />
-          <config-tensor
-            :values="typesConfig.LINK_FACTOR_DISTANCE"
-            :colors="typesConfig.COLORS"
-            :step="0.1"
-            :min="0"
-            v-model:symmetric="typesSymmetricConfig.LINK_FACTOR_DISTANCE_MATRIX_SYMMETRIC"
-          />
-        </div>
-        <div>
-          <input-header
-            name="Links Elastic Factor"
-            :tooltip="linkElasticFactorConfigDescription"
-            position="center"
-          />
-          <config-tensor
-            :values="typesConfig.LINK_FACTOR_ELASTIC"
-            :colors="typesConfig.COLORS"
-            :step="0.1"
-            :min="0"
-            v-model:symmetric="typesSymmetricConfig.LINK_FACTOR_ELASTIC_MATRIX_SYMMETRIC"
-          />
-        </div>
-      </details>
       <div style="margin-top: 30px;">
         <input-header
           name="Transformations on link creation"
@@ -266,16 +223,5 @@ const linkElasticFactorConfigDescription = computed(() => {
 <style scoped lang="scss">
 
 @use "../../assets/config-editor";
-
-.advanced-link-factors {
-  margin-top: 16px;
-  padding: 8px 0;
-}
-
-.advanced-link-factors > summary {
-  cursor: pointer;
-  margin-bottom: 12px;
-  opacity: 0.85;
-}
 
 </style>

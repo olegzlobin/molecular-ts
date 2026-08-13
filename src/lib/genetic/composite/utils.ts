@@ -28,8 +28,6 @@ export function extractExpressedTypesConfig(typesConfigs: TypesConfig[], express
     BOND_PREFERENCE: express(typesConfigs.map((x) => x.BOND_PREFERENCE ?? x.RADIUS.map(() => x.RADIUS.map(() => 0))), expressionIndices.BOND_PREFERENCE ?? expressionIndices.GRAVITY),
     LINK_LENGTH: express(typesConfigs.map((x) => x.LINK_LENGTH ?? x.RADIUS.map(() => 1)), expressionIndices.LINK_LENGTH ?? expressionIndices.RADIUS),
     LINK_STIFFNESS: express(typesConfigs.map((x) => x.LINK_STIFFNESS ?? x.RADIUS.map(() => 1)), expressionIndices.LINK_STIFFNESS ?? expressionIndices.RADIUS),
-    LINK_FACTOR_DISTANCE: express(typesConfigs.map((x) => x.LINK_FACTOR_DISTANCE), expressionIndices.LINK_FACTOR_DISTANCE),
-    LINK_FACTOR_ELASTIC: express(typesConfigs.map((x) => x.LINK_FACTOR_ELASTIC), expressionIndices.LINK_FACTOR_ELASTIC),
     FREQUENCIES: express(typesConfigs.map((x) => x.FREQUENCIES), expressionIndices.FREQUENCIES),
     COLORS: express(typesConfigs.map((x) => x.COLORS), expressionIndices.COLORS),
     TRANSFORMATION: {}, // TODO implement
@@ -102,8 +100,6 @@ export function createRandomExpressedIndicesConfig(typesCount: number, chromosom
     USE_BOND_PREFERENCE_BOUNDS: false,
     USE_LINK_LENGTH_BOUNDS: true,
     USE_LINK_STIFFNESS_BOUNDS: true,
-    USE_LINK_FACTOR_DISTANCE_BOUNDS: true,
-    USE_LINK_FACTOR_ELASTIC_BOUNDS: true,
 
     RADIUS_BOUNDS: [0, chromosomesCount-1],
     FREQUENCY_BOUNDS: [0, chromosomesCount-1],
@@ -116,17 +112,11 @@ export function createRandomExpressedIndicesConfig(typesCount: number, chromosom
     BOND_PREFERENCE_BOUNDS: [0, chromosomesCount-1],
     LINK_LENGTH_BOUNDS: [0, chromosomesCount-1],
     LINK_STIFFNESS_BOUNDS: [0, chromosomesCount-1],
-    LINK_FACTOR_DISTANCE_BOUNDS: [0, chromosomesCount-1],
-    LINK_FACTOR_ELASTIC_BOUNDS: [0, chromosomesCount-1],
 
     GRAVITY_MATRIX_SYMMETRIC: false,
     LINK_GRAVITY_MATRIX_SYMMETRIC: false,
     LINK_TYPE_MATRIX_SYMMETRIC: false,
     LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC: false,
     BOND_PREFERENCE_MATRIX_SYMMETRIC: true,
-    LINK_FACTOR_DISTANCE_MATRIX_SYMMETRIC: false,
-    LINK_FACTOR_DISTANCE_IGNORE_SELF_TYPE: false,
-    LINK_FACTOR_ELASTIC_MATRIX_SYMMETRIC: false,
-    LINK_FACTOR_ELASTIC_IGNORE_SELF_TYPE: false,
   };
 }

@@ -68,8 +68,6 @@ export class Atom implements AtomInterface {
   readonly position: VectorInterface;
   readonly speed: VectorInterface;
   readonly bonds: BondMapInterface;
-  readonly linkDistanceFactors: number[];
-  readonly linkElasticFactors: number[];
   type: number;
   newType: number | undefined = undefined;
   toDelete: boolean = false;
@@ -82,8 +80,6 @@ export class Atom implements AtomInterface {
     this.position = toVector(position);
     this.speed = speed ? toVector(speed) : toVector(new Array<number>(position.length).fill(0));
     this.bonds = new BondMap();
-    this.linkDistanceFactors = [];
-    this.linkElasticFactors = [];
   }
 
   get isTypeChanged(): boolean {

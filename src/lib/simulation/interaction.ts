@@ -67,7 +67,7 @@ export class InteractionManager implements InteractionManagerInterface {
     const dist2 = this.getDist2(this.bufVector);
 
     if (
-      dist2 >= (this.WORLD_CONFIG.MAX_LINK_RADIUS * this.getPairLinkDistanceFactor(link.lhs, link.rhs)) ** 2
+      dist2 >= (this.WORLD_CONFIG.MAX_LINK_RADIUS * this.getPairLinkLengthFactor(link.lhs, link.rhs)) ** 2
       || dist2 > this.WORLD_CONFIG.MAX_INTERACTION_RADIUS ** 2
       || this.ruleHelper.isLinkRedundant(link.lhs, link.rhs)
     ) {
@@ -81,30 +81,12 @@ export class InteractionManager implements InteractionManagerInterface {
       return;
     }
 
-    const elasticFactor = (
-      this.getElasticFactor(link.lhs, link.rhs) + this.getElasticFactor(link.rhs, link.lhs)
-    ) / 2;
+    const elasticFactor = this.getElasticFactor(link.lhs, link.rhs);
     this.handleLinkInfluence(link.lhs, link.rhs, dist2, this.bufVector, elasticFactor);
     this.handleLinkInfluence(link.rhs, link.lhs, dist2, this.bufVector.inverse(), elasticFactor);
   }
 
-  interactAtomsStep1(lhs: AtomInterface, rhs: AtomInterface): void {
-    if (lhs === rhs) {
-      return;
-    }
-
-    this.fillDistVector(lhs, rhs, this.bufVector);
-    const dist2 = this.getDist2(this.bufVector);
-
-    if (dist2 <= this.WORLD_CONFIG.MAX_LINK_RADIUS ** 2) {
-      this.updateDistanceFactor(lhs, rhs);
-      this.updateDistanceFactor(rhs, lhs);
-      this.updateElasticFactor(lhs, rhs);
-      this.updateElasticFactor(rhs, lhs);
-    }
-  }
-
-  interactAtomsStep2(lhs: AtomInterface, rhs: AtomInterface): void {
+  interactAtoms(lhs: AtomInterface, rhs: AtomInterface): void {
     if (lhs === rhs || lhs.toDelete || rhs.toDelete) {
       return;
     }
@@ -130,7 +112,7 @@ export class InteractionManager implements InteractionManagerInterface {
       }
     }
 
-    const linkRadius2 = (this.WORLD_CONFIG.MAX_LINK_RADIUS * this.getPairLinkDistanceFactor(lhs, rhs)) ** 2;
+    const linkRadius2 = (this.WORLD_CONFIG.MAX_LINK_RADIUS * this.getPairLinkLengthFactor(lhs, rhs)) ** 2;
 
     if (lhs.linkBanWith === rhs.id || rhs.linkBanWith === lhs.id) {
       if (dist2 > linkRadius2) {
@@ -194,46 +176,14 @@ export class InteractionManager implements InteractionManagerInterface {
     this.physicModel = model;
   }
 
-  clearDistanceFactor(atom: AtomInterface): void {
-    for (let i = 0; i < this.TYPES_CONFIG.FREQUENCIES.length; ++i) {
-      atom.linkDistanceFactors[i] = 1;
-    }
-  }
-
-  clearElasticFactor(atom: AtomInterface): void {
-    for (let i = 0; i < this.TYPES_CONFIG.FREQUENCIES.length; ++i) {
-      atom.linkElasticFactors[i] = 1;
-    }
-  }
-
-  getDistanceFactor(lhs: AtomInterface, rhs: AtomInterface): number {
-    return lhs.linkDistanceFactors[rhs.type] ?? 1;
-  }
-
-  getPairLinkDistanceFactor(lhs: AtomInterface, rhs: AtomInterface): number {
+  getPairLinkLengthFactor(lhs: AtomInterface, rhs: AtomInterface): number {
     const lengths = this.TYPES_CONFIG.LINK_LENGTH;
-    const lengthFactor = ((lengths?.[lhs.type] ?? 1) + (lengths?.[rhs.type] ?? 1)) / 2;
-    return lengthFactor * this.getDistanceFactor(lhs, rhs) * this.getDistanceFactor(rhs, lhs);
+    return ((lengths?.[lhs.type] ?? 1) + (lengths?.[rhs.type] ?? 1)) / 2;
   }
 
   getElasticFactor(lhs: AtomInterface, rhs: AtomInterface): number {
     const stiffness = this.TYPES_CONFIG.LINK_STIFFNESS;
-    const stiffnessFactor = ((stiffness?.[lhs.type] ?? 1) + (stiffness?.[rhs.type] ?? 1)) / 2;
-    return stiffnessFactor * (lhs.linkElasticFactors[rhs.type] ?? 1);
-  }
-
-  updateDistanceFactor(lhs: AtomInterface, rhs: AtomInterface): void {
-    const mults = this.TYPES_CONFIG.LINK_FACTOR_DISTANCE[rhs.type][lhs.type];
-    for (let i=0; i<mults.length; ++i) {
-      lhs.linkDistanceFactors[i] *= mults[i];
-    }
-  }
-
-  updateElasticFactor(lhs: AtomInterface, rhs: AtomInterface): void {
-    const mults = this.TYPES_CONFIG.LINK_FACTOR_ELASTIC[rhs.type][lhs.type];
-    for (let i=0; i<mults.length; ++i) {
-      lhs.linkElasticFactors[i] *= mults[i];
-    }
+    return ((stiffness?.[lhs.type] ?? 1) + (stiffness?.[rhs.type] ?? 1)) / 2;
   }
 
   updateAtomType(atom: AtomInterface): void {

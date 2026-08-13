@@ -17,8 +17,6 @@ function typesStub(): TypesConfig {
     BOND_PREFERENCE: [[0, 0], [0, 0]],
     LINK_LENGTH: [1, 1],
     LINK_STIFFNESS: [1, 1],
-    LINK_FACTOR_DISTANCE: [[[1, 1], [1, 1]], [[1, 1], [1, 1]]],
-    LINK_FACTOR_ELASTIC: [[[1, 1], [1, 1]], [[1, 1], [1, 1]]],
     FREQUENCIES: [1, 1],
     COLORS: [[255, 0, 0], [0, 255, 0]],
     TRANSFORMATION: {},
@@ -49,10 +47,6 @@ describe('computeEnergy', () => {
     worldConfig.BOUNDS_FORCE_MULTIPLIER = 0;
 
     const atom = createAtom(0, [100, 100], [3, 4]);
-    atom.linkElasticFactors.length = 2;
-    atom.linkElasticFactors.fill(1);
-    atom.linkDistanceFactors.length = 2;
-    atom.linkDistanceFactors.fill(1);
 
     const snapshot = computeEnergy({
       atoms: [atom],
@@ -78,12 +72,6 @@ describe('computeEnergy', () => {
 
     const lhs = createAtom(0, [0, 0], [0, 0]);
     const rhs = createAtom(1, [4, 0], [0, 0]);
-    for (const atom of [lhs, rhs]) {
-      atom.linkElasticFactors.length = 2;
-      atom.linkElasticFactors.fill(1);
-      atom.linkDistanceFactors.length = 2;
-      atom.linkDistanceFactors.fill(1);
-    }
 
     const snapshot = computeEnergy({
       atoms: [lhs, rhs],
@@ -110,12 +98,6 @@ describe('computeEnergy', () => {
 
     const lhs = createAtom(0, [0, 0], [0, 0]);
     const rhs = createAtom(1, [20, 0], [0, 0]);
-    for (const atom of [lhs, rhs]) {
-      atom.linkElasticFactors.length = 2;
-      atom.linkElasticFactors.fill(1);
-      atom.linkDistanceFactors.length = 2;
-      atom.linkDistanceFactors.fill(1);
-    }
 
     const link = { id: '0-1', lhs, rhs, exportState: () => [lhs.id, rhs.id] } as LinkInterface;
 
@@ -128,7 +110,7 @@ describe('computeEnergy', () => {
       viewMode: '2d',
     });
 
-    // rest = 10, extension = 10 → 0.5 * 0.5 * 100 = 25
+    // rest = 10, extension = 10 → 0.5 * 0.5 * 1 * 100 = 25
     expect(snapshot.link).toBeCloseTo(25, 8);
   });
 });

@@ -87,7 +87,7 @@ watch(() => configStore.worldConfig.VIEW_MODE, () => {
       <div>
         <input-header
           name="Max Link Radius"
-          tooltip="Maximum link length (can be increased by Links Distance Factor parameters)."
+          tooltip="Maximum link length (scaled by Link Length of the bonded types)."
         />
         <input type="number" v-model="worldConfig.MAX_LINK_RADIUS" min="0" />
       </div>

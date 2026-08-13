@@ -18,8 +18,6 @@ export interface AtomInterface {
   readonly speed: VectorInterface;
   readonly bonds: BondMapInterface;
   readonly isTypeChanged: boolean;
-  readonly linkDistanceFactors: number[];
-  readonly linkElasticFactors: number[];
   type: number;
   newType: number | undefined;
   toDelete: boolean;

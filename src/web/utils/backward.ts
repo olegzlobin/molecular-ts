@@ -19,7 +19,9 @@ export function convertWorldConfigForBackwardCompatibility(inputConfig: WorldCon
 export function convertTypesConfigForBackwardCompatibility(inputConfig: TypesConfig): TypesConfig {
   const config = fullCopyObject(inputConfig);
 
-  renameKey(config, 'LINK_FACTOR_DISTANCE_EXTENDED', 'LINK_FACTOR_DISTANCE');
+  deleteKey(config, 'LINK_FACTOR_DISTANCE');
+  deleteKey(config, 'LINK_FACTOR_ELASTIC');
+  deleteKey(config, 'LINK_FACTOR_DISTANCE_EXTENDED');
   deleteKey(config, 'LINK_FACTOR_DISTANCE_USE_EXTENDED');
 
   if (config.DECAYS === undefined) {
@@ -71,6 +73,14 @@ export function convertRandomTypesConfigForBackwardCompatibility(inputConfig: Ra
   if (config.BOND_PREFERENCE_MATRIX_SYMMETRIC === undefined) {
     config.BOND_PREFERENCE_MATRIX_SYMMETRIC = true;
   }
+  deleteKey(config, 'USE_LINK_FACTOR_DISTANCE_BOUNDS');
+  deleteKey(config, 'USE_LINK_FACTOR_ELASTIC_BOUNDS');
+  deleteKey(config, 'LINK_FACTOR_DISTANCE_BOUNDS');
+  deleteKey(config, 'LINK_FACTOR_ELASTIC_BOUNDS');
+  deleteKey(config, 'LINK_FACTOR_DISTANCE_MATRIX_SYMMETRIC');
+  deleteKey(config, 'LINK_FACTOR_DISTANCE_IGNORE_SELF_TYPE');
+  deleteKey(config, 'LINK_FACTOR_ELASTIC_MATRIX_SYMMETRIC');
+  deleteKey(config, 'LINK_FACTOR_ELASTIC_IGNORE_SELF_TYPE');
   return config;
 }
 
@@ -79,15 +89,9 @@ export function convertTypesSymmetricConfigForBackwardCompatibility(inputConfig:
   if (config.BOND_PREFERENCE_MATRIX_SYMMETRIC === undefined) {
     config.BOND_PREFERENCE_MATRIX_SYMMETRIC = true;
   }
+  deleteKey(config, 'LINK_FACTOR_DISTANCE_MATRIX_SYMMETRIC');
+  deleteKey(config, 'LINK_FACTOR_ELASTIC_MATRIX_SYMMETRIC');
   return config;
-}
-
-function renameKey<T extends Record<string, unknown>>(input: T, oldKey: string, newKey: string): T {
-  if (input[oldKey] !== undefined) {
-    input[newKey as keyof T] = input[oldKey] as T[keyof T];
-    delete input[oldKey];
-  }
-  return input;
 }
 
 function deleteKey<T extends Record<string, unknown>>(input: T, key: string): T {

@@ -62,25 +62,13 @@ function gravityPotentialV2(gEff: number, dist: number): number {
   return -gEff * dist;
 }
 
-function directedElasticFactor(
-  typesConfig: TypesConfig,
-  lhs: AtomInterface,
-  rhs: AtomInterface,
-): number {
-  const stiffness = typesConfig.LINK_STIFFNESS;
-  const stiffnessFactor = ((stiffness?.[lhs.type] ?? 1) + (stiffness?.[rhs.type] ?? 1)) / 2;
-  return stiffnessFactor * (lhs.linkElasticFactors[rhs.type] ?? 1);
-}
-
 function linkElasticFactor(
   typesConfig: TypesConfig,
   lhs: AtomInterface,
   rhs: AtomInterface,
 ): number {
-  return (
-    directedElasticFactor(typesConfig, lhs, rhs)
-    + directedElasticFactor(typesConfig, rhs, lhs)
-  ) / 2;
+  const stiffness = typesConfig.LINK_STIFFNESS;
+  return ((stiffness?.[lhs.type] ?? 1) + (stiffness?.[rhs.type] ?? 1)) / 2;
 }
 
 export type ComputeEnergyInput = {

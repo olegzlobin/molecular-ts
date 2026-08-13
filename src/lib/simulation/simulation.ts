@@ -254,8 +254,6 @@ export class Simulation implements SimulationInterface {
     this.handleDecays();
     for (const atom of this._atoms) {
       this.interactionManager.updateAtomType(atom);
-      this.interactionManager.clearDistanceFactor(atom);
-      this.interactionManager.clearElasticFactor(atom);
       this.interactionManager.moveAtom(atom);
       this.summaryManager.noticeAtom(atom, this.config.worldConfig);
     }
@@ -270,10 +268,7 @@ export class Simulation implements SimulationInterface {
       });
     }
     for (let i = 0; i < pairs.length; i += 2) {
-      this.interactionManager.interactAtomsStep1(pairs[i], pairs[i + 1]);
-    }
-    for (let i = 0; i < pairs.length; i += 2) {
-      this.interactionManager.interactAtomsStep2(pairs[i], pairs[i + 1]);
+      this.interactionManager.interactAtoms(pairs[i], pairs[i + 1]);
     }
     this.removeDeletedAtoms();
     for (const link of this._links) {
