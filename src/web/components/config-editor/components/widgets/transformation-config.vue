@@ -8,6 +8,7 @@ import TypeSelect from "@/web/components/inputs/type-select.vue";
 const modelValue = defineModel<TransformationConfig>();
 defineProps<{
   colors: [number, number, number][];
+  names?: string[];
 }>();
 
 type InteractionKind = 'link' | 'merge';
@@ -86,7 +87,7 @@ const removeTransformation = (index: number) => {
     <div class="list-group-item d-flex justify-content-between align-items-center" v-for="(transform, index) in transformations" :key="index">
       <div class="list-item__name">
         <div>
-          <type-select :colors="colors" v-model="transform.lhs" />
+          <type-select :colors="colors" :names="names" v-model="transform.lhs" />
         </div>
         <div>
           <select class="kind-select" v-model="transform.kind">
@@ -95,13 +96,13 @@ const removeTransformation = (index: number) => {
           </select>
         </div>
         <div>
-          <type-select :colors="colors" v-model="transform.rhs" />
+          <type-select :colors="colors" :names="names" v-model="transform.rhs" />
         </div>
         <div>
           ➔
         </div>
         <div>
-          <type-select :colors="colors" v-model="transform.type" />
+          <type-select :colors="colors" :names="names" v-model="transform.type" />
         </div>
       </div>
       <div class="btn-group">

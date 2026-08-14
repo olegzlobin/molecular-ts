@@ -62,6 +62,7 @@ export type TypesConfig = {
   LINK_STIFFNESS: number[];
   FREQUENCIES: FrequenciesConfig;
   COLORS: ColorsConfig;
+  NAMES: string[];
   TRANSFORMATION: TransformationConfig;
   DECAYS: DecayConfig;
 };

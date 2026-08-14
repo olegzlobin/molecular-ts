@@ -78,6 +78,19 @@ export function createColors(count: number, randomize: boolean = false, usePrede
   return result;
 }
 
+export function createDefaultTypeNames(count: number): string[] {
+  return Array.from({ length: count }, (_, i) => `T${i}`);
+}
+
+export function ensureTypeNames(names: string[] | undefined, count: number): string[] {
+  const result: string[] = [];
+  for (let i = 0; i < count; ++i) {
+    const name = names?.[i]?.trim();
+    result.push(name ? name : `T${i}`);
+  }
+  return result;
+}
+
 export function createDefaultTypesConfig(): TypesConfig {
   // 0 = C, 1 = H, 2 = O, 3 = N
   return {
@@ -87,6 +100,7 @@ export function createDefaultTypesConfig(): TypesConfig {
       [220, 45, 45],
       [50, 110, 230],
     ],
+    NAMES: ['C', 'H', 'O', 'N'],
     FREQUENCIES: [1, 2, 1, 0.2],
     RADIUS: [1, 0.6, 1, 1],
     CHARGE: [0, 0, 0, 0],
@@ -131,6 +145,7 @@ export function createDefaultTypesConfig(): TypesConfig {
 export function createTransparentTypesConfig(typesCount: number): TypesConfig {
   const config = {
     COLORS: createColors(typesCount),
+    NAMES: createDefaultTypeNames(typesCount),
     TRANSFORMATION: {},
     DECAYS: {},
   } as TypesConfig;
@@ -148,9 +163,21 @@ export function pickUnusedTypeColor(existing: ColorVector[]): ColorVector {
   return getDifferentRandomColor(existing);
 }
 
-export function createSingleTypeConfig(existingColors: ColorVector[] = []): TypesConfig {
+export function pickUnusedTypeName(existing: string[]): string {
+  const used = new Set(existing.map((name) => name.trim().toLowerCase()));
+  for (let i = 0; i < existing.length + 8; ++i) {
+    const name = `T${i}`;
+    if (!used.has(name.toLowerCase())) {
+      return name;
+    }
+  }
+  return `T${existing.length}`;
+}
+
+export function createSingleTypeConfig(existingColors: ColorVector[] = [], existingNames: string[] = []): TypesConfig {
   const config = createTransparentTypesConfig(1);
   config.COLORS = [pickUnusedTypeColor(existingColors)];
+  config.NAMES = [pickUnusedTypeName(existingNames)];
   return config;
 }
 
@@ -278,6 +305,7 @@ export function createRandomTypesConfig({
     LINK_LENGTH: linkLength,
     LINK_STIFFNESS: linkStiffness,
     COLORS: createColors(TYPES_COUNT),
+    NAMES: createDefaultTypeNames(TYPES_COUNT),
     TRANSFORMATION: {},
     DECAYS: {}, // TODO randomize it
   };
@@ -405,6 +433,7 @@ export function createRandomIntTypesConfig({
     LINK_LENGTH: linkLength,
     LINK_STIFFNESS: linkStiffness,
     COLORS: createColors(TYPES_COUNT),
+    NAMES: createDefaultTypeNames(TYPES_COUNT),
     TRANSFORMATION: {},
     DECAYS: {}, // TODO randomize it
   };
@@ -524,6 +553,7 @@ export function randomizeTypesConfig(
   const newConfig = createRandomTypesConfig(randomTypesConfig);
 
   newConfig.COLORS = fullCopyObject(oldConfig.COLORS);
+  newConfig.NAMES = ensureTypeNames(oldConfig.NAMES, newConfig.COLORS.length);
 
   if (!randomTypesConfig.USE_FREQUENCY_BOUNDS || skipSubMatricesBoundaryIndex !== undefined) {
     copyConfigListValue(oldConfig.FREQUENCIES, newConfig.FREQUENCIES, 1);
@@ -652,6 +682,10 @@ export function randomizeTypesConfig(
 export function concatTypesConfigs(lhs: TypesConfig, rhs: TypesConfig): TypesConfig {
   const result = fullCopyObject(lhs);
   result.COLORS = concatArrays(lhs.COLORS, rhs.COLORS);
+  result.NAMES = concatArrays(
+    ensureTypeNames(lhs.NAMES, lhs.COLORS.length),
+    ensureTypeNames(rhs.NAMES, rhs.COLORS.length),
+  );
   concatNumericTypesFields(result, lhs, rhs);
   return result;
 }
@@ -659,6 +693,7 @@ export function concatTypesConfigs(lhs: TypesConfig, rhs: TypesConfig): TypesCon
 export function crossTypesConfigs(lhs: TypesConfig, rhs: TypesConfig, separator: number): TypesConfig {
   const result = fullCopyObject(lhs);
   result.COLORS = createColors(lhs.COLORS.length);
+  result.NAMES = ensureTypeNames(lhs.NAMES, lhs.COLORS.length);
   crossNumericTypesFields(result, lhs, rhs, separator);
   return result;
 }
@@ -666,6 +701,7 @@ export function crossTypesConfigs(lhs: TypesConfig, rhs: TypesConfig, separator:
 export function randomCrossTypesConfigs(lhs: TypesConfig, rhs: TypesConfig, separator: number): TypesConfig {
   const result = fullCopyObject(lhs);
   result.COLORS = createColors(lhs.COLORS.length);
+  result.NAMES = ensureTypeNames(lhs.NAMES, lhs.COLORS.length);
   randomCrossNumericTypesFields(result, lhs, rhs, separator);
   return result;
 }
@@ -673,6 +709,7 @@ export function randomCrossTypesConfigs(lhs: TypesConfig, rhs: TypesConfig, sepa
 export function crossTypesConfigsByIndexes(lhs: TypesConfig, rhs: TypesConfig, indexes: number[]): TypesConfig {
   const result = fullCopyObject(lhs);
   result.COLORS = createColors(lhs.COLORS.length);
+  result.NAMES = ensureTypeNames(lhs.NAMES, lhs.COLORS.length);
   crossNumericTypesFieldsByIndexes(result, lhs, rhs, indexes);
   return result;
 }
@@ -680,6 +717,7 @@ export function crossTypesConfigsByIndexes(lhs: TypesConfig, rhs: TypesConfig, i
 export function removeIndexFromTypesConfig(input: TypesConfig, index: number): TypesConfig {
   const result = fullCopyObject(input);
   result.COLORS = removeIndexFromArray(input.COLORS, index);
+  result.NAMES = removeIndexFromArray(ensureTypeNames(input.NAMES, input.COLORS.length), index);
   removeNumericTypesFieldIndex(result, input, index);
   result.TRANSFORMATION = {};
   result.DECAYS = {};
@@ -689,6 +727,7 @@ export function removeIndexFromTypesConfig(input: TypesConfig, index: number): T
 export function copyIndexInTypesConfig(input: TypesConfig, indexFrom: number, indexTo: number): TypesConfig {
   const result = fullCopyObject(input);
   result.COLORS = copyArrayIndex(input.COLORS, indexFrom, indexTo);
+  result.NAMES = copyArrayIndex(ensureTypeNames(input.NAMES, input.COLORS.length), indexFrom, indexTo);
   copyNumericTypesFieldIndex(result, input, indexFrom, indexTo);
   return result;
 }

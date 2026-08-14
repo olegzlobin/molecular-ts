@@ -7,6 +7,7 @@ import TypeSelect from "@/web/components/inputs/type-select.vue";
 const modelValue = defineModel<DecayConfig>();
 defineProps<{
   colors: [number, number, number][];
+  names?: string[];
 }>();
 
 type DecayRow = {
@@ -94,7 +95,7 @@ const removeStabilizer = (row: DecayRow, index: number) => {
     >
       <div class="list-item__name">
         <div>
-          <type-select :colors="colors" v-model="row.from" />
+          <type-select :colors="colors" :names="names" v-model="row.from" />
         </div>
         <div class="list-item__icon">⏳</div>
         <div>
@@ -102,11 +103,11 @@ const removeStabilizer = (row: DecayRow, index: number) => {
         </div>
         <div class="list-item__icon">➔</div>
         <div>
-          <type-select :colors="colors" v-model="row.to" />
+          <type-select :colors="colors" :names="names" v-model="row.to" />
         </div>
         <div class="list-item__icon">+</div>
         <div>
-          <type-select :colors="colors" allow-none v-model="row.secondary" />
+          <type-select :colors="colors" :names="names" allow-none v-model="row.secondary" />
         </div>
         <div class="list-item__icon">⛓</div>
         <div
@@ -114,7 +115,7 @@ const removeStabilizer = (row: DecayRow, index: number) => {
           :key="sIndex"
           class="stabilizer"
         >
-          <type-select :colors="colors" v-model="row.stabilizers[sIndex]" />
+          <type-select :colors="colors" :names="names" v-model="row.stabilizers[sIndex]" />
           <button class="btn btn-sm btn-outline-secondary stabilizer__remove" @click="removeStabilizer(row, sIndex)">×</button>
         </div>
         <div>

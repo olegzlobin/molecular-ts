@@ -68,11 +68,11 @@ const refill = () => {
       </div>
       <div>
         <input-header
-          name="Colors / Actions"
-          tooltip="Click a color swatch to change it. Use ⋯ under a type to clone or remove it."
+          name="Names / Colors / Actions"
+          tooltip="Edit type names and colors. Use ⋯ under a type to clone or remove it."
           position="center"
         />
-        <config-actions :colors="typesConfig.COLORS" />
+        <config-actions :colors="typesConfig.COLORS" :names="typesConfig.NAMES" />
       </div>
       <div>
         <input-header
@@ -224,7 +224,7 @@ const refill = () => {
           tooltip="Experimental feature. A ↻ B ➔ C means that when A connects to B, A changes type to C. A + B ➔ C merges A and B into C on contact (radii overlap)."
         />
         <div style="margin-top: 10px;"></div>
-        <transformation-config :colors="typesConfig.COLORS" v-model="typesConfig.TRANSFORMATION" />
+        <transformation-config :colors="typesConfig.COLORS" :names="typesConfig.NAMES" v-model="typesConfig.TRANSFORMATION" />
       </div>
       <div style="margin-top: 30px;">
         <input-header
@@ -232,7 +232,7 @@ const refill = () => {
           tooltip="A ⏳ T ➔ B — particle A becomes B with half-life T (ticks). A ⏳ T ➔ B + C — splits into B and C. Use ∅ instead of C for type change only. ⛓ types stabilize A: it does not decay while linked to at least one of them."
         />
         <div style="margin-top: 10px;"></div>
-        <decay-config :colors="typesConfig.COLORS" v-model="typesConfig.DECAYS" />
+        <decay-config :colors="typesConfig.COLORS" :names="typesConfig.NAMES" v-model="typesConfig.DECAYS" />
       </div>
     </template>
   </config-section>

@@ -5,6 +5,7 @@ import {
   createRandomIntTypesConfig,
   createRandomTypesConfig,
   createTransparentTypesConfig,
+  ensureTypeNames,
 } from "../../config/atom-types";
 
 type RecursiveArray<T> = Array<T | RecursiveArray<T>>;
@@ -36,6 +37,11 @@ export function extractExpressedTypesConfig(typesConfigs: TypesConfig[], express
     LINK_STIFFNESS: express(typesConfigs.map((x) => x.LINK_STIFFNESS ?? x.RADIUS.map(() => 1)), expressionIndices.LINK_STIFFNESS ?? expressionIndices.RADIUS),
     FREQUENCIES: express(typesConfigs.map((x) => x.FREQUENCIES), expressionIndices.FREQUENCIES),
     COLORS: express(typesConfigs.map((x) => x.COLORS), expressionIndices.COLORS),
+    NAMES: expressionIndices.RADIUS.map((chromosomeIndex, typeIndex) => {
+      const names = typesConfigs[chromosomeIndex as number]?.NAMES
+        ?? typesConfigs[0]?.NAMES;
+      return ensureTypeNames(names, typeIndex + 1)[typeIndex];
+    }),
     TRANSFORMATION: {}, // TODO implement
     DECAYS: {},
   };

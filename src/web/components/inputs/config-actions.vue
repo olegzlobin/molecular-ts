@@ -7,6 +7,7 @@ import { hexToRgb, rgbToHex, getColorString } from "@/web/components/config-edit
 
 const props = defineProps<{
   colors: [number, number, number][];
+  names: string[];
 }>();
 
 const configStore = useConfigStore();
@@ -15,6 +16,10 @@ const openMenuIndex = ref<number | null>(null);
 
 const onColorInput = (index: number, event: Event) => {
   props.colors[index] = hexToRgb((event.target as HTMLInputElement).value);
+}
+
+const onNameInput = (index: number, event: Event) => {
+  props.names[index] = (event.target as HTMLInputElement).value;
 }
 
 const toggleMenu = (index: number) => {
@@ -54,7 +59,7 @@ const removeType = (index: number) => {
           <label
             class="swatch"
             :style="{ backgroundColor: getColorString(color) }"
-            :title="`Change type ${index} color`"
+            :title="`Change ${names[index] ?? `T${index}`} color`"
           >
             <input
               type="color"
@@ -62,6 +67,14 @@ const removeType = (index: number) => {
               @input="onColorInput(index, $event)"
             />
           </label>
+          <input
+            class="type-name"
+            type="text"
+            :value="names[index]"
+            maxlength="8"
+            :title="`Type ${index} name`"
+            @input="onNameInput(index, $event)"
+          />
           <div class="menu" :class="{ open: openMenuIndex === index }">
             <button
               type="button"
@@ -109,6 +122,21 @@ const removeType = (index: number) => {
     opacity: 0;
     cursor: pointer;
   }
+}
+
+.type-name {
+  display: block;
+  width: 100%;
+  height: 22px;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0 4px;
+  border: 0;
+  border-top: 1px solid #444;
+  background: #242424;
+  color: #eee;
+  font-size: 12px;
+  text-align: center;
 }
 
 .menu {

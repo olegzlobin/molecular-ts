@@ -20,6 +20,7 @@ function typesStub(): TypesConfig {
     LINK_STIFFNESS: [1, 1],
     FREQUENCIES: [1, 1],
     COLORS: [[255, 0, 0], [0, 255, 0]],
+    NAMES: ['A', 'B'],
     TRANSFORMATION: {},
     DECAYS: {},
   };

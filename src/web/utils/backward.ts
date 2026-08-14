@@ -1,6 +1,7 @@
 import type { RandomTypesConfig, TypesConfig, TypesSymmetricConfig, WorldConfig } from '@/lib/config/types';
 import { fullCopyObject } from '@/lib/utils/functions';
 import { ensureNumericTypesFields } from '@/lib/config/types-config-fields';
+import { ensureTypeNames } from '@/lib/config/atom-types';
 
 export function convertWorldConfigForBackwardCompatibility(inputConfig: WorldConfig): WorldConfig {
   const config = fullCopyObject(inputConfig);
@@ -40,6 +41,7 @@ export function convertTypesConfigForBackwardCompatibility(inputConfig: TypesCon
   }
 
   ensureNumericTypesFields(config);
+  config.NAMES = ensureTypeNames(config.NAMES, config.COLORS?.length ?? config.RADIUS?.length ?? 0);
 
   return config;
 }
