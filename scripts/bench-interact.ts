@@ -2,7 +2,7 @@ import { createDefaultTypesConfig } from '../src/lib/config/atom-types';
 import { createBaseWorldConfig } from '../src/lib/config/world';
 import { create2dRandomDistribution } from '../src/lib/config/atoms';
 import { Simulation } from '../src/lib/simulation/simulation';
-import { PhysicModelV2 } from '../src/lib/physics/v2';
+import { PhysicModelSpring } from '../src/lib/physics/spring';
 import type { DrawerInterface } from '../src/lib/drawer/types';
 import type { TypesConfig } from '../src/lib/config/types';
 
@@ -14,14 +14,14 @@ const noopDrawer: DrawerInterface = {
 function makeSim(typesConfig: TypesConfig, atomsCount: number): Simulation {
   const worldConfig = createBaseWorldConfig();
   worldConfig.VIEW_MODE = '2d';
-  worldConfig.PHYSIC_MODEL = 'v2';
+  worldConfig.PHYSIC_MODEL = 'spring';
   worldConfig.PLAYBACK_SPEED = 1;
   worldConfig.CONFIG_2D.INITIAL.ATOMS_COUNT = atomsCount;
   return new Simulation({
     viewMode: '2d',
     worldConfig,
     typesConfig,
-    physicModel: new PhysicModelV2(worldConfig, typesConfig),
+    physicModel: new PhysicModelSpring(worldConfig, typesConfig),
     atomsFactory: create2dRandomDistribution,
     drawer: noopDrawer,
   });

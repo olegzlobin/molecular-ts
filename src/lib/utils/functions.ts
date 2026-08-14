@@ -1,17 +1,15 @@
 import type { AtomInterface } from '../simulation/types/atomic';
 import type { NumericVector } from '../math/types';
 import type {
-  PhysicModelName,
   ViewModeConfig,
   WorldConfig,
   TypesConfig,
   ViewMode,
   ColorVector,
 } from '../config/types';
-import type { PhysicModelConstructor, PhysicModelInterface } from '../simulation/types/interaction';
+import type { PhysicModelInterface } from '../simulation/types/interaction';
 import { Atom } from '../simulation/atomic';
-import { PhysicModelV1 } from '../physics/v1';
-import { PhysicModelV2 } from '../physics/v2';
+import { PhysicModelSpring } from '../physics/spring';
 import { createVector } from "@/lib/math";
 
 export const fullCopyObject = <T extends Record<string, any>>(obj: T) => JSON.parse(JSON.stringify(obj)) as T;
@@ -73,16 +71,7 @@ export function createPhysicModel(
   worldConfig: WorldConfig,
   typesConfig: TypesConfig,
 ): PhysicModelInterface {
-  if (worldConfig.PHYSIC_MODEL === undefined) {
-    return new PhysicModelV1(worldConfig, typesConfig);
-  }
-
-  const map: Record<PhysicModelName, PhysicModelConstructor> = {
-    v1: PhysicModelV1,
-    v2: PhysicModelV2,
-  };
-
-  return new map[worldConfig.PHYSIC_MODEL](worldConfig, typesConfig);
+  return new PhysicModelSpring(worldConfig, typesConfig);
 }
 
 export function getViewModeConfig(worldConfig: WorldConfig, viewMode?: ViewMode): ViewModeConfig {

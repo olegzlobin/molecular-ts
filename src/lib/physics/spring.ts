@@ -3,7 +3,7 @@ import type { AtomInterface } from '../simulation/types/atomic';
 import type { PhysicModelInterface } from '../simulation/types/interaction';
 import { GeometryHelper } from '../utils/structs';
 
-export class PhysicModelV1 implements PhysicModelInterface {
+export class PhysicModelSpring implements PhysicModelInterface {
   public readonly geometry: GeometryHelper;
   private WORLD_CONFIG: WorldConfig;
   private TYPES_CONFIG: TypesConfig;
@@ -19,19 +19,18 @@ export class PhysicModelV1 implements PhysicModelInterface {
   }
 
   getGravityForces(lhs: AtomInterface, rhs: AtomInterface, dist2: number): [number, number] {
-    const bounce = dist2 < this.geometry.getAtomsRadiusSum(lhs, rhs) ** 2;
+    const bounceDistance = this.geometry.getAtomsRadiusSum(lhs, rhs);
     const massL = this.geometry.getMassMultiplier(lhs, rhs);
     const massR = this.geometry.getMassMultiplier(rhs, lhs);
-    const invDist2 = 1 / dist2;
 
-    if (bounce) {
-      const multiplier = -this.WORLD_CONFIG.BOUNCE_FORCE_MULTIPLIER;
-      return [multiplier * massL * invDist2, multiplier * massR * invDist2];
+    if (dist2 < bounceDistance ** 2) {
+      const bounceForce = (bounceDistance - Math.sqrt(dist2))
+        * (-this.WORLD_CONFIG.BOUNCE_FORCE_MULTIPLIER);
+      return [bounceForce * massL, bounceForce * massR];
     }
 
-    const gravityMatrix = lhs.bonds.has(rhs)
-      ? this.TYPES_CONFIG.LINK_GRAVITY
-      : this.TYPES_CONFIG.GRAVITY;
+    const bonded = lhs.bonds.has(rhs);
+    const gravityMatrix = bonded ? this.TYPES_CONFIG.LINK_GRAVITY : this.TYPES_CONFIG.GRAVITY;
     const gL = gravityMatrix[lhs.type][rhs.type];
     const gR = gravityMatrix[rhs.type][lhs.type];
     const qi = this.TYPES_CONFIG.CHARGE?.[lhs.type] ?? 0;
@@ -44,15 +43,24 @@ export class PhysicModelV1 implements PhysicModelInterface {
       return [0, 0];
     }
 
+    const invDist2 = 1 / Math.max(dist2, 1);
     const gravityMult = this.WORLD_CONFIG.GRAVITY_FORCE_MULTIPLIER;
     return [
-      (gravityMult * gL - coulomb) * massL * invDist2,
-      (gravityMult * gR - coulomb) * massR * invDist2,
+      (gravityMult * gL - coulomb) * invDist2 * massL,
+      (gravityMult * gR - coulomb) * invDist2 * massR,
     ];
   }
 
   getLinkForce(lhs: AtomInterface, rhs: AtomInterface, dist2: number, elasticFactor: number): number {
-    return this.WORLD_CONFIG.LINK_FORCE_MULTIPLIER * this.geometry.getMassMultiplier(lhs, rhs) * elasticFactor;
+    const lengths = this.TYPES_CONFIG.LINK_LENGTH;
+    const lengthMult = ((lengths?.[lhs.type] ?? 1) + (lengths?.[rhs.type] ?? 1)) / 2;
+    const restLength = this.geometry.getAtomsRadiusSum(lhs, rhs) * lengthMult;
+    const extension = Math.sqrt(dist2) - restLength;
+
+    return this.WORLD_CONFIG.LINK_FORCE_MULTIPLIER
+      * elasticFactor
+      * this.geometry.getMassMultiplier(lhs, rhs)
+      * extension;
   }
 
   getBoundsForce(dist: number): number {

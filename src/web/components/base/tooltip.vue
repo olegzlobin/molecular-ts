@@ -80,7 +80,8 @@ const style = computed(() => {
   transition: 0.3s opacity ease, 0.3s bottom ease;
   overflow: hidden;
   pointer-events: none;
-  text-align: center;
+  text-align: left;
+  white-space: pre-line;
   z-index: 100000;
   margin-bottom: 3px;
   box-shadow: 0 0 30px 0 rgba(0, 0, 0, 0.9);

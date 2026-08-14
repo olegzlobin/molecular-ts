@@ -14,6 +14,7 @@ export function convertWorldConfigForBackwardCompatibility(inputConfig: WorldCon
   if (config.COULOMB_FORCE_MULTIPLIER === undefined) {
     config.COULOMB_FORCE_MULTIPLIER = 0.6;
   }
+  config.PHYSIC_MODEL = 'spring';
   return config;
 }
 

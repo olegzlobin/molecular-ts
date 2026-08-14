@@ -7,7 +7,7 @@ import { createDefaultTypesConfig } from "../../../config/atom-types";
 import { createBaseWorldConfig } from "../../../config/world";
 import { create2dRandomDistribution } from "../../../config/atoms";
 import { Simulation } from "../../../simulation/simulation";
-import { PhysicModelV1 } from "../../../physics/v1";
+import { PhysicModelSpring } from "../../../physics/spring";
 
 const WORLD_CONFIG: WorldConfig = createBaseWorldConfig();
 const TYPES_CONFIG: TypesConfig = createDefaultTypesConfig();
@@ -17,7 +17,7 @@ export function create2dSimulationWithConstTypes() {
     viewMode: '2d',
     worldConfig: WORLD_CONFIG,
     typesConfig: TYPES_CONFIG,
-    physicModel: new PhysicModelV1(WORLD_CONFIG, TYPES_CONFIG),
+    physicModel: new PhysicModelSpring(WORLD_CONFIG, TYPES_CONFIG),
     atomsFactory: create2dRandomDistribution,
     drawer: create2dDrawer('canvas', WORLD_CONFIG, TYPES_CONFIG, createDefaultShowConfig()),
   });

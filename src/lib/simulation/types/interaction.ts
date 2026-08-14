@@ -1,5 +1,4 @@
 import type { AtomInterface, LinkInterface } from './atomic';
-import type { TypesConfig, WorldConfig } from '../../config/types';
 import type { GeometryHelperInterface } from './utils';
 
 export interface InteractionManagerInterface {
@@ -18,5 +17,3 @@ export interface PhysicModelInterface {
   getLinkForce(lhs: AtomInterface, rhs: AtomInterface, dist2: number, elasticFactor: number): number;
   getBoundsForce(dist: number): number;
 }
-
-export type PhysicModelConstructor ={ new (worldConfig: WorldConfig, typesConfig: TypesConfig): PhysicModelInterface };

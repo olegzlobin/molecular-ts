@@ -1,7 +1,7 @@
 import type { NumericVector } from '../math/types';
 
 export type ColorVector = [number, number, number];
-export type PhysicModelName = 'v1' | 'v2';
+export type PhysicModelName = 'spring';
 export type ViewMode = '2d' | '3d';
 
 export type RadiusConfig = number[];

@@ -1,15 +1,11 @@
 <script setup lang="ts">
 
-import { ref, toRefs, watch } from "vue";
+import { ref, watch } from "vue";
 import { useConfigStore } from '@/web/store/config';
 import { useSimulationStore } from "@/web/store/simulation";
-import { usePhysicsStore } from '@/web/store/physics';
 import ConfigSection from '@/web/components/config-editor/components/containers/config-section.vue';
 import InputHeader from "@/web/components/base/input-header.vue";
 import { useRightBarStore } from '@/web/store/right-bar';
-
-const physicsStore = usePhysicsStore();
-const { physicModelName } = toRefs(physicsStore);
 
 const configStore = useConfigStore();
 const rightBarStore = useRightBarStore();
@@ -70,12 +66,23 @@ watch(() => configStore.worldConfig.VIEW_MODE, () => {
       <div>
         <input-header
           name="Physic Model"
-          tooltip="Defines the rules for calculating forces."
+          tooltip="Spring: Hookean bonds, soft overlap bounce, 1/r² gravity and Coulomb.
+
+Link: F = k · ε · (r − L) / m
+  L = (Rᵢ + Rⱼ) · (ℓᵢ + ℓⱼ) / 2
+  ε = (sᵢ + sⱼ) / 2
+
+Bounce (r < Rᵢ+Rⱼ): F = −k_b · (Rᵢ+Rⱼ − r) / m
+
+Gravity: F = (G·g − k_c·qᵢ·qⱼ) / r² / m
+  uses Link Gravity when bonded
+
+Bounds: F = k_w · Δ
+
+m is proportional to type radius³."
+          :tooltipWidth="420"
         />
-        <label v-for="(title, value) in physicsStore.physicModelNameMap">
-          <input type="radio" name="physic-model" v-model="physicModelName" :value="value">
-          {{ title }} &nbsp;
-        </label>
+        <div class="physic-model-name">Spring</div>
       </div>
       <div>
         <input-header
@@ -277,6 +284,11 @@ watch(() => configStore.worldConfig.VIEW_MODE, () => {
   input {
     width: 100% !important;
   }
+}
+
+.physic-model-name {
+  color: #ddd;
+  padding: 4px 0;
 }
 
 </style>

@@ -4,7 +4,7 @@ import type { NumericVector } from '../math/types';
 export function createBaseWorldConfig(): WorldConfig {
   return {
     VIEW_MODE: '2d',
-    PHYSIC_MODEL: 'v2',
+    PHYSIC_MODEL: 'spring',
     ATOM_RADIUS: 5,
     MAX_INTERACTION_RADIUS: 100,
     MAX_LINK_RADIUS: 60,
