@@ -263,9 +263,39 @@ export class Drawer2d implements DrawerInterface {
     this.clear();
   }
 
+  private clampView(): void {
+    const bounds = this.WORLD_CONFIG.CONFIG_2D.BOUNDS;
+    const [minX, minY] = bounds.MIN_POSITION;
+    const [maxX, maxY] = bounds.MAX_POSITION;
+    const worldW = Math.max(maxX - minX, 1);
+    const worldH = Math.max(maxY - minY, 1);
+    const canvasW = this.domElement.width || this.width || 1;
+    const canvasH = this.domElement.height || this.height || 1;
+
+    const fitScale = Math.min(canvasW / worldW, canvasH / worldH);
+    const minScale = Math.max(fitScale, 1e-3);
+    const maxScale = 40;
+    const scale = Math.min(Math.max(this.viewConfig.scale[0], minScale), maxScale);
+    this.viewConfig.scale = [scale, scale];
+
+    const pad = Math.min(canvasW, canvasH) * 0.25;
+    const clampAxis = (offset: number, min: number, max: number, canvas: number): number => {
+      const lo = pad - max * scale;
+      const hi = canvas - pad - min * scale;
+      if (lo > hi) {
+        return (lo + hi) / 2;
+      }
+      return Math.min(hi, Math.max(lo, offset));
+    };
+
+    this.viewConfig.offset[0] = clampAxis(this.viewConfig.offset[0], minX, maxX, canvasW);
+    this.viewConfig.offset[1] = clampAxis(this.viewConfig.offset[1], minY, maxY, canvasH);
+  }
+
   private initEventHandlers(): void {
     const resizeObserver = new ResizeObserver(() => {
       this.refresh();
+      this.clampView();
     });
     resizeObserver.observe(this.domElement);
 
@@ -300,12 +330,12 @@ export class Drawer2d implements DrawerInterface {
       if (event.ctrlKey) {
         let scale = this.viewConfig.scale[0];
         scale += event.deltaY * -0.002;
-        scale = Math.min(Math.max(0.001, scale), 100);
 
         const oldScalePosition = createVector(
           transposeCoordsBackward([event.offsetX, event.offsetY], this.viewConfig.offset, this.viewConfig.scale),
         );
         this.viewConfig.scale = [scale, scale];
+        this.clampView();
         const newScalePosition = createVector(
           transposeCoordsBackward([event.offsetX, event.offsetY], this.viewConfig.offset, this.viewConfig.scale),
         );
@@ -315,10 +345,13 @@ export class Drawer2d implements DrawerInterface {
           this.viewConfig.offset,
           this.viewConfig.scale,
         );
+        this.clampView();
       } else if (event.shiftKey) {
         this.viewConfig.offset[0] -= event.deltaY;
+        this.clampView();
       } else {
         this.viewConfig.offset[1] -= event.deltaY;
+        this.clampView();
       }
 
       event.preventDefault();
@@ -388,6 +421,7 @@ export class Drawer2d implements DrawerInterface {
 
       this.viewConfig.offset[0] += diff[0];
       this.viewConfig.offset[1] += diff[1];
+      this.clampView();
       mouseDownVector = coords;
     };
 

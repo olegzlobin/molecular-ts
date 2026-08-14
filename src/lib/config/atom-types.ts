@@ -101,7 +101,7 @@ export function createDefaultTypesConfig(): TypesConfig {
       [50, 110, 230],
     ],
     NAMES: ['C', 'H', 'O', 'N'],
-    FREQUENCIES: [1, 2, 1, 0.2],
+    FREQUENCIES: [1, 3, 1, 0.2],
     RADIUS: [1, 0.6, 1, 1],
     CHARGE: [0, 0, 0, 0],
     GRAVITY: createFilledMatrix(4, 4, 0),

@@ -24,6 +24,7 @@ export interface SimulationInterface {
   readonly links: LinkManagerInterface;
   readonly summary: WorldSummary<number[]>;
   readonly energy: EnergyReport;
+  readonly stepIndex: number;
   readonly isPaused: boolean;
   start(): void;
   stop(onStop?: () => void): Promise<void>;

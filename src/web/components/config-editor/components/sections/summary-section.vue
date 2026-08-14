@@ -6,11 +6,79 @@ import { useSimulationStore } from '@/web/store/simulation';
 import type { TimeSeriesConfig } from "@/web/components/config-editor/components/widgets/chart-flow.vue";
 import ChartFlow from "@/web/components/config-editor/components/widgets/chart-flow.vue";
 import Flag from '@/web/components/inputs/flag.vue';
+import InputHeader from '@/web/components/base/input-header.vue';
 import { emptyEnergyReport } from '@/lib/analysis/energy';
+import { buildMoleculeSnapshot, type MoleculeSnapshot } from '@/lib/analysis/molecules';
 
 const { getCurrentSimulation } = useSimulationStore();
 
 const showMean: Ref<boolean> = ref(false);
+
+const waitTicks = ref(500);
+const waitStartTick = ref<number | null>(null);
+const waitProgress = ref(0);
+const moleculeSnapshot = ref<MoleculeSnapshot | null>(null);
+const moleculeStatus = ref('');
+
+const isWaitingMolecules = computed(() => waitStartTick.value !== null);
+
+const takeMoleculeSnapshot = (stepIndex?: number) => {
+  try {
+    const sim = getCurrentSimulation();
+    moleculeSnapshot.value = buildMoleculeSnapshot(
+      sim.atoms,
+      sim.config.typesConfig.NAMES,
+      stepIndex ?? sim.stepIndex,
+    );
+    moleculeStatus.value = `Snapshot at step ${moleculeSnapshot.value.tick}`;
+  } catch {
+    moleculeStatus.value = 'Simulation not ready';
+  }
+};
+
+const startMoleculeWait = () => {
+  try {
+    const sim = getCurrentSimulation();
+    waitStartTick.value = sim.stepIndex;
+    waitProgress.value = 0;
+    moleculeStatus.value = `Waiting ${waitTicks.value} ticks from ${sim.stepIndex}…`;
+  } catch {
+    moleculeStatus.value = 'Simulation not ready';
+  }
+};
+
+const cancelMoleculeWait = () => {
+  waitStartTick.value = null;
+  waitProgress.value = 0;
+  moleculeStatus.value = 'Cancelled';
+};
+
+const pollMoleculeWait = () => {
+  if (waitStartTick.value === null) {
+    return;
+  }
+  try {
+    const sim = getCurrentSimulation();
+    const elapsed = sim.stepIndex - waitStartTick.value;
+    waitProgress.value = Math.max(0, elapsed);
+    if (elapsed >= waitTicks.value) {
+      waitStartTick.value = null;
+      takeMoleculeSnapshot(sim.stepIndex);
+    }
+  } catch {
+    // simulation not ready
+  }
+};
+
+const copyMoleculeJson = async () => {
+  if (!moleculeSnapshot.value) {
+    return;
+  }
+  await navigator.clipboard.writeText(JSON.stringify(moleculeSnapshot.value, null, 2));
+  moleculeStatus.value = 'JSON copied';
+};
+
+const pct = (value: number): string => `${(value * 100).toFixed(1)}%`;
 
 const getEnergy = () => {
   try {
@@ -60,6 +128,7 @@ const resetEnergyBaseline = () => {
 };
 
 let energyReadoutTimer: ReturnType<typeof setInterval> | undefined;
+let moleculeWaitTimer: ReturnType<typeof setInterval> | undefined;
 
 type ChartConfig = {
   id: string;
@@ -516,12 +585,17 @@ onMounted(() => {
   }
   refreshEnergyReadout();
   energyReadoutTimer = setInterval(refreshEnergyReadout, 200);
+  moleculeWaitTimer = setInterval(pollMoleculeWait, 200);
 });
 
 onUnmounted(() => {
   if (energyReadoutTimer !== undefined) {
     clearInterval(energyReadoutTimer);
     energyReadoutTimer = undefined;
+  }
+  if (moleculeWaitTimer !== undefined) {
+    clearInterval(moleculeWaitTimer);
+    moleculeWaitTimer = undefined;
   }
   try {
     getCurrentSimulation().setEnergyTracking(false);
@@ -535,6 +609,76 @@ onUnmounted(() => {
 <template>
   <config-section>
     <template #body>
+      <div class="molecules-panel">
+        <input-header
+          name="Molecules"
+          tooltip="Count bonded groups by chemical-like formulas from type names (Hill order: C, H, then A–Z). Free atoms are included as single-letter formulas."
+        />
+        <div class="molecules-controls">
+          <label class="molecules-wait">
+            Wait ticks
+            <input type="number" v-model.number="waitTicks" min="1" step="1" />
+          </label>
+          <div class="btn-group" role="group">
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              :disabled="isWaitingMolecules"
+              @click="startMoleculeWait"
+            >
+              Wait & snapshot
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              :disabled="!isWaitingMolecules"
+              @click="cancelMoleculeWait"
+            >
+              Cancel
+            </button>
+            <button type="button" class="btn btn-outline-secondary" @click="takeMoleculeSnapshot()">
+              Now
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              :disabled="!moleculeSnapshot"
+              @click="copyMoleculeJson"
+            >
+              Copy JSON
+            </button>
+          </div>
+        </div>
+        <div v-if="isWaitingMolecules" class="molecules-status">
+          Progress: {{ waitProgress }} / {{ waitTicks }}
+        </div>
+        <div v-else-if="moleculeStatus" class="molecules-status">{{ moleculeStatus }}</div>
+        <table v-if="moleculeSnapshot" class="molecules-table">
+          <thead>
+            <tr>
+              <th>Formula</th>
+              <th>Count</th>
+              <th>Atoms</th>
+              <th>Mol %</th>
+              <th>Atom %</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="row in moleculeSnapshot.formulas" :key="row.formula">
+              <td>{{ row.formula }}</td>
+              <td>{{ row.count }}</td>
+              <td>{{ row.atomTotal }}</td>
+              <td>{{ pct(row.moleculeFraction) }}</td>
+              <td>{{ pct(row.atomFraction) }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <div v-if="moleculeSnapshot" class="molecules-status">
+          Molecules: {{ moleculeSnapshot.moleculeCount }},
+          free atoms: {{ moleculeSnapshot.freeAtomCount }},
+          total atoms: {{ moleculeSnapshot.totalAtoms }}
+        </div>
+      </div>
       <div class="energy-readout">
         <div class="energy-readout-header">
           <h5 class="mb-0">Energy</h5>
@@ -612,6 +756,48 @@ onUnmounted(() => {
 
 .energy-readout {
   margin-bottom: 1rem;
+}
+
+.molecules-panel {
+  margin-bottom: 1.25rem;
+}
+
+.molecules-controls {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.molecules-wait {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.molecules-status {
+  margin-top: 0.5rem;
+  color: #bbb;
+  font-size: 0.9rem;
+}
+
+.molecules-table {
+  width: 100%;
+  margin-top: 0.75rem;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: 0.25rem 0.35rem;
+    border-bottom: 1px solid #444;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  th:first-child,
+  td:first-child {
+    text-align: left;
+  }
 }
 
 .energy-readout-header {

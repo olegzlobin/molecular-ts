@@ -88,6 +88,10 @@ export class Simulation implements SimulationInterface {
     return this._energy;
   }
 
+  get stepIndex(): number {
+    return this.summaryManager.step;
+  }
+
   get isPaused(): boolean {
     return this.runningState.isPaused;
   }
