@@ -183,7 +183,7 @@ const randomizeTypesConfig = () => {
       <div>
         <input-header
           name="Types Link Weights"
-          tooltip="Nominal bond order per type pair. Actual order uses leftover valence; preference scales by actual/nominal."
+          tooltip="Nominal bond order per type pair. Actual order uses leftover valence. Preference = Bond Preference × order."
           tooltip-position="left"
         >
           <input type="checkbox" class="title-flag" v-model="randomTypesConfig.USE_LINK_TYPE_WEIGHT_BOUNDS" />
@@ -197,7 +197,7 @@ const randomizeTypesConfig = () => {
       <div>
         <input-header
           name="Bond Preference"
-          tooltip="Higher values are preferred when swapping bonds. Scaled by actual/nominal bond order."
+          tooltip="Preference per unit of bond order. Effective preference is this × order."
           tooltip-position="left"
         >
           <input type="checkbox" class="title-flag" v-model="randomTypesConfig.USE_BOND_PREFERENCE_BOUNDS" />

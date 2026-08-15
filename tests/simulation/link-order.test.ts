@@ -63,7 +63,7 @@ function nitrogenTypesConfig(): TypesConfig {
       [1, 1],
     ],
     BOND_PREFERENCE: [
-      [4, 2],
+      [4 / 3, 2],
       [2, 2],
     ],
     BOND_PREFERENCE_FACTOR: undefined,

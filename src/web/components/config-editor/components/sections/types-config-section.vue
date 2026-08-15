@@ -161,7 +161,7 @@ const refill = () => {
       <div>
         <input-header
           name="Type Link Weights"
-          tooltip="Nominal bond order for each type pair (prefer integers 1, 2, …). Actual order is min(weight, free valence on both sides); preference scales by actual/nominal."
+          tooltip="Nominal bond order for each type pair (prefer integers 1, 2, …). Actual order is min(weight, free valence on both sides). Link preference = Bond Preference × order."
           position="center"
         />
         <config-matrix
@@ -174,7 +174,7 @@ const refill = () => {
       <div>
         <input-header
           name="Bond Preference"
-          tooltip="Higher values are preferred. Scaled by actual/nominal bond order. When valence is full, a new bond can replace the weakest existing bond if it has a strictly higher preference."
+          tooltip="Preference per unit of bond order. Effective link preference is this value × order. When valence is full, a new bond can replace the weakest existing bond if it has a strictly higher preference."
           position="center"
         />
         <config-matrix

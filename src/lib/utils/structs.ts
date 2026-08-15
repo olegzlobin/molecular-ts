@@ -312,8 +312,7 @@ export class RulesHelper implements RulesHelperInterface {
 
   private _bondPreference(atom: AtomInterface, partner: AtomInterface, order: number): number {
     const matrix = this.TYPES_CONFIG.BOND_PREFERENCE;
-    const nominal = this._nominalWeight(atom.type, partner.type);
-    let preference = (matrix?.[atom.type]?.[partner.type] ?? 0) * (order / nominal);
+    let preference = (matrix?.[atom.type]?.[partner.type] ?? 0) * order;
     const factors = this.TYPES_CONFIG.BOND_PREFERENCE_FACTOR;
     if (!factors) {
       return preference;
