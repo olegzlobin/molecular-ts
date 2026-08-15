@@ -29,7 +29,7 @@ export function encodeTransform(type: number, merge: boolean): number {
 
 export type DecayRule = {
   halfLife: number;
-  to: number;
+  to: number | null;
   secondary: number | null;
   stabilizers: number[];
 };

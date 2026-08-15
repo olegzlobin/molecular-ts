@@ -229,7 +229,7 @@ const refill = () => {
       <div style="margin-top: 30px;">
         <input-header
           name="Decay"
-          tooltip="A ⏳ T ➔ B — particle A becomes B with half-life T (ticks). A ⏳ T ➔ B + C — splits into B and C. Use ∅ instead of C for type change only. ⛓ types stabilize A: it does not decay while linked to at least one of them."
+          tooltip="A ⏳ T ➔ B — particle A becomes B with half-life T (ticks). A ⏳ T ➔ B + C — splits into B and C. A ⏳ T ➔ ∅ + ∅ — particle disappears. Use ∅ as C for type change only. ⛓ types stabilize A: it does not decay while linked to at least one of them."
         />
         <div style="margin-top: 10px;"></div>
         <decay-config :colors="typesConfig.COLORS" :names="typesConfig.NAMES" v-model="typesConfig.DECAYS" />

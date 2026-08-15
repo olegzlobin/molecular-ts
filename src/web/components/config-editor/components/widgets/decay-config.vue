@@ -13,7 +13,7 @@ defineProps<{
 type DecayRow = {
   from: number;
   halfLife: number;
-  to: number;
+  to: number | null;
   secondary: number | null;
   stabilizers: number[];
 };
@@ -32,7 +32,7 @@ const syncForward = () => {
     next.push({
       from: Number(from),
       halfLife: rule.halfLife,
-      to: rule.to,
+      to: rule.to === null || rule.to === undefined ? null : Number(rule.to),
       secondary: rule.secondary ?? null,
       stabilizers: [...(rule.stabilizers ?? [])],
     });
@@ -52,7 +52,7 @@ const syncBackward = () => {
   for (const row of rows.value) {
     modelValue.value[Number(row.from)] = {
       halfLife: Number(row.halfLife),
-      to: Number(row.to),
+      to: row.to === null || row.to === undefined ? null : Number(row.to),
       secondary: row.secondary === null || row.secondary === undefined ? null : Number(row.secondary),
       stabilizers: row.stabilizers.map(Number),
     };
@@ -103,7 +103,7 @@ const removeStabilizer = (row: DecayRow, index: number) => {
         </div>
         <div class="list-item__icon">➔</div>
         <div>
-          <type-select :colors="colors" :names="names" v-model="row.to" />
+          <type-select :colors="colors" :names="names" allow-none v-model="row.to" />
         </div>
         <div class="list-item__icon">+</div>
         <div>
