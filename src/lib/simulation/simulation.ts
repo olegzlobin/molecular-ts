@@ -111,8 +111,9 @@ export class Simulation implements SimulationInterface {
     }
 
     if (this.config.worldConfig.SPEED > 0 && !this.runningState.isPaused) {
-      for (let i=0; i<this.config.worldConfig.PLAYBACK_SPEED; ++i) {
-        this.interact();
+      const playback = Math.max(1, this.config.worldConfig.PLAYBACK_SPEED);
+      for (let i = 0; i < playback; ++i) {
+        this.interact(i === playback - 1);
       }
       if (this._energyTracking) {
         this._energyFrameCounter++;
@@ -251,7 +252,7 @@ export class Simulation implements SimulationInterface {
     this._energy = buildEnergyReport(current, this._energyInitial);
   }
 
-  private interact(): void {
+  private interact(collectStockSummary: boolean = true): void {
     for (const atom of this._atoms) {
       this.interactionManager.updateAtomType(atom);
     }
@@ -259,7 +260,9 @@ export class Simulation implements SimulationInterface {
     for (const atom of this._atoms) {
       this.interactionManager.updateAtomType(atom);
       this.interactionManager.moveAtom(atom);
-      this.summaryManager.noticeAtom(atom, this.config.worldConfig);
+      if (collectStockSummary) {
+        this.summaryManager.noticeAtom(atom, this.config.worldConfig);
+      }
     }
     for (const atom of this._atoms) {
       this.spatialGridManager.updateAtomCell(atom);
@@ -277,7 +280,9 @@ export class Simulation implements SimulationInterface {
     this.removeDeletedAtoms();
     for (const link of this._links) {
       this.interactionManager.interactLink(link);
-      this.summaryManager.noticeLink(link, this.config.worldConfig);
+      if (collectStockSummary) {
+        this.summaryManager.noticeLink(link, this.config.worldConfig);
+      }
     }
     this.interactionManager.handleTime();
   }
@@ -304,6 +309,12 @@ export class Simulation implements SimulationInterface {
       }
       const p = 1 - Math.pow(0.5, 1 / rule.halfLife);
       if (Math.random() >= p) {
+        continue;
+      }
+
+      if (rule.to === null || rule.to === undefined) {
+        this.breakAtomLinks(atom);
+        atom.toDelete = true;
         continue;
       }
 
