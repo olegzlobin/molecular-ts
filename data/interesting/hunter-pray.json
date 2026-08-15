@@ -1,0 +1,213 @@
+{
+  "worldConfig": {
+    "VIEW_MODE": "2d",
+    "PHYSIC_MODEL": "spring",
+    "ATOM_RADIUS": 5,
+    "MAX_INTERACTION_RADIUS": 100,
+    "MAX_LINK_RADIUS": 60,
+    "MAX_FORCE": 0.15,
+    "GRAVITY_FORCE_MULTIPLIER": 0.6,
+    "COULOMB_FORCE_MULTIPLIER": 0.6,
+    "WORLD_GRAVITY": 0,
+    "LINK_FORCE_MULTIPLIER": 0.0025,
+    "BOUNCE_FORCE_MULTIPLIER": 0.02,
+    "BOUNDS_FORCE_MULTIPLIER": 0.01,
+    "INERTIAL_MULTIPLIER": 0.96,
+    "SPEED": 5,
+    "PLAYBACK_SPEED": 1,
+    "SIMPLIFIED_VIEW_MODE": false,
+    "TEMPERATURE_MULTIPLIER": 0.1,
+    "DECAY_SPLITS_VELOCITY": 0.3,
+    "CONFIG_2D": {
+      "BOUNDS": {
+        "MIN_POSITION": [
+          0,
+          0
+        ],
+        "MAX_POSITION": [
+          2500,
+          2500
+        ]
+      },
+      "INITIAL": {
+        "ATOMS_COUNT": 2000,
+        "MIN_POSITION": [
+          0,
+          0
+        ],
+        "MAX_POSITION": [
+          2500,
+          2500
+        ]
+      }
+    },
+    "CONFIG_3D": {
+      "BOUNDS": {
+        "MIN_POSITION": [
+          0,
+          0,
+          0
+        ],
+        "MAX_POSITION": [
+          700,
+          700,
+          700
+        ]
+      },
+      "INITIAL": {
+        "ATOMS_COUNT": 1000,
+        "MIN_POSITION": [
+          0,
+          0,
+          0
+        ],
+        "MAX_POSITION": [
+          700,
+          700,
+          700
+        ]
+      }
+    }
+  },
+  "typesConfig": {
+    "COLORS": [
+      [
+        51,
+        209,
+        122
+      ],
+      [
+        237,
+        51,
+        59
+      ]
+    ],
+    "NAMES": [
+      "A",
+      "B"
+    ],
+    "FREQUENCIES": [
+      1,
+      1
+    ],
+    "RADIUS": [
+      1,
+      1
+    ],
+    "CHARGE": [
+      0,
+      0
+    ],
+    "GRAVITY": [
+      [
+        -10,
+        -10
+      ],
+      [
+        10,
+        -1
+      ]
+    ],
+    "LINK_GRAVITY": [
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        0
+      ]
+    ],
+    "LINKS": [
+      1,
+      1
+    ],
+    "TYPE_LINKS": [
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        0
+      ]
+    ],
+    "TYPE_LINK_WEIGHTS": [
+      [
+        1,
+        1
+      ],
+      [
+        1,
+        1
+      ]
+    ],
+    "BOND_PREFERENCE": [
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        0
+      ]
+    ],
+    "LINK_LENGTH": [
+      0.3,
+      0.3
+    ],
+    "LINK_STIFFNESS": [
+      1,
+      1
+    ],
+    "BOND_PREFERENCE_FACTOR": [
+      [
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      [
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          1
+        ]
+      ]
+    ],
+    "TRANSFORMATION": {
+      "0": {
+        "1": 1
+      }
+    },
+    "DECAYS": {
+      "0": {
+        "halfLife": 200,
+        "to": 0,
+        "secondary": 0,
+        "stabilizers": []
+      },
+      "1": {
+        "halfLife": 500,
+        "to": null,
+        "secondary": null,
+        "stabilizers": []
+      }
+    }
+  },
+  "typesSymmetricConfig": {
+    "GRAVITY_MATRIX_SYMMETRIC": false,
+    "LINK_GRAVITY_MATRIX_SYMMETRIC": true,
+    "LINK_TYPE_MATRIX_SYMMETRIC": true,
+    "LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC": true,
+    "BOND_PREFERENCE_MATRIX_SYMMETRIC": true,
+    "BOND_PREFERENCE_FACTOR_MATRIX_SYMMETRIC": true
+  }
+}
