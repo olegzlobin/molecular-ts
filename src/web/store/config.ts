@@ -19,6 +19,7 @@ import {
   createTransparentTypesConfig,
   removeIndexFromTypesConfig,
 } from "@/lib/config/atom-types";
+import { syncDerivedTypeLinks } from "@/lib/config/bond-limits";
 import { fullCopyObject, getViewModeConfig } from "@/lib/utils/functions";
 import { useFlash } from '@/web/hooks/use-flash';
 import { concatTypesConfigs, randomizeTypesConfig as partlyRandomizeTypesConfig } from '@/lib/config/atom-types';
@@ -110,7 +111,8 @@ export const useConfigStore = defineStore("config", () => {
     if (!typesConfig.value.DECAYS) {
       typesConfig.value.DECAYS = {};
     }
-    setTypesConfigRaw(newConfig);
+    syncDerivedTypeLinks(typesConfig.value);
+    setTypesConfigRaw(typesConfig.value);
   }
 
   const setWorldConfigRaw = <T>(newConfig: WorldConfig) => {
@@ -251,9 +253,6 @@ export const useConfigStore = defineStore("config", () => {
     if (config.USE_LINK_GRAVITY_BOUNDS) {
       typesSymmetricConfig.value.LINK_GRAVITY_MATRIX_SYMMETRIC = config.LINK_GRAVITY_MATRIX_SYMMETRIC;
     }
-    if (config.USE_LINK_TYPE_BOUNDS) {
-      typesSymmetricConfig.value.LINK_TYPE_MATRIX_SYMMETRIC = config.LINK_TYPE_MATRIX_SYMMETRIC;
-    }
     if (config.USE_LINK_TYPE_WEIGHT_BOUNDS) {
       typesSymmetricConfig.value.LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC = config.LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC;
     }
@@ -272,9 +271,6 @@ export const useConfigStore = defineStore("config", () => {
     if (typesSymmetricConfig.value.LINK_GRAVITY_MATRIX_SYMMETRIC) {
       makeMatrixSymmetric(typesConfig.value.LINK_GRAVITY);
     }
-    if (typesSymmetricConfig.value.LINK_TYPE_MATRIX_SYMMETRIC) {
-      makeMatrixSymmetric(typesConfig.value.TYPE_LINKS);
-    }
     if (typesSymmetricConfig.value.LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC) {
       makeMatrixSymmetric(typesConfig.value.TYPE_LINK_WEIGHTS);
     }
@@ -284,6 +280,7 @@ export const useConfigStore = defineStore("config", () => {
     if (typesSymmetricConfig.value.BOND_PREFERENCE_FACTOR_MATRIX_SYMMETRIC) {
       makeTensorSymmetric(typesConfig.value.BOND_PREFERENCE_FACTOR);
     }
+    syncDerivedTypeLinks(typesConfig.value);
   }
 
   const addTypesFromConfig = (config: TypesConfig): void => {
@@ -323,6 +320,14 @@ export const useConfigStore = defineStore("config", () => {
   watch(worldConfig, (newConfig: WorldConfig) => {
     setWorldConfigRaw(newConfig);
   }, { deep: true });
+
+  watch(
+    () => [typesConfig.value.LINKS, typesConfig.value.TYPE_LINK_WEIGHTS] as const,
+    () => {
+      syncDerivedTypeLinks(typesConfig.value);
+    },
+    { deep: true },
+  );
 
   watch(typesConfig, (newConfig: TypesConfig) => {
     setTypesConfigRaw(newConfig);

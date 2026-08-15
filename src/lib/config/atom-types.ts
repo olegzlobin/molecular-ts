@@ -34,6 +34,7 @@ import {
   randomCrossNumericTypesFields,
   removeNumericTypesFieldIndex,
 } from './types-config-fields';
+import { deriveTypeLinksMatrix, syncDerivedTypeLinks, typeLinkLimit } from './bond-limits';
 
 export const COLORS_PREDEFINED: Array<ColorVector> = [
   [250, 20, 20],
@@ -103,7 +104,15 @@ export function ensureTypeNames(names: string[] | undefined, count: number): str
 
 export function createDefaultTypesConfig(): TypesConfig {
   // 0 = C, 1 = H, 2 = O, 3 = N
-  return {
+  const links = [4, 1, 2, 3];
+  const typeLinkWeights = [
+    // C-O=2 (CO2); O-O=2 (O2); N-N=3 (N2)
+    [1, 1, 2, 1],
+    [1, 1, 1, 1],
+    [2, 1, 2, 1],
+    [1, 1, 1, 3],
+  ];
+  const config = {
     COLORS: [
       [170, 170, 185],
       [230, 230, 235],
@@ -115,29 +124,18 @@ export function createDefaultTypesConfig(): TypesConfig {
     RADIUS: [1, 0.6, 1, 1],
     CHARGE: [0, 0, 0, 0],
     GRAVITY: createFilledMatrix(4, 4, 0),
-    // Strong C–C repulsion while bonded keeps carbon networks from collapsing into mush
+    // Strong C-C repulsion while bonded keeps carbon networks from collapsing into mush
     LINK_GRAVITY: [
       [-15, 0, 0, 0],
       [0, 0, 0, 0],
       [0, 0, 0, 0],
       [0, 0, 0, 0],
     ],
-    LINKS: [4, 1, 2, 3],
-    TYPE_LINKS: [
-      [2, 4, 2, 3],
-      [4, 1, 2, 1],
-      [2, 2, 1, 1],
-      [3, 3, 1, 3],
-    ],
-    TYPE_LINK_WEIGHTS: [
-      // C–O=2 (CO₂); O–O=2 (O₂); N–N=3 (N₂)
-      [1, 1, 2, 1],
-      [1, 1, 1, 1],
-      [2, 1, 2, 1],
-      [1, 1, 1, 3],
-    ],
+    LINKS: links,
+    TYPE_LINK_WEIGHTS: typeLinkWeights,
+    TYPE_LINKS: deriveTypeLinksMatrix(links, typeLinkWeights),
     BOND_PREFERENCE: [
-      // Per unit order; full-bond strength ≈ value × TYPE_LINK_WEIGHTS.
+      // Per unit order; full-bond strength = value * TYPE_LINK_WEIGHTS.
       [2.0, 2.5, 1.5, 2.0],
       [2.5, 2.0, 3.0, 2.5],
       [1.5, 3.0, 0.7, 1.0],
@@ -148,7 +146,8 @@ export function createDefaultTypesConfig(): TypesConfig {
     BOND_PREFERENCE_FACTOR: createFilledTensor(4, 4, 4, 1),
     TRANSFORMATION: {},
     DECAYS: {},
-  };
+  } as TypesConfig;
+  return config;
 }
 
 export function createTransparentTypesConfig(typesCount: number): TypesConfig {
@@ -159,6 +158,7 @@ export function createTransparentTypesConfig(typesCount: number): TypesConfig {
     DECAYS: {},
   } as TypesConfig;
   fillNumericTypesFields(config, typesCount);
+  syncDerivedTypeLinks(config);
   return config;
 }
 
@@ -258,14 +258,6 @@ export function createRandomTypesConfig({
     links.push(createRandomInteger(LINK_BOUNDS));
   }
 
-  const typeLinks = randomizeMatrix(
-    TYPES_COUNT,
-    LINK_TYPE_BOUNDS,
-    createRandomInteger,
-    LINK_TYPE_MATRIX_SYMMETRIC,
-    precision,
-  );
-
   const typeLinkWeights = randomizeMatrix(
     TYPES_COUNT,
     LINK_TYPE_WEIGHT_BOUNDS,
@@ -307,7 +299,7 @@ export function createRandomTypesConfig({
     FREQUENCIES: frequencies,
     LINK_GRAVITY: linkGravity,
     LINKS: links,
-    TYPE_LINKS: typeLinks,
+    TYPE_LINKS: deriveTypeLinksMatrix(links, typeLinkWeights),
     TYPE_LINK_WEIGHTS: typeLinkWeights,
     BOND_PREFERENCE: bondPreference,
     BOND_PREFERENCE_FACTOR: bondPreferenceFactor,
@@ -386,14 +378,6 @@ export function createRandomIntTypesConfig({
     links.push(createRandomInteger(LINK_BOUNDS));
   }
 
-  const typeLinks = randomizeMatrix(
-    TYPES_COUNT,
-    LINK_TYPE_BOUNDS,
-    createRandomInteger,
-    LINK_TYPE_MATRIX_SYMMETRIC,
-    0,
-  );
-
   const typeLinkWeights = randomizeMatrix(
     TYPES_COUNT,
     LINK_TYPE_WEIGHT_BOUNDS,
@@ -435,7 +419,7 @@ export function createRandomIntTypesConfig({
     FREQUENCIES: frequencies,
     LINK_GRAVITY: linkGravity,
     LINKS: links,
-    TYPE_LINKS: typeLinks,
+    TYPE_LINKS: deriveTypeLinksMatrix(links, typeLinkWeights),
     TYPE_LINK_WEIGHTS: typeLinkWeights,
     BOND_PREFERENCE: bondPreference,
     BOND_PREFERENCE_FACTOR: bondPreferenceFactor,
@@ -458,7 +442,7 @@ export function createDefaultRandomTypesConfig(typesCount: number): RandomTypesC
     USE_GRAVITY_BOUNDS: true,
     USE_LINK_GRAVITY_BOUNDS: true,
     USE_LINK_BOUNDS: true,
-    USE_LINK_TYPE_BOUNDS: true,
+    USE_LINK_TYPE_BOUNDS: false,
     USE_LINK_TYPE_WEIGHT_BOUNDS: true,
     USE_BOND_PREFERENCE_BOUNDS: false,
     USE_BOND_PREFERENCE_FACTOR_BOUNDS: false,
@@ -624,17 +608,6 @@ export function randomizeTypesConfig(
     }
   }
 
-  if (!randomTypesConfig.USE_LINK_TYPE_BOUNDS) {
-    copyConfigMatrixValue(oldConfig.TYPE_LINKS, newConfig.TYPE_LINKS, 0);
-  } else {
-    if (randomTypesConfig.LINK_TYPE_MATRIX_SYMMETRIC) {
-      makeMatrixSymmetric(newConfig.TYPE_LINKS);
-    }
-    if (skipSubMatricesBoundaryIndex !== undefined) {
-      copyConfigMatrixValue(oldConfig.TYPE_LINKS, newConfig.TYPE_LINKS, 0, skipSubMatricesBoundaryIndex);
-    }
-  }
-
   if (!randomTypesConfig.USE_LINK_TYPE_WEIGHT_BOUNDS) {
     copyConfigMatrixValue(oldConfig.TYPE_LINK_WEIGHTS, newConfig.TYPE_LINK_WEIGHTS, 1);
   } else {
@@ -689,6 +662,7 @@ export function randomizeTypesConfig(
   }
 
 
+  syncDerivedTypeLinks(newConfig);
   return newConfig;
 }
 
@@ -700,6 +674,7 @@ export function concatTypesConfigs(lhs: TypesConfig, rhs: TypesConfig): TypesCon
     ensureTypeNames(rhs.NAMES, rhs.COLORS.length),
   );
   concatNumericTypesFields(result, lhs, rhs);
+  syncDerivedTypeLinks(result);
   return result;
 }
 
@@ -708,6 +683,7 @@ export function crossTypesConfigs(lhs: TypesConfig, rhs: TypesConfig, separator:
   result.COLORS = createColors(lhs.COLORS.length);
   result.NAMES = ensureTypeNames(lhs.NAMES, lhs.COLORS.length);
   crossNumericTypesFields(result, lhs, rhs, separator);
+  syncDerivedTypeLinks(result);
   return result;
 }
 
@@ -716,6 +692,7 @@ export function randomCrossTypesConfigs(lhs: TypesConfig, rhs: TypesConfig, sepa
   result.COLORS = createColors(lhs.COLORS.length);
   result.NAMES = ensureTypeNames(lhs.NAMES, lhs.COLORS.length);
   randomCrossNumericTypesFields(result, lhs, rhs, separator);
+  syncDerivedTypeLinks(result);
   return result;
 }
 
@@ -724,6 +701,7 @@ export function crossTypesConfigsByIndexes(lhs: TypesConfig, rhs: TypesConfig, i
   result.COLORS = createColors(lhs.COLORS.length);
   result.NAMES = ensureTypeNames(lhs.NAMES, lhs.COLORS.length);
   crossNumericTypesFieldsByIndexes(result, lhs, rhs, indexes);
+  syncDerivedTypeLinks(result);
   return result;
 }
 
@@ -734,6 +712,7 @@ export function removeIndexFromTypesConfig(input: TypesConfig, index: number): T
   removeNumericTypesFieldIndex(result, input, index);
   result.TRANSFORMATION = {};
   result.DECAYS = {};
+  syncDerivedTypeLinks(result);
   return result;
 }
 
@@ -742,39 +721,28 @@ export function copyIndexInTypesConfig(input: TypesConfig, indexFrom: number, in
   result.COLORS = copyArrayIndex(input.COLORS, indexFrom, indexTo);
   result.NAMES = copyArrayIndex(ensureTypeNames(input.NAMES, input.COLORS.length), indexFrom, indexTo);
   copyNumericTypesFieldIndex(result, input, indexFrom, indexTo);
+  syncDerivedTypeLinks(result);
   return result;
 }
 
 function getUnableToConnectTypePairs(typesConfig: TypesConfig): [number, number][] {
   const result: Set<string> = new Set();
   for (let i = 0; i < typesConfig.LINKS.length; ++i) {
-    if (typesConfig.LINKS[i] === 0) {
-      for (let j = 0; j < typesConfig.LINKS.length; ++j) {
-        if (typesConfig.TYPE_LINKS[i][j] === 1) {
-          result.add(`${i},${j}`);
-          result.add(`${j},${i}`);
-        }
-      }
-    }
-  }
-
-  for (let i = 0; i < typesConfig.TYPE_LINKS.length; ++i) {
-    for (let j = 0; j < typesConfig.TYPE_LINKS[i].length; ++j) {
-      if (typesConfig.TYPE_LINKS[i][j] === 0) {
+    for (let j = 0; j < typesConfig.LINKS.length; ++j) {
+      if (typeLinkLimit(typesConfig.LINKS[i], typesConfig.TYPE_LINK_WEIGHTS[i][j] ?? 1) === 0) {
         result.add(`${i},${j}`);
         result.add(`${j},${i}`);
       }
     }
   }
-
   return [...result.values()].map((x) => x.split(',').map((y) => Number(y))) as [number, number][];
 }
 
 export function clearInactiveParams(config: TypesConfig) {
   const pairs = getUnableToConnectTypePairs(config);
   for (const [i, j] of pairs) {
-    config.TYPE_LINKS[i][j] = 0;
     config.TYPE_LINK_WEIGHTS[i][j] = 1;
     config.LINK_GRAVITY[i][j] = 0;
   }
+  syncDerivedTypeLinks(config);
 }

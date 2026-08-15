@@ -24,6 +24,7 @@ import {
   removeIndexFromMatrix,
   removeIndexFromTensor,
 } from '../math/operations';
+import { syncDerivedTypeLinks } from './bond-limits';
 
 type TypeFieldRank = 1 | 2 | 3;
 
@@ -149,6 +150,7 @@ export function ensureNumericTypesFields(config: TypesConfig): void {
       writeField(config, field, ensureTensor(config, field, typesCount));
     }
   }
+  syncDerivedTypeLinks(config);
 }
 
 export function concatNumericTypesFields(result: TypesConfig, lhs: TypesConfig, rhs: TypesConfig): void {

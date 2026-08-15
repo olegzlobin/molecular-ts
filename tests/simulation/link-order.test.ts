@@ -21,11 +21,6 @@ function typesConfig(): TypesConfig {
       [0, 0, 0],
     ],
     LINKS: [4, 2, 1],
-    TYPE_LINKS: [
-      [0, 2, 4],
-      [2, 0, 1],
-      [4, 1, 0],
-    ],
     TYPE_LINK_WEIGHTS: [
       [1, 2, 1],
       [2, 1, 1],
@@ -39,8 +34,13 @@ function typesConfig(): TypesConfig {
     BOND_PREFERENCE_FACTOR: undefined,
     LINK_LENGTH: [1, 1, 1],
     LINK_STIFFNESS: [1, 1, 1],
-    TRANSFORMS: undefined,
+    TRANSFORMATION: undefined,
     DECAYS: undefined,
+    TYPE_LINKS: [
+      [4, 2, 4],
+      [1, 2, 2],
+      [1, 1, 1],
+    ],
   } as unknown as TypesConfig;
 }
 
@@ -69,7 +69,7 @@ function nitrogenTypesConfig(): TypesConfig {
     BOND_PREFERENCE_FACTOR: undefined,
     LINK_LENGTH: [1, 1],
     LINK_STIFFNESS: [1, 1],
-    TRANSFORMS: undefined,
+    TRANSFORMATION: undefined,
     DECAYS: undefined,
   } as unknown as TypesConfig;
 }

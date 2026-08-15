@@ -14,6 +14,7 @@ import type {
   TypesConfig,
 } from '../config/types';
 import { decodeTransformType, isMergeTransform } from '../config/types';
+import { typeLinkLimit } from '../config/bond-limits';
 import { arrayBinaryOperation, arrayUnaryOperation } from '../math';
 import { Link } from '../simulation/atomic';
 
@@ -190,7 +191,7 @@ export class RulesHelper implements RulesHelperInterface {
     if (this._freeValence(lhs) < 1) {
       return false;
     }
-    return lhs.bonds.lengthOf(rhs.type) < this.TYPES_CONFIG.TYPE_LINKS[lhs.type][rhs.type];
+    return lhs.bonds.lengthOf(rhs.type) < this._typeLinkLimit(lhs.type, rhs.type);
   }
 
   private _findVictimsForSwap(
@@ -205,7 +206,7 @@ export class RulesHelper implements RulesHelperInterface {
     }
 
     const maxLinks = this.TYPES_CONFIG.LINKS[atom.type];
-    const maxToType = this.TYPES_CONFIG.TYPE_LINKS[atom.type][newPartner.type];
+    const maxToType = this._typeLinkLimit(atom.type, newPartner.type);
     const newPref = this._bondPreference(atom, newPartner, needWeight);
     const factors = this.TYPES_CONFIG.BOND_PREFERENCE_FACTOR;
 
@@ -340,7 +341,7 @@ export class RulesHelper implements RulesHelperInterface {
     if (this._countWeightedBonds(lhs) > this.TYPES_CONFIG.LINKS[lhs.type]) {
       return true;
     }
-    return lhs.bonds.lengthOf(rhs.type) > this.TYPES_CONFIG.TYPE_LINKS[lhs.type][rhs.type];
+    return lhs.bonds.lengthOf(rhs.type) > this._typeLinkLimit(lhs.type, rhs.type);
   }
 
   private _isMergeTransform(lhs: AtomInterface, rhs: AtomInterface): boolean {
@@ -383,6 +384,13 @@ export class RulesHelper implements RulesHelperInterface {
 
   private _nominalWeight(fromType: number, toType: number): number {
     return Math.max(1, Math.round(this.TYPES_CONFIG.TYPE_LINK_WEIGHTS[fromType][toType] ?? 1));
+  }
+
+  private _typeLinkLimit(fromType: number, toType: number): number {
+    return typeLinkLimit(
+      this.TYPES_CONFIG.LINKS[fromType],
+      this.TYPES_CONFIG.TYPE_LINK_WEIGHTS[fromType][toType] ?? 1,
+    );
   }
 
   private _freeValence(atom: AtomInterface): number {

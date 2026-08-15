@@ -7,6 +7,7 @@ import {
   createTransparentTypesConfig,
   ensureTypeNames,
 } from "../../config/atom-types";
+import { syncDerivedTypeLinks } from "../../config/bond-limits";
 
 type RecursiveArray<T> = Array<T | RecursiveArray<T>>;
 
@@ -18,13 +19,13 @@ export function extractExpressedGenome(compositeGenome: CompositeSimulationGenom
 }
 
 export function extractExpressedTypesConfig(typesConfigs: TypesConfig[], expressionIndices: TypesConfig): TypesConfig {
-  return {
+  const result: TypesConfig = {
     RADIUS: express(typesConfigs.map((x) => x.RADIUS), expressionIndices.RADIUS),
     CHARGE: express(typesConfigs.map((x) => x.CHARGE ?? x.RADIUS.map(() => 0)), expressionIndices.CHARGE ?? expressionIndices.RADIUS),
     GRAVITY: express(typesConfigs.map((x) => x.GRAVITY), expressionIndices.GRAVITY),
     LINK_GRAVITY: express(typesConfigs.map((x) => x.LINK_GRAVITY), expressionIndices.LINK_GRAVITY),
     LINKS: express(typesConfigs.map((x) => x.LINKS), expressionIndices.LINKS),
-    TYPE_LINKS: express(typesConfigs.map((x) => x.TYPE_LINKS), expressionIndices.TYPE_LINKS),
+    TYPE_LINKS: expressionIndices.LINKS.map(() => expressionIndices.LINKS.map(() => 0)),
     TYPE_LINK_WEIGHTS: express(typesConfigs.map((x) => x.TYPE_LINK_WEIGHTS), expressionIndices.TYPE_LINK_WEIGHTS),
     BOND_PREFERENCE: express(typesConfigs.map((x) => x.BOND_PREFERENCE ?? x.RADIUS.map(() => x.RADIUS.map(() => 0))), expressionIndices.BOND_PREFERENCE ?? expressionIndices.GRAVITY),
     BOND_PREFERENCE_FACTOR: express(
@@ -45,6 +46,8 @@ export function extractExpressedTypesConfig(typesConfigs: TypesConfig[], express
     TRANSFORMATION: {}, // TODO implement
     DECAYS: {},
   };
+  syncDerivedTypeLinks(result);
+  return result;
 }
 
 export function express<T extends RecursiveArray<number>>(chromosomes: T[], indices: T | number): T {

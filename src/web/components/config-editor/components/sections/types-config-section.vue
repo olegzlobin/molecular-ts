@@ -133,7 +133,7 @@ const refill = () => {
       <div>
         <input-header
           name="Links"
-          tooltip="Connection limit map shows the maximum number of links for particles of each type."
+          tooltip="Maximum total bond order (valence) for this type. Used valence is the sum of orders of all bonds on the atom."
           position="center"
         />
         <config-list
@@ -145,23 +145,8 @@ const refill = () => {
       </div>
       <div>
         <input-header
-          name="Type Links"
-          tooltip="Connection limit matrix shows the maximum number of connections that particles of each type can have
-                   with particles of different types."
-          position="center"
-        />
-        <config-matrix
-          :values="typesConfig.TYPE_LINKS"
-          :colors="typesConfig.COLORS"
-          :step="1"
-          :min="0"
-          v-model:symmetric="typesSymmetricConfig.LINK_TYPE_MATRIX_SYMMETRIC"
-        />
-      </div>
-      <div>
-        <input-header
           name="Type Link Weights"
-          tooltip="Nominal bond order for each type pair (prefer integers 1, 2, …). Actual order is min(weight, free valence on both sides). Link preference = Bond Preference × order."
+          tooltip="Nominal bond order for each type pair (prefer integers 1, 2, …). Actual order is min(weight, free valence on both sides). Max partners of that type is derived as floor(Links / weight). Link preference = Bond Preference × order."
           position="center"
         />
         <config-matrix

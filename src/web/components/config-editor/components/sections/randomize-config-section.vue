@@ -155,7 +155,7 @@ const randomizeTypesConfig = () => {
       <div v-show="!useIgnoreSubMatricesBoundaryIndex">
         <input-header
           name="Links Count"
-          tooltip="Connection limit map shows the maximum number of links for particles of each type."
+          tooltip="Maximum total bond order (valence) per type. Used valence is the sum of bond orders on the atom."
           tooltip-position="left"
         >
           <input type="checkbox" class="title-flag" v-model="randomTypesConfig.USE_LINK_BOUNDS" />
@@ -167,23 +167,8 @@ const randomizeTypesConfig = () => {
 
       <div>
         <input-header
-          name="Types Links Count"
-          tooltip="Connection limit matrix shows the maximum number of connections that particles of each type can have
-                   with particles of different types."
-          tooltip-position="left"
-        >
-          <input type="checkbox" class="title-flag" v-model="randomTypesConfig.USE_LINK_TYPE_BOUNDS" />
-        </input-header>
-        <div v-show="randomTypesConfig.USE_LINK_TYPE_BOUNDS">
-          <config-bounds :step="1" :min="1" :values="randomTypesConfig.LINK_TYPE_BOUNDS" />
-          <flag title="Symmetric" v-model="randomTypesConfig.LINK_TYPE_MATRIX_SYMMETRIC" />
-        </div>
-      </div>
-
-      <div>
-        <input-header
           name="Types Link Weights"
-          tooltip="Nominal bond order per type pair. Actual order uses leftover valence. Preference = Bond Preference × order."
+          tooltip="Nominal bond order per type pair. Max partners of that type = floor(Links / weight). Preference = Bond Preference × order."
           tooltip-position="left"
         >
           <input type="checkbox" class="title-flag" v-model="randomTypesConfig.USE_LINK_TYPE_WEIGHT_BOUNDS" />

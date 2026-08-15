@@ -2,6 +2,7 @@ import type { RandomTypesConfig, TypesConfig, TypesSymmetricConfig, WorldConfig 
 import { fullCopyObject } from '@/lib/utils/functions';
 import { ensureNumericTypesFields } from '@/lib/config/types-config-fields';
 import { ensureTypeNames } from '@/lib/config/atom-types';
+import { syncDerivedTypeLinks } from '@/lib/config/bond-limits';
 
 export function convertWorldConfigForBackwardCompatibility(inputConfig: WorldConfig): WorldConfig {
   const config = fullCopyObject(inputConfig);
@@ -26,6 +27,12 @@ export function convertTypesConfigForBackwardCompatibility(inputConfig: TypesCon
   deleteKey(config, 'LINK_FACTOR_DISTANCE_EXTENDED');
   deleteKey(config, 'LINK_FACTOR_DISTANCE_USE_EXTENDED');
 
+  const mistypedTransforms = (config as Record<string, unknown>).TRANSFORMS;
+  if (mistypedTransforms !== undefined && config.TRANSFORMATION === undefined) {
+    config.TRANSFORMATION = mistypedTransforms as TypesConfig['TRANSFORMATION'];
+  }
+  deleteKey(config as Record<string, unknown>, 'TRANSFORMS');
+
   if (config.DECAYS === undefined) {
     config.DECAYS = {};
   } else {
@@ -43,6 +50,7 @@ export function convertTypesConfigForBackwardCompatibility(inputConfig: TypesCon
 
   ensureNumericTypesFields(config);
   config.NAMES = ensureTypeNames(config.NAMES, config.COLORS?.length ?? config.RADIUS?.length ?? 0);
+  syncDerivedTypeLinks(config);
 
   return config;
 }
