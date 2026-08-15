@@ -64,6 +64,12 @@ class BondMap implements BondMapInterface {
     return this.orders[atom.id] ?? 0;
   }
 
+  setOrder(atom: AtomInterface, order: number): void {
+    const prev = this.orders[atom.id] ?? 0;
+    this.orders[atom.id] = order;
+    this.totalOrder += order - prev;
+  }
+
   getTotalOrder(): number {
     return this.totalOrder;
   }

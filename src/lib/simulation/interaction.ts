@@ -76,6 +76,25 @@ export class InteractionManager implements InteractionManagerInterface {
       return;
     }
 
+    const upgrade = this.ruleHelper.getLinkUpgradePlan(link);
+    if (upgrade) {
+      for (const victim of upgrade.breakLhsWith) {
+        const broken = this.linkManager.find(link.lhs, victim);
+        if (broken) {
+          this.linkManager.delete(broken);
+          this.summaryManager.noticeLinkDeleted(broken, this.WORLD_CONFIG);
+        }
+      }
+      for (const victim of upgrade.breakRhsWith) {
+        const broken = this.linkManager.find(link.rhs, victim);
+        if (broken) {
+          this.linkManager.delete(broken);
+          this.summaryManager.noticeLinkDeleted(broken, this.WORLD_CONFIG);
+        }
+      }
+      this.linkManager.setOrder(link, upgrade.newOrder);
+    }
+
     const radiusSum = this.physicModel.geometry.getAtomsRadiusSum(link.lhs, link.rhs);
     if (dist2 <= radiusSum ** 2) {
       return;

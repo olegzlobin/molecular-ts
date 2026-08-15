@@ -3,6 +3,7 @@ import type {
   LinkManagerInterface,
   RulesHelperInterface,
   LinkSwapPlan,
+  LinkUpgradePlan,
   GeometryHelperInterface,
   QueueInterface,
   RunningStateInterface,
@@ -50,6 +51,12 @@ export class LinkManager implements LinkManagerInterface {
     rhs.bonds.add(lhs, order);
     this.storage.add(link);
     return link;
+  }
+
+  setOrder(link: LinkInterface, order: number): void {
+    link.order = order;
+    link.lhs.bonds.setOrder(link.rhs, order);
+    link.rhs.bonds.setOrder(link.lhs, order);
   }
 
   delete(link: LinkInterface): void {
@@ -134,6 +141,36 @@ export class RulesHelper implements RulesHelperInterface {
     return { breakLhsWith, breakRhsWith };
   }
 
+  getLinkUpgradePlan(link: LinkInterface): LinkUpgradePlan | null {
+    const { lhs, rhs, order } = link;
+    const nominal = Math.min(
+      this._nominalWeight(lhs.type, rhs.type),
+      this._nominalWeight(rhs.type, lhs.type),
+    );
+    if (order >= nominal) {
+      return null;
+    }
+
+    const target = Math.min(
+      this._maxUpgradeableOrder(lhs, rhs, nominal),
+      this._maxUpgradeableOrder(rhs, lhs, nominal),
+    );
+    if (target <= order) {
+      return null;
+    }
+
+    const breakLhsWith = this._findVictimsForUpgrade(lhs, rhs, target);
+    if (!breakLhsWith) {
+      return null;
+    }
+    const breakRhsWith = this._findVictimsForUpgrade(rhs, lhs, target);
+    if (!breakRhsWith) {
+      return null;
+    }
+
+    return { breakLhsWith, breakRhsWith, newOrder: target };
+  }
+
   isLinkRedundant(lhs: AtomInterface, rhs: AtomInterface): boolean {
     return this._isLinkRedundant(lhs, rhs) || this._isLinkRedundant(rhs, lhs);
   }
@@ -201,6 +238,71 @@ export class RulesHelper implements RulesHelperInterface {
       }
       victims.push(partner);
       if (fits()) {
+        return victims;
+      }
+    }
+
+    return null;
+  }
+
+  private _maxUpgradeableOrder(atom: AtomInterface, partner: AtomInterface, nominal: number): number {
+    const current = atom.bonds.getOrder(partner);
+    const upgradePref = this._bondPreference(atom, partner, nominal);
+    const factors = this.TYPES_CONFIG.BOND_PREFERENCE_FACTOR;
+    let canGain = this._freeValence(atom);
+
+    for (const other of Object.values(atom.bonds.getStorage())) {
+      if (other === partner) {
+        continue;
+      }
+      const boost = factors?.[other.type]?.[atom.type]?.[partner.type] ?? 1;
+      if (boost > 1) {
+        continue;
+      }
+      const preference = this._bondPreference(atom, other, atom.bonds.getOrder(other));
+      if (upgradePref > preference) {
+        canGain += atom.bonds.getOrder(other);
+      }
+    }
+
+    return Math.min(nominal, current + canGain);
+  }
+
+  private _findVictimsForUpgrade(
+    atom: AtomInterface,
+    partner: AtomInterface,
+    target: number,
+  ): AtomInterface[] | null {
+    const needExtra = target - atom.bonds.getOrder(partner);
+    if (needExtra <= 0) {
+      return [];
+    }
+
+    let free = this._freeValence(atom);
+    if (free >= needExtra) {
+      return [];
+    }
+
+    const upgradePref = this._bondPreference(atom, partner, target);
+    const factors = this.TYPES_CONFIG.BOND_PREFERENCE_FACTOR;
+    const candidates = Object.values(atom.bonds.getStorage())
+      .filter((other) => other !== partner)
+      .filter((other) => {
+        const boost = factors?.[other.type]?.[atom.type]?.[partner.type] ?? 1;
+        return !(boost > 1);
+      })
+      .map((other) => ({
+        other,
+        preference: this._bondPreference(atom, other, atom.bonds.getOrder(other)),
+      }))
+      .filter(({ preference }) => upgradePref > preference)
+      .sort((a, b) => a.preference - b.preference || a.other.id - b.other.id);
+
+    const victims: AtomInterface[] = [];
+    for (const { other } of candidates) {
+      free += atom.bonds.getOrder(other);
+      victims.push(other);
+      if (free >= needExtra) {
         return victims;
       }
     }

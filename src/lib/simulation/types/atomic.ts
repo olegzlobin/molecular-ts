@@ -9,6 +9,7 @@ export interface BondMapInterface {
   delete(atom: AtomInterface): void;
   update(atom: AtomInterface): void;
   getOrder(atom: AtomInterface): number;
+  setOrder(atom: AtomInterface, order: number): void;
   getTotalOrder(): number;
   getTypesCountMap(): Record<number, number>;
   getStorage(): Record<number, AtomInterface>;
