@@ -14,25 +14,29 @@
       0.8,
       1.3,
       1,
-      0.1
+      0.1,
+      1
     ],
     "FREQUENCY_BOUNDS": [
       0.1,
       1,
       0.5,
-      0.1
+      0.1,
+      1
     ],
     "GRAVITY_BOUNDS": [
       -15,
       1,
       -1,
-      0.1
+      0.1,
+      1
     ],
     "LINK_GRAVITY_BOUNDS": [
       -20,
       -1,
       -1,
-      0.1
+      0.1,
+      1
     ],
     "LINK_BOUNDS": [
       1,
@@ -48,19 +52,22 @@
       0.5,
       2,
       1,
-      0.5
+      0.5,
+      1
     ],
     "LINK_LENGTH_BOUNDS": [
       0.7,
       1.3,
       1,
-      0.1
+      0.1,
+      1
     ],
     "LINK_STIFFNESS_BOUNDS": [
       0.5,
       1.2,
       1,
-      0.1
+      0.1,
+      1
     ],
     "GRAVITY_MATRIX_SYMMETRIC": false,
     "LINK_GRAVITY_MATRIX_SYMMETRIC": false,
@@ -73,19 +80,22 @@
       -2,
       2,
       0,
-      0.5
+      0.5,
+      1
     ],
     "BOND_PREFERENCE_BOUNDS": [
       0,
       4,
       1.5,
-      0.1
+      0.1,
+      1
     ],
     "BOND_PREFERENCE_FACTOR_BOUNDS": [
       0.5,
       2,
       1,
-      0.1
+      0.1,
+      1
     ],
     "BOND_PREFERENCE_MATRIX_SYMMETRIC": true,
     "BOND_PREFERENCE_FACTOR_MATRIX_SYMMETRIC": true,
@@ -106,25 +116,29 @@
       0.8,
       1.3,
       1,
-      0.1
+      0.1,
+      1
     ],
     "FREQUENCY_BOUNDS": [
       0.5,
       1,
       0.7,
-      0.1
+      0.1,
+      1
     ],
     "GRAVITY_BOUNDS": [
       -10,
       1,
       -1,
-      0.1
+      0.1,
+      1
     ],
     "LINK_GRAVITY_BOUNDS": [
       -15,
       1,
       -1,
-      0.1
+      0.1,
+      1
     ],
     "LINK_BOUNDS": [
       1,
@@ -140,19 +154,22 @@
       -3,
       2,
       1,
-      0.5
+      0.5,
+      1
     ],
     "LINK_LENGTH_BOUNDS": [
       0.7,
       1.3,
       1,
-      0.1
+      0.1,
+      1
     ],
     "LINK_STIFFNESS_BOUNDS": [
       0.5,
       1.2,
       1,
-      0.1
+      0.1,
+      1
     ],
     "GRAVITY_MATRIX_SYMMETRIC": false,
     "LINK_GRAVITY_MATRIX_SYMMETRIC": false,
@@ -165,19 +182,22 @@
       -2,
       2,
       0,
-      0.5
+      0.5,
+      1
     ],
     "BOND_PREFERENCE_BOUNDS": [
       0,
       4,
       1.5,
-      0.1
+      0.1,
+      1
     ],
     "BOND_PREFERENCE_FACTOR_BOUNDS": [
       0.5,
       2,
       1,
-      0.1
+      0.1,
+      1
     ],
     "BOND_PREFERENCE_MATRIX_SYMMETRIC": true,
     "BOND_PREFERENCE_FACTOR_MATRIX_SYMMETRIC": true,
@@ -198,25 +218,29 @@
       0.8,
       1.3,
       1,
-      0.1
+      0.1,
+      1
     ],
     "FREQUENCY_BOUNDS": [
       0.5,
       1,
       0.7,
-      0.1
+      0.1,
+      1
     ],
     "GRAVITY_BOUNDS": [
       -10,
       -1,
       -3,
-      0.1
+      0.1,
+      1
     ],
     "LINK_GRAVITY_BOUNDS": [
       -15,
       -1,
       -3,
-      0.1
+      0.1,
+      1
     ],
     "LINK_BOUNDS": [
       1,
@@ -232,19 +256,22 @@
       0.5,
       2,
       1,
-      0.5
+      0.5,
+      1
     ],
     "LINK_LENGTH_BOUNDS": [
       0.7,
       1.3,
       1,
-      0.1
+      0.1,
+      1
     ],
     "LINK_STIFFNESS_BOUNDS": [
       0.5,
       1.2,
       1,
-      0.1
+      0.1,
+      1
     ],
     "GRAVITY_MATRIX_SYMMETRIC": false,
     "LINK_GRAVITY_MATRIX_SYMMETRIC": false,
@@ -257,19 +284,22 @@
       -2,
       2,
       0,
-      0.5
+      0.5,
+      1
     ],
     "BOND_PREFERENCE_BOUNDS": [
       0,
       4,
       1.5,
-      0.1
+      0.1,
+      1
     ],
     "BOND_PREFERENCE_FACTOR_BOUNDS": [
       0.5,
       2,
       1,
-      0.1
+      0.1,
+      1
     ],
     "BOND_PREFERENCE_MATRIX_SYMMETRIC": true,
     "BOND_PREFERENCE_FACTOR_MATRIX_SYMMETRIC": true,
@@ -290,25 +320,29 @@
       0.8,
       1.3,
       1,
-      0.1
+      0.1,
+      1
     ],
     "FREQUENCY_BOUNDS": [
       0.5,
       1,
       0.7,
-      0.1
+      0.1,
+      1
     ],
     "GRAVITY_BOUNDS": [
       -10,
       -1,
       -3,
-      0.1
+      0.1,
+      1
     ],
     "LINK_GRAVITY_BOUNDS": [
       -15,
       -1,
       -3,
-      0.1
+      0.1,
+      1
     ],
     "LINK_BOUNDS": [
       1,
@@ -324,19 +358,22 @@
       0.5,
       2,
       1,
-      0.5
+      0.5,
+      1
     ],
     "LINK_LENGTH_BOUNDS": [
       0.7,
       1.3,
       1,
-      0.1
+      0.1,
+      1
     ],
     "LINK_STIFFNESS_BOUNDS": [
       0.5,
       1.2,
       1,
-      0.1
+      0.1,
+      1
     ],
     "GRAVITY_MATRIX_SYMMETRIC": false,
     "LINK_GRAVITY_MATRIX_SYMMETRIC": false,
@@ -349,19 +386,22 @@
       -2,
       2,
       0,
-      0.5
+      0.5,
+      1
     ],
     "BOND_PREFERENCE_BOUNDS": [
       0,
       4,
       1.5,
-      0.1
+      0.1,
+      1
     ],
     "BOND_PREFERENCE_FACTOR_BOUNDS": [
       0.5,
       2,
       1,
-      0.1
+      0.1,
+      1
     ],
     "BOND_PREFERENCE_MATRIX_SYMMETRIC": true,
     "BOND_PREFERENCE_FACTOR_MATRIX_SYMMETRIC": true,

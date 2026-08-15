@@ -4,6 +4,7 @@ import { ref } from "vue";
 import { useConfigStore } from "@/web/store/config";
 import { useSimulationStore } from "@/web/store/simulation";
 import { hexToRgb, rgbToHex, getColorString } from "@/web/components/config-editor/utils";
+import { defaultTypeName } from "@/lib/config/atom-types";
 
 const props = defineProps<{
   colors: [number, number, number][];
@@ -59,7 +60,7 @@ const removeType = (index: number) => {
           <label
             class="swatch"
             :style="{ backgroundColor: getColorString(color) }"
-            :title="`Change ${names[index] ?? `T${index}`} color`"
+            :title="`Change ${names[index] ?? defaultTypeName(index)} color`"
           >
             <input
               type="color"

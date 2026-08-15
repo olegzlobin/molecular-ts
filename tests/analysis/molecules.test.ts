@@ -14,7 +14,7 @@ describe('molecule formulas', () => {
     links.create(c, h2);
     links.create(c, o);
 
-    expect(compoundFormula(new Set([c, h1, h2, o]), ['C', 'H', 'O'])).toBe('CH2O');
+    expect(compoundFormula(new Set([c, h1, h2, o]), ['C', 'H', 'O'])).toBe('CH₂O');
   });
 
   it('counts formulas and free atoms in a snapshot', () => {
@@ -33,7 +33,7 @@ describe('molecule formulas', () => {
     expect(snapshot.freeAtomCount).toBe(1);
     expect(snapshot.formulas).toEqual([
       {
-        formula: 'H2O',
+        formula: 'H₂O',
         count: 1,
         size: 3,
         atomTotal: 3,

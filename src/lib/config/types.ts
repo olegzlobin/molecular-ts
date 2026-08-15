@@ -105,18 +105,18 @@ export type RandomTypesConfig = {
   USE_LINK_LENGTH_BOUNDS: boolean;
   USE_LINK_STIFFNESS_BOUNDS: boolean;
 
-  RADIUS_BOUNDS: [number, number, number?, number?];
-  FREQUENCY_BOUNDS: [number, number, number?, number?];
-  CHARGE_BOUNDS: [number, number, number?, number?];
-  GRAVITY_BOUNDS: [number, number, number?, number?];
-  LINK_GRAVITY_BOUNDS: [number, number, number?, number?];
-  LINK_BOUNDS: [number, number, number?];
-  LINK_TYPE_BOUNDS: [number, number, number?];
-  LINK_TYPE_WEIGHT_BOUNDS: [number, number, number?, number?];
-  BOND_PREFERENCE_BOUNDS: [number, number, number?, number?];
-  BOND_PREFERENCE_FACTOR_BOUNDS: [number, number, number?, number?];
-  LINK_LENGTH_BOUNDS: [number, number, number?, number?];
-  LINK_STIFFNESS_BOUNDS: [number, number, number?, number?];
+  RADIUS_BOUNDS: [number, number, number?, number?, number?];
+  FREQUENCY_BOUNDS: [number, number, number?, number?, number?];
+  CHARGE_BOUNDS: [number, number, number?, number?, number?];
+  GRAVITY_BOUNDS: [number, number, number?, number?, number?];
+  LINK_GRAVITY_BOUNDS: [number, number, number?, number?, number?];
+  LINK_BOUNDS: [number, number, number?, number?, number?];
+  LINK_TYPE_BOUNDS: [number, number, number?, number?, number?];
+  LINK_TYPE_WEIGHT_BOUNDS: [number, number, number?, number?, number?];
+  BOND_PREFERENCE_BOUNDS: [number, number, number?, number?, number?];
+  BOND_PREFERENCE_FACTOR_BOUNDS: [number, number, number?, number?, number?];
+  LINK_LENGTH_BOUNDS: [number, number, number?, number?, number?];
+  LINK_STIFFNESS_BOUNDS: [number, number, number?, number?, number?];
 
   GRAVITY_MATRIX_SYMMETRIC: boolean;
   LINK_GRAVITY_MATRIX_SYMMETRIC: boolean;

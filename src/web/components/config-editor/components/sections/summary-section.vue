@@ -9,6 +9,7 @@ import Flag from '@/web/components/inputs/flag.vue';
 import InputHeader from '@/web/components/base/input-header.vue';
 import { emptyEnergyReport } from '@/lib/analysis/energy';
 import { buildMoleculeSnapshot, type MoleculeSnapshot } from '@/lib/analysis/molecules';
+import { defaultTypeName } from '@/lib/config/atom-types';
 
 const { getCurrentSimulation } = useSimulationStore();
 
@@ -249,7 +250,7 @@ const timeSeriesAtomsTypesCountConfig = {
   data: () => getCurrentSimulation().summary['ATOMS_TYPE_COUNT'],
   config: getCurrentSimulation().config.typesConfig.COLORS.map((color, index) => {
     const strColor = color.join(', ');
-    const typeName = getCurrentSimulation().config.typesConfig.NAMES?.[index] || `T${index}`;
+    const typeName = getCurrentSimulation().config.typesConfig.NAMES?.[index] || defaultTypeName(index);
     return {
       name: typeName,
       options: {
@@ -266,7 +267,7 @@ const timeSeriesAtomsTypesMeanCountConfig = {
   data: () => getCurrentSimulation().summary['ATOMS_TYPE_MEAN_COUNT'],
   config: getCurrentSimulation().config.typesConfig.COLORS.map((color, index) => {
     const strColor = color.join(', ');
-    const typeName = getCurrentSimulation().config.typesConfig.NAMES?.[index] || `T${index}`;
+    const typeName = getCurrentSimulation().config.typesConfig.NAMES?.[index] || defaultTypeName(index);
     return {
       name: typeName,
       options: {
@@ -283,7 +284,7 @@ const timeSeriesAtomsTypeMeanSpeedConfig = {
   data: () => getCurrentSimulation().summary['ATOMS_TYPE_MEAN_SPEED'],
   config: getCurrentSimulation().config.typesConfig.COLORS.map((color, index) => {
     const strColor = color.join(', ');
-    const typeName = getCurrentSimulation().config.typesConfig.NAMES?.[index] || `T${index}`;
+    const typeName = getCurrentSimulation().config.typesConfig.NAMES?.[index] || defaultTypeName(index);
     return {
       name: typeName,
       options: {
@@ -300,7 +301,7 @@ const timeSeriesAtomsTypeLinksCountConfig = {
   data: () => getCurrentSimulation().summary['ATOMS_TYPE_LINKS_COUNT'],
   config: getCurrentSimulation().config.typesConfig.COLORS.map((color, index) => {
     const strColor = color.join(', ');
-    const typeName = getCurrentSimulation().config.typesConfig.NAMES?.[index] || `T${index}`;
+    const typeName = getCurrentSimulation().config.typesConfig.NAMES?.[index] || defaultTypeName(index);
     return {
       name: typeName,
       options: {
@@ -317,7 +318,7 @@ const timeSeriesAtomsTypeLinksMeanCountConfig = {
   data: () => getCurrentSimulation().summary['ATOMS_TYPE_LINKS_MEAN_COUNT'],
   config: getCurrentSimulation().config.typesConfig.COLORS.map((color, index) => {
     const strColor = color.join(', ');
-    const typeName = getCurrentSimulation().config.typesConfig.NAMES?.[index] || `T${index}`;
+    const typeName = getCurrentSimulation().config.typesConfig.NAMES?.[index] || defaultTypeName(index);
     return {
       name: typeName,
       options: {
@@ -381,7 +382,7 @@ const timeSeriesLinksTypeCreatedConfig = {
   data: () => getCurrentSimulation().summary['LINKS_TYPE_CREATED'],
   config: getCurrentSimulation().config.typesConfig.COLORS.map((color, index) => {
     const strColor = color.join(', ');
-    const typeName = getCurrentSimulation().config.typesConfig.NAMES?.[index] || `T${index}`;
+    const typeName = getCurrentSimulation().config.typesConfig.NAMES?.[index] || defaultTypeName(index);
     return {
       name: typeName,
       options: {
@@ -399,7 +400,7 @@ const timeSeriesLinksTypeDeletedConfig = {
   data: () => getCurrentSimulation().summary['LINKS_TYPE_DELETED'],
   config: getCurrentSimulation().config.typesConfig.COLORS.map((color, index) => {
     const strColor = color.join(', ');
-    const typeName = getCurrentSimulation().config.typesConfig.NAMES?.[index] || `T${index}`;
+    const typeName = getCurrentSimulation().config.typesConfig.NAMES?.[index] || defaultTypeName(index);
     return {
       name: typeName,
       options: {
@@ -417,7 +418,7 @@ const timeSeriesLinksTypeCreatedMeanConfig = {
   data: () => getCurrentSimulation().summary['LINKS_TYPE_CREATED_MEAN'],
   config: getCurrentSimulation().config.typesConfig.COLORS.map((color, index) => {
     const strColor = color.join(', ');
-    const typeName = getCurrentSimulation().config.typesConfig.NAMES?.[index] || `T${index}`;
+    const typeName = getCurrentSimulation().config.typesConfig.NAMES?.[index] || defaultTypeName(index);
     return {
       name: typeName,
       options: {
@@ -435,7 +436,7 @@ const timeSeriesLinksTypeDeletedMeanConfig = {
   data: () => getCurrentSimulation().summary['LINKS_TYPE_DELETED_MEAN'],
   config: getCurrentSimulation().config.typesConfig.COLORS.map((color, index) => {
     const strColor = color.join(', ');
-    const typeName = getCurrentSimulation().config.typesConfig.NAMES?.[index] || `T${index}`;
+    const typeName = getCurrentSimulation().config.typesConfig.NAMES?.[index] || defaultTypeName(index);
     return {
       name: typeName,
       options: {
@@ -483,7 +484,7 @@ const timeSeriesTransformationsTypeFromCountConfig = {
   data: () => getCurrentSimulation().summary['TRANSFORMATION_TYPE_FROM_COUNT'],
   config: getCurrentSimulation().config.typesConfig.COLORS.map((color, index) => {
     const strColor = color.join(', ');
-    const typeName = getCurrentSimulation().config.typesConfig.NAMES?.[index] || `T${index}`;
+    const typeName = getCurrentSimulation().config.typesConfig.NAMES?.[index] || defaultTypeName(index);
     return {
       name: typeName,
       options: {
@@ -500,7 +501,7 @@ const timeSeriesTransformationsTypeToCountConfig = {
   data: () => getCurrentSimulation().summary['TRANSFORMATION_TYPE_TO_COUNT'],
   config: getCurrentSimulation().config.typesConfig.COLORS.map((color, index) => {
     const strColor = color.join(', ');
-    const typeName = getCurrentSimulation().config.typesConfig.NAMES?.[index] || `T${index}`;
+    const typeName = getCurrentSimulation().config.typesConfig.NAMES?.[index] || defaultTypeName(index);
     return {
       name: typeName,
       options: {
@@ -517,7 +518,7 @@ const timeSeriesTransformationsTypeFromMeanCountConfig = {
   data: () => getCurrentSimulation().summary['TRANSFORMATION_TYPE_FROM_MEAN_COUNT'],
   config: getCurrentSimulation().config.typesConfig.COLORS.map((color, index) => {
     const strColor = color.join(', ');
-    const typeName = getCurrentSimulation().config.typesConfig.NAMES?.[index] || `T${index}`;
+    const typeName = getCurrentSimulation().config.typesConfig.NAMES?.[index] || defaultTypeName(index);
     return {
       name: typeName,
       options: {
@@ -534,7 +535,7 @@ const timeSeriesTransformationsTypeToMeanCountConfig = {
   data: () => getCurrentSimulation().summary['TRANSFORMATION_TYPE_TO_MEAN_COUNT'],
   config: getCurrentSimulation().config.typesConfig.COLORS.map((color, index) => {
     const strColor = color.join(', ');
-    const typeName = getCurrentSimulation().config.typesConfig.NAMES?.[index] || `T${index}`;
+    const typeName = getCurrentSimulation().config.typesConfig.NAMES?.[index] || defaultTypeName(index);
     return {
       name: typeName,
       options: {

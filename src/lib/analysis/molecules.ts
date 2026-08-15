@@ -1,7 +1,7 @@
 import type { AtomInterface } from '../simulation/types/atomic';
 import type { Compound } from './types';
 import { createCompoundByAtom } from './factories';
-import { ensureTypeNames } from '../config/atom-types';
+import { ensureTypeNames, defaultTypeName } from '../config/atom-types';
 
 export type MoleculeFormulaRow = {
   formula: string;
@@ -36,6 +36,10 @@ export function collectAllCompounds(atoms: Iterable<AtomInterface>): Compound[] 
   return compounds;
 }
 
+export function toSubscriptDigits(value: number): string {
+  return String(value).replace(/\d/g, (digit) => '₀₁₂₃₄₅₆₇₈₉'[Number(digit)]);
+}
+
 export function compoundFormula(compound: Compound, names: string[]): string {
   const counts = new Map<number, number>();
   for (const atom of compound) {
@@ -43,7 +47,7 @@ export function compoundFormula(compound: Compound, names: string[]): string {
   }
 
   const parts = [...counts.entries()].map(([type, count]) => ({
-    name: names[type] || `T${type}`,
+    name: names[type] || defaultTypeName(type),
     count,
   }));
 
@@ -60,7 +64,7 @@ export function compoundFormula(compound: Compound, names: string[]): string {
     return 0;
   });
 
-  return parts.map(({ name, count }) => (count > 1 ? `${name}${count}` : name)).join('');
+  return parts.map(({ name, count }) => (count > 1 ? `${name}${toSubscriptDigits(count)}` : name)).join('');
 }
 
 export function buildMoleculeSnapshot(

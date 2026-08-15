@@ -88,6 +88,7 @@ export function convertRandomTypesConfigForBackwardCompatibility(inputConfig: Ra
   if (config.BOND_PREFERENCE_FACTOR_IGNORE_SELF_TYPE === undefined) {
     config.BOND_PREFERENCE_FACTOR_IGNORE_SELF_TYPE = true;
   }
+  deleteKey(config as Record<string, unknown>, 'BOND_PREFERENCE_FACTOR_DEVIATION_SHARE');
   return config;
 }
 

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 
 import { getColorString } from "@/web/components/config-editor/utils";
+import { defaultTypeName } from "@/lib/config/atom-types";
 import { computed, ref } from "vue";
 
 const modelValue = defineModel<number | null>();
@@ -26,10 +27,10 @@ const selectedName = computed(() => {
   if (modelValue.value === null || modelValue.value === undefined) {
     return '∅';
   }
-  return props.names?.[Number(modelValue.value)] || `T${modelValue.value}`;
+  return props.names?.[Number(modelValue.value)] || defaultTypeName(Number(modelValue.value));
 });
 
-const typeName = (index: number) => props.names?.[index] || `T${index}`;
+const typeName = (index: number) => props.names?.[index] || defaultTypeName(index);
 
 const select = (index: number | null) => {
   modelValue.value = index;

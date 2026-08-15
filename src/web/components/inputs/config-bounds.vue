@@ -1,12 +1,19 @@
 <script setup lang="ts">
+import { onMounted } from 'vue';
 
-withDefaults(defineProps<{
-  values: [number, number, number?, number?];
+const props = withDefaults(defineProps<{
+  values: [number, number, number?, number?, number?];
   min?: number;
   max?: number;
   step?: number;
 }>(), {
   step: 1,
+});
+
+onMounted(() => {
+  if (props.values[4] === undefined || props.values[4] === null) {
+    props.values[4] = 1;
+  }
 });
 
 </script>
@@ -18,7 +25,8 @@ withDefaults(defineProps<{
         <td>min</td>
         <td>max</td>
         <td>median</td>
-        <td v-if="values[3] !== undefined" width="25%">step</td>
+        <td v-if="values[3] !== undefined && values[3] !== null" width="20%">step</td>
+        <td width="20%" title="Share of values that deviate from median. 1 = fully random, 0 = all median.">share</td>
       </tr>
       <tr>
         <td>
@@ -30,8 +38,11 @@ withDefaults(defineProps<{
         <td>
           <input type="number" v-model="values[2]" :step="0.1" :min="min" :max="max">
         </td>
-        <td v-if="values[3] !== undefined">
+        <td v-if="values[3] !== undefined && values[3] !== null">
           <input type="number" v-model="values[3]" :step="0.1" :min="0" :max="values[1] - values[0]">
+        </td>
+        <td>
+          <input type="number" v-model="values[4]" :step="0.05" :min="0" :max="1">
         </td>
       </tr>
     </tbody>

@@ -78,15 +78,25 @@ export function createColors(count: number, randomize: boolean = false, usePrede
   return result;
 }
 
+export function defaultTypeName(index: number): string {
+  let n = index;
+  let name = '';
+  do {
+    name = String.fromCharCode(65 + (n % 26)) + name;
+    n = Math.floor(n / 26) - 1;
+  } while (n >= 0);
+  return name;
+}
+
 export function createDefaultTypeNames(count: number): string[] {
-  return Array.from({ length: count }, (_, i) => `T${i}`);
+  return Array.from({ length: count }, (_, i) => defaultTypeName(i));
 }
 
 export function ensureTypeNames(names: string[] | undefined, count: number): string[] {
   const result: string[] = [];
   for (let i = 0; i < count; ++i) {
     const name = names?.[i]?.trim();
-    result.push(name ? name : `T${i}`);
+    result.push(name ? name : defaultTypeName(i));
   }
   return result;
 }
@@ -165,13 +175,13 @@ export function pickUnusedTypeColor(existing: ColorVector[]): ColorVector {
 
 export function pickUnusedTypeName(existing: string[]): string {
   const used = new Set(existing.map((name) => name.trim().toLowerCase()));
-  for (let i = 0; i < existing.length + 8; ++i) {
-    const name = `T${i}`;
+  for (let i = 0; i < existing.length + 32; ++i) {
+    const name = defaultTypeName(i);
     if (!used.has(name.toLowerCase())) {
       return name;
     }
   }
-  return `T${existing.length}`;
+  return defaultTypeName(existing.length);
 }
 
 export function createSingleTypeConfig(existingColors: ColorVector[] = [], existingNames: string[] = []): TypesConfig {
@@ -335,7 +345,7 @@ export function createRandomIntTypesConfig({
 }: RandomTypesConfig): TypesConfig {
   const radius: number[] = [];
   for (let i=0; i<TYPES_COUNT; ++i) {
-    radius.push(createRandomInteger([RADIUS_BOUNDS[0], RADIUS_BOUNDS[1]]));
+    radius.push(createRandomInteger(RADIUS_BOUNDS));
   }
 
   const gravity = randomizeMatrix(
@@ -348,12 +358,12 @@ export function createRandomIntTypesConfig({
 
   const frequencies: number[] = [];
   for (let i=0; i<TYPES_COUNT; ++i) {
-    frequencies.push(createRandomInteger([FREQUENCY_BOUNDS[0], FREQUENCY_BOUNDS[1]]));
+    frequencies.push(createRandomInteger(FREQUENCY_BOUNDS));
   }
 
   const charge: number[] = [];
   for (let i=0; i<TYPES_COUNT; ++i) {
-    charge.push(createRandomInteger([CHARGE_BOUNDS[0], CHARGE_BOUNDS[1]]));
+    charge.push(createRandomInteger(CHARGE_BOUNDS));
   }
 
   const bondPreference = randomizeMatrix(
@@ -395,12 +405,12 @@ export function createRandomIntTypesConfig({
 
   const linkLength: number[] = [];
   for (let i=0; i<TYPES_COUNT; ++i) {
-    linkLength.push(createRandomInteger([LINK_LENGTH_BOUNDS[0], LINK_LENGTH_BOUNDS[1]]));
+    linkLength.push(createRandomInteger(LINK_LENGTH_BOUNDS));
   }
 
   const linkStiffness: number[] = [];
   for (let i=0; i<TYPES_COUNT; ++i) {
-    linkStiffness.push(createRandomInteger([LINK_STIFFNESS_BOUNDS[0], LINK_STIFFNESS_BOUNDS[1]]));
+    linkStiffness.push(createRandomInteger(LINK_STIFFNESS_BOUNDS));
   }
 
 
@@ -456,18 +466,18 @@ export function createDefaultRandomTypesConfig(typesCount: number): RandomTypesC
     USE_LINK_LENGTH_BOUNDS: true,
     USE_LINK_STIFFNESS_BOUNDS: true,
 
-    RADIUS_BOUNDS: [0.8, 1.3, 1, 0.1],
-    FREQUENCY_BOUNDS: [0.1, 1, 0.5, 0.1],
-    CHARGE_BOUNDS: [-2, 2, 0, 0.5],
-    GRAVITY_BOUNDS: [-15, 1, -1, 0.1],
-    LINK_GRAVITY_BOUNDS: [-20, -1, -1, 0.1],
+    RADIUS_BOUNDS: [0.8, 1.3, 1, 0.1, 1],
+    FREQUENCY_BOUNDS: [0.1, 1, 0.5, 0.1, 1],
+    CHARGE_BOUNDS: [-2, 2, 0, 0.5, 1],
+    GRAVITY_BOUNDS: [-15, 1, -1, 0.1, 1],
+    LINK_GRAVITY_BOUNDS: [-20, -1, -1, 0.1, 1],
     LINK_BOUNDS: [1, 8, 3],
     LINK_TYPE_BOUNDS: [0, 4, 2],
-    LINK_TYPE_WEIGHT_BOUNDS: [0.5, 2, 1, 0.5],
-    BOND_PREFERENCE_BOUNDS: [0, 4, 1.5, 0.1],
-    BOND_PREFERENCE_FACTOR_BOUNDS: [0.5, 2, 1, 0.1],
-    LINK_LENGTH_BOUNDS: [0.7, 1.3, 1, 0.1],
-    LINK_STIFFNESS_BOUNDS: [0.5, 1.2, 1, 0.1],
+    LINK_TYPE_WEIGHT_BOUNDS: [0.5, 2, 1, 0.5, 1],
+    BOND_PREFERENCE_BOUNDS: [0, 4, 1.5, 0.1, 1],
+    BOND_PREFERENCE_FACTOR_BOUNDS: [0.5, 2, 1, 0.1, 1],
+    LINK_LENGTH_BOUNDS: [0.7, 1.3, 1, 0.1, 1],
+    LINK_STIFFNESS_BOUNDS: [0.5, 1.2, 1, 0.1, 1],
 
     GRAVITY_MATRIX_SYMMETRIC: false,
     LINK_GRAVITY_MATRIX_SYMMETRIC: false,
@@ -552,8 +562,12 @@ export function randomizeTypesConfig(
   oldConfig = oldConfig ?? createRandomTypesConfig(randomTypesConfig);
   const newConfig = createRandomTypesConfig(randomTypesConfig);
 
-  newConfig.COLORS = fullCopyObject(oldConfig.COLORS);
-  newConfig.NAMES = ensureTypeNames(oldConfig.NAMES, newConfig.COLORS.length);
+  const typesCount = newConfig.RADIUS.length;
+  const keptColors = fullCopyObject(oldConfig.COLORS).slice(0, typesCount);
+  newConfig.COLORS = keptColors.length < typesCount
+    ? keptColors.concat(createColors(typesCount - keptColors.length))
+    : keptColors;
+  newConfig.NAMES = ensureTypeNames(oldConfig.NAMES, typesCount);
 
   if (!randomTypesConfig.USE_FREQUENCY_BOUNDS || skipSubMatricesBoundaryIndex !== undefined) {
     copyConfigListValue(oldConfig.FREQUENCIES, newConfig.FREQUENCIES, 1);

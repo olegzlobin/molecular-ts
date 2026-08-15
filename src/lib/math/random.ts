@@ -1,7 +1,9 @@
 import { roundWithStep } from './helpers';
 
-type NumberFactory = ((bounds: [number, number, number?, number?], precision?: number) => number) |
-  ((bounds: [number, number, number?], precision?: number) => number);
+type NumberFactory = ((bounds: [number, number, number?, number?, number?], precision?: number) => number) |
+  ((bounds: [number, number, number?, number?, number?], precision?: number) => number);
+
+type RandomBounds = [number, number, number?, number?, number?];
 
 function applyMedian(from: number, until: number, median?: number): [number, number] {
   if (median === undefined) {
@@ -15,15 +17,46 @@ function applyMedian(from: number, until: number, median?: number): [number, num
   return [from, median];
 }
 
-export function createRandomInteger([from, until, median]: [number, number, number?]): number {
+function getBoundsMean(bounds: RandomBounds): number {
+  if (bounds[2] !== undefined && bounds[2] !== null) {
+    return bounds[2];
+  }
+  return (bounds[0] + bounds[1]) / 2;
+}
+
+function getDeviationShare(bounds: RandomBounds): number {
+  const share = bounds[4];
+  if (share === undefined || share === null) {
+    return 1;
+  }
+  return Math.min(1, Math.max(0, share));
+}
+
+export function createRandomInteger(bounds: RandomBounds): number {
+  if (Math.random() >= getDeviationShare(bounds)) {
+    return Math.round(getBoundsMean(bounds));
+  }
+  let [from, until] = bounds;
+  const median = bounds[2] ?? undefined;
   [from, until] = applyMedian(from, until, median);
   return Math.round(Math.random() * (until - from) + from);
 }
 
 export function createRandomFloat(
-  [from, until, median, step]: [number, number, number?, number?],
+  bounds: RandomBounds,
   precision?: number,
 ): number {
+  const step = bounds[3] ?? undefined;
+  if (Math.random() >= getDeviationShare(bounds)) {
+    const mean = getBoundsMean(bounds);
+    if (step !== undefined && step !== 0) {
+      return roundWithStep(mean, step, precision);
+    }
+    return mean;
+  }
+
+  let [from, until] = bounds;
+  const median = bounds[2] ?? undefined;
   [from, until] = applyMedian(from, until, median);
 
   let result = Math.random() * (until - from) + from;
@@ -35,7 +68,7 @@ export function createRandomFloat(
 
 export function randomizeMatrix(
   count: number,
-  bounds: [number, number, number?, number?] | [number, number, number?],
+  bounds: RandomBounds,
   numberFactory: NumberFactory,
   symmetric: boolean = false,
   precision?: number,
@@ -47,7 +80,7 @@ export function randomizeMatrix(
       if (symmetric && i > j) {
         result[i].push(result[j][i]);
       } else {
-        result[i].push(numberFactory(bounds as [number, number], precision));
+        result[i].push(numberFactory(bounds, precision));
       }
     }
   }
