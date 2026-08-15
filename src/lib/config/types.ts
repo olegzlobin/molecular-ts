@@ -58,6 +58,7 @@ export type TypesConfig = {
   TYPE_LINK_WEIGHTS: TypeLinkWeightsConfig;
   BOND_PREFERENCE: GravityConfig;
   BOND_PREFERENCE_FACTOR: BondPreferenceFactorConfig;
+  LINK_STRENGTH_FACTOR: BondPreferenceFactorConfig;
   LINK_LENGTH: number[];
   LINK_STIFFNESS: number[];
   FREQUENCIES: FrequenciesConfig;
@@ -102,6 +103,7 @@ export type RandomTypesConfig = {
   USE_LINK_TYPE_WEIGHT_BOUNDS: boolean;
   USE_BOND_PREFERENCE_BOUNDS: boolean;
   USE_BOND_PREFERENCE_FACTOR_BOUNDS: boolean;
+  USE_LINK_STRENGTH_FACTOR_BOUNDS: boolean;
   USE_LINK_LENGTH_BOUNDS: boolean;
   USE_LINK_STIFFNESS_BOUNDS: boolean;
 
@@ -115,6 +117,7 @@ export type RandomTypesConfig = {
   LINK_TYPE_WEIGHT_BOUNDS: [number, number, number?, number?, number?];
   BOND_PREFERENCE_BOUNDS: [number, number, number?, number?, number?];
   BOND_PREFERENCE_FACTOR_BOUNDS: [number, number, number?, number?, number?];
+  LINK_STRENGTH_FACTOR_BOUNDS: [number, number, number?, number?, number?];
   LINK_LENGTH_BOUNDS: [number, number, number?, number?, number?];
   LINK_STIFFNESS_BOUNDS: [number, number, number?, number?, number?];
 
@@ -125,6 +128,8 @@ export type RandomTypesConfig = {
   BOND_PREFERENCE_MATRIX_SYMMETRIC: boolean;
   BOND_PREFERENCE_FACTOR_MATRIX_SYMMETRIC: boolean;
   BOND_PREFERENCE_FACTOR_IGNORE_SELF_TYPE: boolean;
+  LINK_STRENGTH_FACTOR_MATRIX_SYMMETRIC: boolean;
+  LINK_STRENGTH_FACTOR_IGNORE_SELF_TYPE: boolean;
 };
 
 export type TypesSymmetricConfig = {
@@ -134,4 +139,5 @@ export type TypesSymmetricConfig = {
   LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC: boolean;
   BOND_PREFERENCE_MATRIX_SYMMETRIC: boolean;
   BOND_PREFERENCE_FACTOR_MATRIX_SYMMETRIC: boolean;
+  LINK_STRENGTH_FACTOR_MATRIX_SYMMETRIC: boolean;
 }

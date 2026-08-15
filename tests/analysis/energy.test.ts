@@ -16,6 +16,7 @@ function typesStub(): TypesConfig {
     TYPE_LINK_WEIGHTS: [[1, 1], [1, 1]],
     BOND_PREFERENCE: [[0, 0], [0, 0]],
     BOND_PREFERENCE_FACTOR: [[[1, 1], [1, 1]], [[1, 1], [1, 1]]],
+    LINK_STRENGTH_FACTOR: [[[1, 1], [1, 1]], [[1, 1], [1, 1]]],
     LINK_LENGTH: [1, 1],
     LINK_STIFFNESS: [1, 1],
     FREQUENCIES: [1, 1],

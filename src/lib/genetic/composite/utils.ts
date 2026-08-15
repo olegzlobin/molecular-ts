@@ -34,6 +34,13 @@ export function extractExpressedTypesConfig(typesConfigs: TypesConfig[], express
       expressionIndices.BOND_PREFERENCE_FACTOR
         ?? expressionIndices.RADIUS.map(() => expressionIndices.GRAVITY),
     ),
+    LINK_STRENGTH_FACTOR: express(
+      typesConfigs.map((x) => x.LINK_STRENGTH_FACTOR
+        ?? x.RADIUS.map(() => x.RADIUS.map(() => x.RADIUS.map(() => 1)))),
+      expressionIndices.LINK_STRENGTH_FACTOR
+        ?? expressionIndices.BOND_PREFERENCE_FACTOR
+        ?? expressionIndices.RADIUS.map(() => expressionIndices.GRAVITY),
+    ),
     LINK_LENGTH: express(typesConfigs.map((x) => x.LINK_LENGTH ?? x.RADIUS.map(() => 1)), expressionIndices.LINK_LENGTH ?? expressionIndices.RADIUS),
     LINK_STIFFNESS: express(typesConfigs.map((x) => x.LINK_STIFFNESS ?? x.RADIUS.map(() => 1)), expressionIndices.LINK_STIFFNESS ?? expressionIndices.RADIUS),
     FREQUENCIES: express(typesConfigs.map((x) => x.FREQUENCIES), expressionIndices.FREQUENCIES),
@@ -114,6 +121,7 @@ export function createRandomExpressedIndicesConfig(typesCount: number, chromosom
     USE_LINK_TYPE_WEIGHT_BOUNDS: true,
     USE_BOND_PREFERENCE_BOUNDS: false,
     USE_BOND_PREFERENCE_FACTOR_BOUNDS: false,
+    USE_LINK_STRENGTH_FACTOR_BOUNDS: false,
     USE_LINK_LENGTH_BOUNDS: true,
     USE_LINK_STIFFNESS_BOUNDS: true,
 
@@ -127,6 +135,7 @@ export function createRandomExpressedIndicesConfig(typesCount: number, chromosom
     LINK_TYPE_WEIGHT_BOUNDS: [0, chromosomesCount-1],
     BOND_PREFERENCE_BOUNDS: [0, chromosomesCount-1],
     BOND_PREFERENCE_FACTOR_BOUNDS: [0, chromosomesCount-1],
+    LINK_STRENGTH_FACTOR_BOUNDS: [0, chromosomesCount-1],
     LINK_LENGTH_BOUNDS: [0, chromosomesCount-1],
     LINK_STIFFNESS_BOUNDS: [0, chromosomesCount-1],
 
@@ -137,5 +146,7 @@ export function createRandomExpressedIndicesConfig(typesCount: number, chromosom
     BOND_PREFERENCE_MATRIX_SYMMETRIC: true,
     BOND_PREFERENCE_FACTOR_MATRIX_SYMMETRIC: true,
     BOND_PREFERENCE_FACTOR_IGNORE_SELF_TYPE: true,
+    LINK_STRENGTH_FACTOR_MATRIX_SYMMETRIC: true,
+    LINK_STRENGTH_FACTOR_IGNORE_SELF_TYPE: true,
   };
 }

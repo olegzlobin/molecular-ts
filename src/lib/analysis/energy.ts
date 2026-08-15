@@ -2,6 +2,7 @@ import type { TypesConfig, ViewMode, WorldConfig } from '../config/types';
 import type { AtomInterface, LinkInterface } from '../simulation/types/atomic';
 import { GeometryHelper } from '../utils/structs';
 import { getViewModeConfig } from '../utils/functions';
+import { linkStrengthFactor } from '../utils/link-strength';
 
 export type EnergySnapshot = {
   kinetic: number;
@@ -65,7 +66,8 @@ function linkElasticFactor(
   rhs: AtomInterface,
 ): number {
   const stiffness = typesConfig.LINK_STIFFNESS;
-  return ((stiffness?.[lhs.type] ?? 1) + (stiffness?.[rhs.type] ?? 1)) / 2;
+  const base = ((stiffness?.[lhs.type] ?? 1) + (stiffness?.[rhs.type] ?? 1)) / 2;
+  return base * linkStrengthFactor(typesConfig, lhs, rhs);
 }
 
 export type ComputeEnergyInput = {

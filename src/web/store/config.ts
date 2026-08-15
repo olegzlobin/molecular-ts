@@ -53,6 +53,7 @@ export const useConfigStore = defineStore("config", () => {
     LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC: true,
     BOND_PREFERENCE_MATRIX_SYMMETRIC: true,
     BOND_PREFERENCE_FACTOR_MATRIX_SYMMETRIC: true,
+    LINK_STRENGTH_FACTOR_MATRIX_SYMMETRIC: true,
   });
 
   const syncConfigBounds = ref(true);
@@ -262,6 +263,9 @@ export const useConfigStore = defineStore("config", () => {
     if (config.USE_BOND_PREFERENCE_FACTOR_BOUNDS) {
       typesSymmetricConfig.value.BOND_PREFERENCE_FACTOR_MATRIX_SYMMETRIC = config.BOND_PREFERENCE_FACTOR_MATRIX_SYMMETRIC;
     }
+    if (config.USE_LINK_STRENGTH_FACTOR_BOUNDS) {
+      typesSymmetricConfig.value.LINK_STRENGTH_FACTOR_MATRIX_SYMMETRIC = config.LINK_STRENGTH_FACTOR_MATRIX_SYMMETRIC;
+    }
   }
 
   const applySymmetricTypesConfig = () => {
@@ -279,6 +283,9 @@ export const useConfigStore = defineStore("config", () => {
     }
     if (typesSymmetricConfig.value.BOND_PREFERENCE_FACTOR_MATRIX_SYMMETRIC) {
       makeTensorSymmetric(typesConfig.value.BOND_PREFERENCE_FACTOR);
+    }
+    if (typesSymmetricConfig.value.LINK_STRENGTH_FACTOR_MATRIX_SYMMETRIC) {
+      makeTensorSymmetric(typesConfig.value.LINK_STRENGTH_FACTOR);
     }
     syncDerivedTypeLinks(typesConfig.value);
   }

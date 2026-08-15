@@ -6,6 +6,7 @@ import type { InteractionManagerInterface } from './types/interaction';
 import type { PhysicModelInterface } from './types/interaction';
 import { isEqual, Vector } from '../math';
 import { getViewModeConfig } from '../utils/functions';
+import { linkStrengthFactor } from '../utils/link-strength';
 import type { SummaryManagerInterface } from '../analysis/types';
 
 export class InteractionManager implements InteractionManagerInterface {
@@ -202,12 +203,14 @@ export class InteractionManager implements InteractionManagerInterface {
 
   getPairLinkLengthFactor(lhs: AtomInterface, rhs: AtomInterface): number {
     const lengths = this.TYPES_CONFIG.LINK_LENGTH;
-    return ((lengths?.[lhs.type] ?? 1) + (lengths?.[rhs.type] ?? 1)) / 2;
+    const base = ((lengths?.[lhs.type] ?? 1) + (lengths?.[rhs.type] ?? 1)) / 2;
+    return base * linkStrengthFactor(this.TYPES_CONFIG, lhs, rhs);
   }
 
   getElasticFactor(lhs: AtomInterface, rhs: AtomInterface): number {
     const stiffness = this.TYPES_CONFIG.LINK_STIFFNESS;
-    return ((stiffness?.[lhs.type] ?? 1) + (stiffness?.[rhs.type] ?? 1)) / 2;
+    const base = ((stiffness?.[lhs.type] ?? 1) + (stiffness?.[rhs.type] ?? 1)) / 2;
+    return base * linkStrengthFactor(this.TYPES_CONFIG, lhs, rhs);
   }
 
   updateAtomType(atom: AtomInterface): void {

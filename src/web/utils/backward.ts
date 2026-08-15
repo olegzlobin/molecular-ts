@@ -87,6 +87,9 @@ export function convertRandomTypesConfigForBackwardCompatibility(inputConfig: Ra
   if (config.USE_BOND_PREFERENCE_FACTOR_BOUNDS === undefined) {
     config.USE_BOND_PREFERENCE_FACTOR_BOUNDS = false;
   }
+  if (config.USE_LINK_STRENGTH_FACTOR_BOUNDS === undefined) {
+    config.USE_LINK_STRENGTH_FACTOR_BOUNDS = false;
+  }
   if (!config.LINK_LENGTH_BOUNDS) {
     config.LINK_LENGTH_BOUNDS = [0.7, 1.3, 1, 0.1];
   }
@@ -102,6 +105,9 @@ export function convertRandomTypesConfigForBackwardCompatibility(inputConfig: Ra
   if (!config.BOND_PREFERENCE_FACTOR_BOUNDS) {
     config.BOND_PREFERENCE_FACTOR_BOUNDS = [0.5, 2, 1, 0.1];
   }
+  if (!config.LINK_STRENGTH_FACTOR_BOUNDS) {
+    config.LINK_STRENGTH_FACTOR_BOUNDS = [0.3, 1.5, 1, 0.1];
+  }
   if (config.BOND_PREFERENCE_MATRIX_SYMMETRIC === undefined) {
     config.BOND_PREFERENCE_MATRIX_SYMMETRIC = true;
   }
@@ -110,6 +116,12 @@ export function convertRandomTypesConfigForBackwardCompatibility(inputConfig: Ra
   }
   if (config.BOND_PREFERENCE_FACTOR_IGNORE_SELF_TYPE === undefined) {
     config.BOND_PREFERENCE_FACTOR_IGNORE_SELF_TYPE = true;
+  }
+  if (config.LINK_STRENGTH_FACTOR_MATRIX_SYMMETRIC === undefined) {
+    config.LINK_STRENGTH_FACTOR_MATRIX_SYMMETRIC = true;
+  }
+  if (config.LINK_STRENGTH_FACTOR_IGNORE_SELF_TYPE === undefined) {
+    config.LINK_STRENGTH_FACTOR_IGNORE_SELF_TYPE = true;
   }
   deleteKey(raw, 'BOND_PREFERENCE_FACTOR_DEVIATION_SHARE');
   return config;
@@ -124,6 +136,9 @@ export function convertTypesSymmetricConfigForBackwardCompatibility(inputConfig:
   }
   if (config.BOND_PREFERENCE_FACTOR_MATRIX_SYMMETRIC === undefined) {
     config.BOND_PREFERENCE_FACTOR_MATRIX_SYMMETRIC = true;
+  }
+  if (config.LINK_STRENGTH_FACTOR_MATRIX_SYMMETRIC === undefined) {
+    config.LINK_STRENGTH_FACTOR_MATRIX_SYMMETRIC = true;
   }
   deleteKey(config, 'LINK_FACTOR_DISTANCE_MATRIX_SYMMETRIC');
   deleteKey(config, 'LINK_FACTOR_ELASTIC_MATRIX_SYMMETRIC');

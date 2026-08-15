@@ -47,6 +47,7 @@ export const TYPE_NUMERIC_FIELDS: TypeNumericField[] = [
   { key: 'TYPE_LINK_WEIGHTS', rank: 2, fill: 1 },
   { key: 'BOND_PREFERENCE', rank: 2, fill: 0 },
   { key: 'BOND_PREFERENCE_FACTOR', rank: 3, fill: 1 },
+  { key: 'LINK_STRENGTH_FACTOR', rank: 3, fill: 1 },
 ];
 
 export function createFilledTypeField(field: TypeNumericField, typesCount: number): unknown {

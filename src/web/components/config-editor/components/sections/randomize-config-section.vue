@@ -221,6 +221,35 @@ const randomizeTypesConfig = () => {
         </div>
       </div>
 
+      <div>
+        <input-header
+          name="Link Strength Factor"
+          tooltip="Per-agent multipliers for stiffness and break radius of A⟷B while the agent is bonded to A or B. <1 weakens, >1 strengthens."
+          tooltip-position="left"
+        >
+          <input type="checkbox" class="title-flag" v-model="randomTypesConfig.USE_LINK_STRENGTH_FACTOR_BOUNDS" />
+        </input-header>
+        <div v-show="randomTypesConfig.USE_LINK_STRENGTH_FACTOR_BOUNDS">
+          <config-bounds :step="0.1" :values="randomTypesConfig.LINK_STRENGTH_FACTOR_BOUNDS" />
+          <div class="grid-wrapper">
+            <div>
+              <flag
+                title="Symmetric"
+                v-model="randomTypesConfig.LINK_STRENGTH_FACTOR_MATRIX_SYMMETRIC"
+              />
+            </div>
+            <div></div>
+            <div>
+              <flag
+                title="Ignore self type"
+                v-model="randomTypesConfig.LINK_STRENGTH_FACTOR_IGNORE_SELF_TYPE"
+                style="text-align: center;"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div v-show="!useIgnoreSubMatricesBoundaryIndex">
         <input-header
           name="Link Length"

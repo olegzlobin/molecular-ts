@@ -15,6 +15,7 @@ export function createDefaultPopulateRandomTypesConfigCollection(): RandomTypesC
       USE_LINK_TYPE_WEIGHT_BOUNDS: true,
       USE_BOND_PREFERENCE_BOUNDS: false,
       USE_BOND_PREFERENCE_FACTOR_BOUNDS: false,
+      USE_LINK_STRENGTH_FACTOR_BOUNDS: false,
       USE_LINK_LENGTH_BOUNDS: false,
       USE_LINK_STIFFNESS_BOUNDS: false,
 
@@ -28,6 +29,7 @@ export function createDefaultPopulateRandomTypesConfigCollection(): RandomTypesC
       LINK_TYPE_WEIGHT_BOUNDS: [-3, 2, 1, 0.5, 1],
       BOND_PREFERENCE_BOUNDS: [0, 4, 1.5, 0.1, 1],
       BOND_PREFERENCE_FACTOR_BOUNDS: [0.5, 2, 1, 0.1, 1],
+      LINK_STRENGTH_FACTOR_BOUNDS: [0.3, 1.5, 1, 0.1, 1],
       LINK_LENGTH_BOUNDS: [0.7, 1.3, 1, 0.1, 1],
       LINK_STIFFNESS_BOUNDS: [0.5, 1.2, 1, 0.1, 1],
 
@@ -38,6 +40,8 @@ export function createDefaultPopulateRandomTypesConfigCollection(): RandomTypesC
       BOND_PREFERENCE_MATRIX_SYMMETRIC: true,
       BOND_PREFERENCE_FACTOR_MATRIX_SYMMETRIC: true,
       BOND_PREFERENCE_FACTOR_IGNORE_SELF_TYPE: true,
+      LINK_STRENGTH_FACTOR_MATRIX_SYMMETRIC: true,
+      LINK_STRENGTH_FACTOR_IGNORE_SELF_TYPE: true,
     },
     {
       TYPES_COUNT: 0,
@@ -52,6 +56,7 @@ export function createDefaultPopulateRandomTypesConfigCollection(): RandomTypesC
       USE_LINK_TYPE_WEIGHT_BOUNDS: true,
       USE_BOND_PREFERENCE_BOUNDS: false,
       USE_BOND_PREFERENCE_FACTOR_BOUNDS: false,
+      USE_LINK_STRENGTH_FACTOR_BOUNDS: false,
       USE_LINK_LENGTH_BOUNDS: false,
       USE_LINK_STIFFNESS_BOUNDS: false,
 
@@ -65,6 +70,7 @@ export function createDefaultPopulateRandomTypesConfigCollection(): RandomTypesC
       LINK_TYPE_WEIGHT_BOUNDS: [0.5, 2, 1, 0.5, 1],
       BOND_PREFERENCE_BOUNDS: [0, 4, 1.5, 0.1, 1],
       BOND_PREFERENCE_FACTOR_BOUNDS: [0.5, 2, 1, 0.1, 1],
+      LINK_STRENGTH_FACTOR_BOUNDS: [0.3, 1.5, 1, 0.1, 1],
       LINK_LENGTH_BOUNDS: [0.7, 1.3, 1, 0.1, 1],
       LINK_STIFFNESS_BOUNDS: [0.5, 1.2, 1, 0.1, 1],
 
@@ -75,6 +81,8 @@ export function createDefaultPopulateRandomTypesConfigCollection(): RandomTypesC
       BOND_PREFERENCE_MATRIX_SYMMETRIC: true,
       BOND_PREFERENCE_FACTOR_MATRIX_SYMMETRIC: true,
       BOND_PREFERENCE_FACTOR_IGNORE_SELF_TYPE: true,
+      LINK_STRENGTH_FACTOR_MATRIX_SYMMETRIC: true,
+      LINK_STRENGTH_FACTOR_IGNORE_SELF_TYPE: true,
     },
     {
       TYPES_COUNT: 0,
@@ -89,6 +97,7 @@ export function createDefaultPopulateRandomTypesConfigCollection(): RandomTypesC
       USE_LINK_TYPE_WEIGHT_BOUNDS: true,
       USE_BOND_PREFERENCE_BOUNDS: false,
       USE_BOND_PREFERENCE_FACTOR_BOUNDS: false,
+      USE_LINK_STRENGTH_FACTOR_BOUNDS: false,
       USE_LINK_LENGTH_BOUNDS: false,
       USE_LINK_STIFFNESS_BOUNDS: false,
 
@@ -102,6 +111,7 @@ export function createDefaultPopulateRandomTypesConfigCollection(): RandomTypesC
       LINK_TYPE_WEIGHT_BOUNDS: [0.5, 2, 1, 0.5, 1],
       BOND_PREFERENCE_BOUNDS: [0, 4, 1.5, 0.1, 1],
       BOND_PREFERENCE_FACTOR_BOUNDS: [0.5, 2, 1, 0.1, 1],
+      LINK_STRENGTH_FACTOR_BOUNDS: [0.3, 1.5, 1, 0.1, 1],
       LINK_LENGTH_BOUNDS: [0.7, 1.3, 1, 0.1, 1],
       LINK_STIFFNESS_BOUNDS: [0.5, 1.2, 1, 0.1, 1],
 
@@ -112,6 +122,8 @@ export function createDefaultPopulateRandomTypesConfigCollection(): RandomTypesC
       BOND_PREFERENCE_MATRIX_SYMMETRIC: true,
       BOND_PREFERENCE_FACTOR_MATRIX_SYMMETRIC: true,
       BOND_PREFERENCE_FACTOR_IGNORE_SELF_TYPE: true,
+      LINK_STRENGTH_FACTOR_MATRIX_SYMMETRIC: true,
+      LINK_STRENGTH_FACTOR_IGNORE_SELF_TYPE: true,
     }
   ];
 }
@@ -131,6 +143,7 @@ export function createDefaultMutationRandomTypesConfigCollection(): RandomTypesC
       USE_LINK_TYPE_WEIGHT_BOUNDS: true,
       USE_BOND_PREFERENCE_BOUNDS: false,
       USE_BOND_PREFERENCE_FACTOR_BOUNDS: false,
+      USE_LINK_STRENGTH_FACTOR_BOUNDS: false,
       USE_LINK_LENGTH_BOUNDS: false,
       USE_LINK_STIFFNESS_BOUNDS: false,
 
@@ -144,6 +157,7 @@ export function createDefaultMutationRandomTypesConfigCollection(): RandomTypesC
       LINK_TYPE_WEIGHT_BOUNDS: [-3, 2, 1, 0.5, 1],
       BOND_PREFERENCE_BOUNDS: [0, 4, 1.5, 0.1, 1],
       BOND_PREFERENCE_FACTOR_BOUNDS: [0.5, 2, 1, 0.1, 1],
+      LINK_STRENGTH_FACTOR_BOUNDS: [0.3, 1.5, 1, 0.1, 1],
       LINK_LENGTH_BOUNDS: [0.7, 1.3, 1, 0.1, 1],
       LINK_STIFFNESS_BOUNDS: [0.5, 1.2, 1, 0.1, 1],
 
@@ -154,6 +168,8 @@ export function createDefaultMutationRandomTypesConfigCollection(): RandomTypesC
       BOND_PREFERENCE_MATRIX_SYMMETRIC: true,
       BOND_PREFERENCE_FACTOR_MATRIX_SYMMETRIC: true,
       BOND_PREFERENCE_FACTOR_IGNORE_SELF_TYPE: true,
+      LINK_STRENGTH_FACTOR_MATRIX_SYMMETRIC: true,
+      LINK_STRENGTH_FACTOR_IGNORE_SELF_TYPE: true,
     },
     {
       TYPES_COUNT: 0,
@@ -168,6 +184,7 @@ export function createDefaultMutationRandomTypesConfigCollection(): RandomTypesC
       USE_LINK_TYPE_WEIGHT_BOUNDS: true,
       USE_BOND_PREFERENCE_BOUNDS: false,
       USE_BOND_PREFERENCE_FACTOR_BOUNDS: false,
+      USE_LINK_STRENGTH_FACTOR_BOUNDS: false,
       USE_LINK_LENGTH_BOUNDS: false,
       USE_LINK_STIFFNESS_BOUNDS: false,
 
@@ -181,6 +198,7 @@ export function createDefaultMutationRandomTypesConfigCollection(): RandomTypesC
       LINK_TYPE_WEIGHT_BOUNDS: [0.5, 2, 1, 0.5, 1],
       BOND_PREFERENCE_BOUNDS: [0, 4, 1.5, 0.1, 1],
       BOND_PREFERENCE_FACTOR_BOUNDS: [0.5, 2, 1, 0.1, 1],
+      LINK_STRENGTH_FACTOR_BOUNDS: [0.3, 1.5, 1, 0.1, 1],
       LINK_LENGTH_BOUNDS: [0.7, 1.3, 1, 0.1, 1],
       LINK_STIFFNESS_BOUNDS: [0.5, 1.2, 1, 0.1, 1],
 
@@ -191,6 +209,8 @@ export function createDefaultMutationRandomTypesConfigCollection(): RandomTypesC
       BOND_PREFERENCE_MATRIX_SYMMETRIC: true,
       BOND_PREFERENCE_FACTOR_MATRIX_SYMMETRIC: true,
       BOND_PREFERENCE_FACTOR_IGNORE_SELF_TYPE: true,
+      LINK_STRENGTH_FACTOR_MATRIX_SYMMETRIC: true,
+      LINK_STRENGTH_FACTOR_IGNORE_SELF_TYPE: true,
     },
     {
       TYPES_COUNT: 0,
@@ -205,6 +225,7 @@ export function createDefaultMutationRandomTypesConfigCollection(): RandomTypesC
       USE_LINK_TYPE_WEIGHT_BOUNDS: true,
       USE_BOND_PREFERENCE_BOUNDS: false,
       USE_BOND_PREFERENCE_FACTOR_BOUNDS: false,
+      USE_LINK_STRENGTH_FACTOR_BOUNDS: false,
       USE_LINK_LENGTH_BOUNDS: false,
       USE_LINK_STIFFNESS_BOUNDS: false,
 
@@ -218,6 +239,7 @@ export function createDefaultMutationRandomTypesConfigCollection(): RandomTypesC
       LINK_TYPE_WEIGHT_BOUNDS: [0.5, 2, 1, 0.5, 1],
       BOND_PREFERENCE_BOUNDS: [0, 4, 1.5, 0.1, 1],
       BOND_PREFERENCE_FACTOR_BOUNDS: [0.5, 2, 1, 0.1, 1],
+      LINK_STRENGTH_FACTOR_BOUNDS: [0.3, 1.5, 1, 0.1, 1],
       LINK_LENGTH_BOUNDS: [0.7, 1.3, 1, 0.1, 1],
       LINK_STIFFNESS_BOUNDS: [0.5, 1.2, 1, 0.1, 1],
 
@@ -228,6 +250,8 @@ export function createDefaultMutationRandomTypesConfigCollection(): RandomTypesC
       BOND_PREFERENCE_MATRIX_SYMMETRIC: true,
       BOND_PREFERENCE_FACTOR_MATRIX_SYMMETRIC: true,
       BOND_PREFERENCE_FACTOR_IGNORE_SELF_TYPE: true,
+      LINK_STRENGTH_FACTOR_MATRIX_SYMMETRIC: true,
+      LINK_STRENGTH_FACTOR_IGNORE_SELF_TYPE: true,
     },
     {
       TYPES_COUNT: 0,
@@ -242,6 +266,7 @@ export function createDefaultMutationRandomTypesConfigCollection(): RandomTypesC
       USE_LINK_TYPE_WEIGHT_BOUNDS: false,
       USE_BOND_PREFERENCE_BOUNDS: false,
       USE_BOND_PREFERENCE_FACTOR_BOUNDS: false,
+      USE_LINK_STRENGTH_FACTOR_BOUNDS: false,
       USE_LINK_LENGTH_BOUNDS: false,
       USE_LINK_STIFFNESS_BOUNDS: false,
 
@@ -255,6 +280,7 @@ export function createDefaultMutationRandomTypesConfigCollection(): RandomTypesC
       LINK_TYPE_WEIGHT_BOUNDS: [0.5, 2, 1, 0.5, 1],
       BOND_PREFERENCE_BOUNDS: [0, 4, 1.5, 0.1, 1],
       BOND_PREFERENCE_FACTOR_BOUNDS: [0.5, 2, 1, 0.1, 1],
+      LINK_STRENGTH_FACTOR_BOUNDS: [0.3, 1.5, 1, 0.1, 1],
       LINK_LENGTH_BOUNDS: [0.7, 1.3, 1, 0.1, 1],
       LINK_STIFFNESS_BOUNDS: [0.5, 1.2, 1, 0.1, 1],
 
@@ -265,6 +291,8 @@ export function createDefaultMutationRandomTypesConfigCollection(): RandomTypesC
       BOND_PREFERENCE_MATRIX_SYMMETRIC: true,
       BOND_PREFERENCE_FACTOR_MATRIX_SYMMETRIC: true,
       BOND_PREFERENCE_FACTOR_IGNORE_SELF_TYPE: true,
+      LINK_STRENGTH_FACTOR_MATRIX_SYMMETRIC: true,
+      LINK_STRENGTH_FACTOR_IGNORE_SELF_TYPE: true,
     }
   ];
 }

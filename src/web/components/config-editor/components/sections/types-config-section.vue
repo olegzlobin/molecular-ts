@@ -184,22 +184,40 @@ const refill = () => {
         />
         <config-list :values="typesConfig.LINK_STIFFNESS" :colors="typesConfig.COLORS" :step="0.1" :min="0" />
       </div>
-      <details class="bond-preference-factor">
-        <summary>Bond Preference Factor (catalysts / inhibitors)</summary>
-        <input-header
-          name="Agent → bond A ⟷ B"
-          tooltip="Tabs choose the agent type. The matrix multiplies Bond Preference of A–B while that agent is bonded to A or B. Values >1 catalyze, <1 inhibit, 0 blocks the swap path. Default 1 = no effect."
-          position="center"
-        />
-        <config-tensor
-          :values="typesConfig.BOND_PREFERENCE_FACTOR"
-          :colors="typesConfig.COLORS"
-          :step="0.1"
-          :min="0"
-          tab-label="Agent (bonded catalyst / inhibitor)"
-          matrix-hint="While the selected agent is bonded to A or B, multiply preference of bond A ⟷ B."
-          v-model:symmetric="typesSymmetricConfig.BOND_PREFERENCE_FACTOR_MATRIX_SYMMETRIC"
-        />
+      <details class="advanced-settings">
+        <summary>Advanced settings</summary>
+        <div class="advanced-block">
+          <input-header
+            name="Bond Preference Factor"
+            tooltip="Tabs choose the agent type. The matrix multiplies Bond Preference of A–B while that agent is bonded to A or B. Values >1 catalyze, <1 inhibit, 0 blocks the swap path. Default 1 = no effect."
+            position="center"
+          />
+          <config-tensor
+            :values="typesConfig.BOND_PREFERENCE_FACTOR"
+            :colors="typesConfig.COLORS"
+            :step="0.1"
+            :min="0"
+            tab-label="Agent (bonded catalyst / inhibitor)"
+            matrix-hint="While the selected agent is bonded to A or B, multiply preference of bond A ⟷ B."
+            v-model:symmetric="typesSymmetricConfig.BOND_PREFERENCE_FACTOR_MATRIX_SYMMETRIC"
+          />
+        </div>
+        <div class="advanced-block">
+          <input-header
+            name="Link Strength Factor"
+            tooltip="Tabs choose the agent type. Multiplies link stiffness and break radius of A–B while that agent is bonded to A or B. Values <1 weaken (easier to break), >1 strengthen. Default 1 = no effect."
+            position="center"
+          />
+          <config-tensor
+            :values="typesConfig.LINK_STRENGTH_FACTOR"
+            :colors="typesConfig.COLORS"
+            :step="0.1"
+            :min="0"
+            tab-label="Agent (bonded strength modifier)"
+            matrix-hint="While the selected agent is bonded to A or B, multiply strength of bond A ⟷ B."
+            v-model:symmetric="typesSymmetricConfig.LINK_STRENGTH_FACTOR_MATRIX_SYMMETRIC"
+          />
+        </div>
       </details>
       <div style="margin-top: 30px;">
         <input-header
@@ -225,15 +243,19 @@ const refill = () => {
 
 @use "../../assets/config-editor";
 
-.bond-preference-factor {
+.advanced-settings {
   margin-top: 16px;
   padding: 8px 0;
 }
 
-.bond-preference-factor > summary {
+.advanced-settings > summary {
   cursor: pointer;
   margin-bottom: 12px;
   opacity: 0.85;
+}
+
+.advanced-block + .advanced-block {
+  margin-top: 20px;
 }
 
 </style>
