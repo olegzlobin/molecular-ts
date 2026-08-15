@@ -88,7 +88,7 @@ export class Drawer2d implements DrawerInterface {
         // Проверяем, попадает ли линия в видимую область
         // Используем AABB (axis-aligned bounding box) линии с учетом ширины и кратности
         const bondOrder = this.getBondOrder(link);
-        const bondSpread = this.getBondSpread(bondOrder);
+        const bondSpread = this.getBondLayout(link, bondOrder).spread;
         const minX = Math.min(lhsX, rhsX) - linkWidth - bondSpread * this.viewConfig.scale[0];
         const maxX = Math.max(lhsX, rhsX) + linkWidth + bondSpread * this.viewConfig.scale[0];
         const minY = Math.min(lhsY, rhsY) - linkWidth - bondSpread * this.viewConfig.scale[1];
@@ -176,14 +176,22 @@ export class Drawer2d implements DrawerInterface {
   }
 
   private getBondOrder(link: LinkInterface): number {
-    return Math.max(1, Math.min(3, Math.round(link.order || 1)));
+    return Math.max(1, Math.round(link.order || 1));
   }
 
-  private getBondSpread(order: number): number {
+  private getBondLayout(link: LinkInterface, order: number): { width: number; spacing: number; spread: number } {
+    const baseWidth = this.getLinkWidth(link);
     if (order <= 1) {
-      return 0;
+      return { width: baseWidth, spacing: 0, spread: baseWidth / 2 };
     }
-    return this.WORLD_CONFIG.ATOM_RADIUS * 0.55 * (order - 1);
+
+    const rL = this.WORLD_CONFIG.ATOM_RADIUS * (this.TYPES_CONFIG.RADIUS[link.lhs.type] ?? 1);
+    const rR = this.WORLD_CONFIG.ATOM_RADIUS * (this.TYPES_CONFIG.RADIUS[link.rhs.type] ?? 1);
+    const maxTotal = Math.min(rL, rR) * (order === 2 ? 1.0 : 1.4);
+    const width = Math.min(baseWidth * 0.65, maxTotal / (order + 0.5));
+    const spacing = Math.max(0, (maxTotal - width) / (order - 1));
+    const spread = ((order - 1) / 2) * spacing + width / 2;
+    return { width, spacing, spread };
   }
 
   private drawBond(link: LinkInterface): void {
@@ -197,25 +205,16 @@ export class Drawer2d implements DrawerInterface {
     }
 
     const order = this.getBondOrder(link);
+    const { width, spacing } = this.getBondLayout(link, order);
     const color = `rgb(${this.getLinkColor(link).join(', ')})`;
     const nx = -dy / len;
     const ny = dx / len;
 
-    // Multiple strokes need thin lines + gap > stroke width, otherwise they fuse into one sausage.
-    const width = order === 1
-      ? this.getLinkWidth(link)
-      : Math.min(4.8, Math.max(2.4, this.getLinkWidth(link) * 0.7));
-    const spacing = order === 1
-      ? 0
-      : Math.max(width * 1.35, this.WORLD_CONFIG.ATOM_RADIUS * 0.55);
-
     for (let i = 0; i < order; ++i) {
       const offset = (i - (order - 1) / 2) * spacing;
-      const ox = nx * offset;
-      const oy = ny * offset;
       this.drawLine(
-        [from[0] + ox, from[1] + oy],
-        [to[0] + ox, to[1] + oy],
+        [from[0] + nx * offset, from[1] + ny * offset],
+        [to[0] + nx * offset, to[1] + ny * offset],
         width,
         color,
       );
