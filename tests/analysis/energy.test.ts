@@ -10,7 +10,7 @@ function typesStub(): TypesConfig {
     RADIUS: [1, 1],
     CHARGE: [0, 0],
     GRAVITY: [[0, 1], [1, 0]],
-    LINK_GRAVITY: [[0, 0], [0, 0]],
+    LINK_BIAS: [[0, 0], [0, 0]],
     LINKS: [0, 0],
     TYPE_LINKS: [[0, 0], [0, 0]],
     TYPE_LINK_WEIGHTS: [[1, 1], [1, 1]],

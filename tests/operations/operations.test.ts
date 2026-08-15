@@ -114,7 +114,7 @@ function dataProviderForOperationsPipe(): Array<[TypesConfig, ArgumentName, Oper
           [4, 5, 6],
           [7, 8, 9],
         ],
-        LINK_GRAVITY: [
+        LINK_BIAS: [
           [1, 1, 1],
           [2, 2, 2],
           [3, 3, 3],
@@ -125,7 +125,7 @@ function dataProviderForOperationsPipe(): Array<[TypesConfig, ArgumentName, Oper
         new Operation({
           type: OperationType.BINARY,
           factoryName: 'ADD',
-          rightArgument: 'LINK_GRAVITY',
+          rightArgument: 'LINK_BIAS',
         }).setFactoryArgValues([1]),
       ],
       [
@@ -142,7 +142,7 @@ function dataProviderForOperationsPipe(): Array<[TypesConfig, ArgumentName, Oper
           [4, 5, 6],
           [7, 8, 9],
         ],
-        LINK_GRAVITY: [
+        LINK_BIAS: [
           [1, 1, 1],
           [2, 2, 2],
           [3, 3, 3],
@@ -153,7 +153,7 @@ function dataProviderForOperationsPipe(): Array<[TypesConfig, ArgumentName, Oper
         new Operation({
           type: OperationType.BINARY,
           factoryName: 'ADD',
-          rightArgument: 'LINK_GRAVITY',
+          rightArgument: 'LINK_BIAS',
         }).setFactoryArgValues([1]),
         new Operation({
           type: OperationType.UNARY,

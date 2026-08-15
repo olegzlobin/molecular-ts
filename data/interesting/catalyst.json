@@ -108,14 +108,14 @@
         -10
       ]
     ],
-    "LINK_GRAVITY": [
+    "LINK_BIAS": [
       [
-        0,
-        0
+        0.0,
+        0.0
       ],
       [
-        0,
-        -50
+        0.0,
+        -0.5
       ]
     ],
     "LINKS": [
@@ -200,7 +200,7 @@
   },
   "typesSymmetricConfig": {
     "GRAVITY_MATRIX_SYMMETRIC": true,
-    "LINK_GRAVITY_MATRIX_SYMMETRIC": true,
+    "LINK_BIAS_MATRIX_SYMMETRIC": true,
     "LINK_TYPE_MATRIX_SYMMETRIC": true,
     "LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC": true,
     "BOND_PREFERENCE_MATRIX_SYMMETRIC": true,

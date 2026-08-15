@@ -21,17 +21,24 @@ export function convertWorldConfigForBackwardCompatibility(inputConfig: WorldCon
 
 export function convertTypesConfigForBackwardCompatibility(inputConfig: TypesConfig): TypesConfig {
   const config = fullCopyObject(inputConfig);
+  const raw = config as Record<string, unknown>;
 
   deleteKey(config, 'LINK_FACTOR_DISTANCE');
   deleteKey(config, 'LINK_FACTOR_ELASTIC');
   deleteKey(config, 'LINK_FACTOR_DISTANCE_EXTENDED');
   deleteKey(config, 'LINK_FACTOR_DISTANCE_USE_EXTENDED');
 
-  const mistypedTransforms = (config as Record<string, unknown>).TRANSFORMS;
-  if (mistypedTransforms !== undefined && config.TRANSFORMATION === undefined) {
-    config.TRANSFORMATION = mistypedTransforms as TypesConfig['TRANSFORMATION'];
+  const mistypedTransforms = raw.TRANSFORMS;
+  if (mistypedTransforms !== undefined && config.TRANSFORMS === undefined) {
+    config.TRANSFORMS = mistypedTransforms as TypesConfig['TRANSFORMS'];
   }
-  deleteKey(config as Record<string, unknown>, 'TRANSFORMS');
+  deleteKey(raw, 'TRANSFORMS');
+
+  // LINK_GRAVITY was 1/r²; LINK_BIAS is constant ≈ old / r² at typical bond length (~10)
+  if (raw.LINK_GRAVITY !== undefined && raw.LINK_BIAS === undefined) {
+    raw.LINK_BIAS = scaleLegacyLinkGravityMatrix(raw.LINK_GRAVITY);
+  }
+  deleteKey(raw, 'LINK_GRAVITY');
 
   if (config.DECAYS === undefined) {
     config.DECAYS = {};
@@ -44,8 +51,8 @@ export function convertTypesConfigForBackwardCompatibility(inputConfig: TypesCon
     }
   }
 
-  if (config.TRANSFORMATION === undefined) {
-    config.TRANSFORMATION = {};
+  if (config.TRANSFORMS === undefined) {
+    config.TRANSFORMS = {};
   }
 
   ensureNumericTypesFields(config);
@@ -57,6 +64,14 @@ export function convertTypesConfigForBackwardCompatibility(inputConfig: TypesCon
 
 export function convertRandomTypesConfigForBackwardCompatibility(inputConfig: RandomTypesConfig): RandomTypesConfig {
   const config = fullCopyObject(inputConfig);
+  const raw = config as Record<string, unknown>;
+  renameKey(raw, 'USE_LINK_GRAVITY_BOUNDS', 'USE_LINK_BIAS_BOUNDS');
+  renameKey(raw, 'LINK_GRAVITY_MATRIX_SYMMETRIC', 'LINK_BIAS_MATRIX_SYMMETRIC');
+  if (raw.LINK_GRAVITY_BOUNDS !== undefined && raw.LINK_BIAS_BOUNDS === undefined) {
+    raw.LINK_BIAS_BOUNDS = scaleLegacyLinkGravityBounds(raw.LINK_GRAVITY_BOUNDS);
+  }
+  deleteKey(raw, 'LINK_GRAVITY_BOUNDS');
+
   if (config.USE_LINK_LENGTH_BOUNDS === undefined) {
     config.USE_LINK_LENGTH_BOUNDS = false;
   }
@@ -96,12 +111,14 @@ export function convertRandomTypesConfigForBackwardCompatibility(inputConfig: Ra
   if (config.BOND_PREFERENCE_FACTOR_IGNORE_SELF_TYPE === undefined) {
     config.BOND_PREFERENCE_FACTOR_IGNORE_SELF_TYPE = true;
   }
-  deleteKey(config as Record<string, unknown>, 'BOND_PREFERENCE_FACTOR_DEVIATION_SHARE');
+  deleteKey(raw, 'BOND_PREFERENCE_FACTOR_DEVIATION_SHARE');
   return config;
 }
 
 export function convertTypesSymmetricConfigForBackwardCompatibility(inputConfig: TypesSymmetricConfig): TypesSymmetricConfig {
   const config = fullCopyObject(inputConfig);
+  const raw = config as Record<string, unknown>;
+  renameKey(raw, 'LINK_GRAVITY_MATRIX_SYMMETRIC', 'LINK_BIAS_MATRIX_SYMMETRIC');
   if (config.BOND_PREFERENCE_MATRIX_SYMMETRIC === undefined) {
     config.BOND_PREFERENCE_MATRIX_SYMMETRIC = true;
   }
@@ -111,6 +128,36 @@ export function convertTypesSymmetricConfigForBackwardCompatibility(inputConfig:
   deleteKey(config, 'LINK_FACTOR_DISTANCE_MATRIX_SYMMETRIC');
   deleteKey(config, 'LINK_FACTOR_ELASTIC_MATRIX_SYMMETRIC');
   return config;
+}
+
+const LEGACY_LINK_GRAVITY_SCALE = 0.01;
+
+function scaleLegacyLinkGravityMatrix(value: unknown): number[][] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return value.map((row) => (
+    Array.isArray(row)
+      ? row.map((cell) => Number(cell) * LEGACY_LINK_GRAVITY_SCALE)
+      : []
+  ));
+}
+
+function scaleLegacyLinkGravityBounds(value: unknown): [number, number, number?, number?, number?] {
+  if (!Array.isArray(value) || value.length < 2) {
+    return [-0.5, 0.2, -0.1, 0.05, 1];
+  }
+  const scaled = value.map((x, i) => (
+    i < 4 && typeof x === 'number' ? Number((x * LEGACY_LINK_GRAVITY_SCALE).toFixed(6)) : x
+  ));
+  return scaled as [number, number, number?, number?, number?];
+}
+
+function renameKey(input: Record<string, unknown>, from: string, to: string): void {
+  if (input[from] !== undefined && input[to] === undefined) {
+    input[to] = input[from];
+  }
+  deleteKey(input, from);
 }
 
 function deleteKey<T extends Record<string, unknown>>(input: T, key: string): T {

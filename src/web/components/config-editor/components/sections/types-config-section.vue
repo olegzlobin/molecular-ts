@@ -118,16 +118,15 @@ const refill = () => {
       </div>
       <div>
         <input-header
-          name="Link Gravity"
-          tooltip="Gravity coefficient matrix for linked particles shows whether a particle of one type will attract or
-                   repel a particle of another type in the case when they are linked to each other, and with what force."
+          name="Link Bias"
+          tooltip="Constant radial force along a bond. Positive attracts, negative repels. Shifts effective bond length against the spring."
           position="center"
         />
         <config-matrix
-          :values="typesConfig.LINK_GRAVITY"
+          :values="typesConfig.LINK_BIAS"
           :colors="typesConfig.COLORS"
-          :step="0.1"
-          v-model:symmetric="typesSymmetricConfig.LINK_GRAVITY_MATRIX_SYMMETRIC"
+          :step="0.01"
+          v-model:symmetric="typesSymmetricConfig.LINK_BIAS_MATRIX_SYMMETRIC"
         />
       </div>
       <div>

@@ -42,7 +42,7 @@ export const TYPE_NUMERIC_FIELDS: TypeNumericField[] = [
   { key: 'LINK_LENGTH', rank: 1, fill: 1 },
   { key: 'LINK_STIFFNESS', rank: 1, fill: 1 },
   { key: 'GRAVITY', rank: 2, fill: 0 },
-  { key: 'LINK_GRAVITY', rank: 2, fill: 0 },
+  { key: 'LINK_BIAS', rank: 2, fill: 0 },
   { key: 'TYPE_LINKS', rank: 2, fill: 0 },
   { key: 'TYPE_LINK_WEIGHTS', rank: 2, fill: 1 },
   { key: 'BOND_PREFERENCE', rank: 2, fill: 0 },

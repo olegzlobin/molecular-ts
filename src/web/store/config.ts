@@ -48,7 +48,7 @@ export const useConfigStore = defineStore("config", () => {
 
   const typesSymmetricConfig: Ref<TypesSymmetricConfig> = ref({
     GRAVITY_MATRIX_SYMMETRIC: true,
-    LINK_GRAVITY_MATRIX_SYMMETRIC: true,
+    LINK_BIAS_MATRIX_SYMMETRIC: true,
     LINK_TYPE_MATRIX_SYMMETRIC: true,
     LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC: true,
     BOND_PREFERENCE_MATRIX_SYMMETRIC: true,
@@ -250,8 +250,8 @@ export const useConfigStore = defineStore("config", () => {
     if (config.USE_GRAVITY_BOUNDS) {
       typesSymmetricConfig.value.GRAVITY_MATRIX_SYMMETRIC = config.GRAVITY_MATRIX_SYMMETRIC;
     }
-    if (config.USE_LINK_GRAVITY_BOUNDS) {
-      typesSymmetricConfig.value.LINK_GRAVITY_MATRIX_SYMMETRIC = config.LINK_GRAVITY_MATRIX_SYMMETRIC;
+    if (config.USE_LINK_BIAS_BOUNDS) {
+      typesSymmetricConfig.value.LINK_BIAS_MATRIX_SYMMETRIC = config.LINK_BIAS_MATRIX_SYMMETRIC;
     }
     if (config.USE_LINK_TYPE_WEIGHT_BOUNDS) {
       typesSymmetricConfig.value.LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC = config.LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC;
@@ -268,8 +268,8 @@ export const useConfigStore = defineStore("config", () => {
     if (typesSymmetricConfig.value.GRAVITY_MATRIX_SYMMETRIC) {
       makeMatrixSymmetric(typesConfig.value.GRAVITY);
     }
-    if (typesSymmetricConfig.value.LINK_GRAVITY_MATRIX_SYMMETRIC) {
-      makeMatrixSymmetric(typesConfig.value.LINK_GRAVITY);
+    if (typesSymmetricConfig.value.LINK_BIAS_MATRIX_SYMMETRIC) {
+      makeMatrixSymmetric(typesConfig.value.LINK_BIAS);
     }
     if (typesSymmetricConfig.value.LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC) {
       makeMatrixSymmetric(typesConfig.value.TYPE_LINK_WEIGHTS);

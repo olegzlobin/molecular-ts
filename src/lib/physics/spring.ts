@@ -30,9 +30,9 @@ export class PhysicModelSpring implements PhysicModelInterface {
     }
 
     const bonded = lhs.bonds.has(rhs);
-    const gravityMatrix = bonded ? this.TYPES_CONFIG.LINK_GRAVITY : this.TYPES_CONFIG.GRAVITY;
-    const gL = gravityMatrix[lhs.type][rhs.type];
-    const gR = gravityMatrix[rhs.type][lhs.type];
+    const matrix = bonded ? this.TYPES_CONFIG.LINK_BIAS : this.TYPES_CONFIG.GRAVITY;
+    const gL = matrix[lhs.type][rhs.type];
+    const gR = matrix[rhs.type][lhs.type];
     const qi = this.TYPES_CONFIG.CHARGE?.[lhs.type] ?? 0;
     const qj = this.TYPES_CONFIG.CHARGE?.[rhs.type] ?? 0;
     const coulomb = (qi !== 0 && qj !== 0)
@@ -45,6 +45,12 @@ export class PhysicModelSpring implements PhysicModelInterface {
 
     const invDist2 = 1 / Math.max(dist2, 1);
     const gravityMult = this.WORLD_CONFIG.GRAVITY_FORCE_MULTIPLIER;
+    if (bonded) {
+      return [
+        (gravityMult * gL - coulomb * invDist2) * massL,
+        (gravityMult * gR - coulomb * invDist2) * massR,
+      ];
+    }
     return [
       (gravityMult * gL - coulomb) * invDist2 * massL,
       (gravityMult * gR - coulomb) * invDist2 * massR,

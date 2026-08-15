@@ -15,7 +15,7 @@ function typesConfig(): TypesConfig {
       [0, 0, 0],
       [0, 0, 0],
     ],
-    LINK_GRAVITY: [
+    LINK_BIAS: [
       [0, 0, 0],
       [0, 0, 0],
       [0, 0, 0],
@@ -52,7 +52,7 @@ function nitrogenTypesConfig(): TypesConfig {
     CHARGE: [0, 0],
     FREQUENCIES: [1, 1],
     GRAVITY: [[0, 0], [0, 0]],
-    LINK_GRAVITY: [[0, 0], [0, 0]],
+    LINK_BIAS: [[0, 0], [0, 0]],
     LINKS: [3, 1],
     TYPE_LINKS: [
       [1, 3],

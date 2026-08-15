@@ -75,7 +75,7 @@ Link: F = k · ε · (r − L) / m
 Bounce (r < Rᵢ+Rⱼ): F = −k_b · (Rᵢ+Rⱼ − r) / m
 
 Gravity: F = (G·g − k_c·qᵢ·qⱼ) / r² / m
-  uses Link Gravity when bonded
+Link Bias (bonded): F = G·b / m  (constant; coulomb still / r²)
 
 Bounds: F = k_w · Δ
 

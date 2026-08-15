@@ -44,14 +44,7 @@ function atomMass(typesConfig: TypesConfig, type: number): number {
   return mass > 0 ? mass : 1;
 }
 
-function gravityCoeff(
-  typesConfig: TypesConfig,
-  lhs: AtomInterface,
-  rhs: AtomInterface,
-): number {
-  const matrix = lhs.bonds.has(rhs)
-    ? typesConfig.LINK_GRAVITY
-    : typesConfig.GRAVITY;
+function pairForceCoeff(matrix: number[][], lhs: AtomInterface, rhs: AtomInterface): number {
   return (matrix[lhs.type][rhs.type] + matrix[rhs.type][lhs.type]) / 2;
 }
 
@@ -59,6 +52,10 @@ function gravityPotentialV2(gEff: number, dist: number): number {
   if (dist >= 1) {
     return -gEff / dist;
   }
+  return -gEff * dist;
+}
+
+function linkBiasPotential(gEff: number, dist: number): number {
   return -gEff * dist;
 }
 
@@ -127,13 +124,20 @@ export function computeEnergy(input: ComputeEnergyInput): EnergySnapshot {
       return;
     }
 
-    const g = worldConfig.GRAVITY_FORCE_MULTIPLIER * gravityCoeff(typesConfig, lhs, rhs);
+    const bonded = lhs.bonds.has(rhs);
+    const g = worldConfig.GRAVITY_FORCE_MULTIPLIER * pairForceCoeff(
+      bonded ? typesConfig.LINK_BIAS : typesConfig.GRAVITY,
+      lhs,
+      rhs,
+    );
     const qi = typesConfig.CHARGE?.[lhs.type] ?? 0;
     const qj = typesConfig.CHARGE?.[rhs.type] ?? 0;
     const coulomb = (qi !== 0 && qj !== 0)
       ? -worldConfig.COULOMB_FORCE_MULTIPLIER * qi * qj
       : 0;
-    snapshot.gravity += gravityPotentialV2(g + coulomb, dist);
+    snapshot.gravity += bonded
+      ? linkBiasPotential(g, dist) + gravityPotentialV2(coulomb, dist)
+      : gravityPotentialV2(g + coulomb, dist);
   });
 
   for (const link of links) {

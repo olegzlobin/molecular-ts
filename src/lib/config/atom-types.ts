@@ -124,9 +124,9 @@ export function createDefaultTypesConfig(): TypesConfig {
     RADIUS: [1, 0.6, 1, 1],
     CHARGE: [0, 0, 0, 0],
     GRAVITY: createFilledMatrix(4, 4, 0),
-    // Strong C-C repulsion while bonded keeps carbon networks from collapsing into mush
-    LINK_GRAVITY: [
-      [-15, 0, 0, 0],
+    // Constant radial bias while bonded; C–C repulsion keeps carbon networks from collapsing
+    LINK_BIAS: [
+      [-0.15, 0, 0, 0],
       [0, 0, 0, 0],
       [0, 0, 0, 0],
       [0, 0, 0, 0],
@@ -196,7 +196,7 @@ export function createRandomTypesConfig({
   FREQUENCY_BOUNDS,
   CHARGE_BOUNDS,
   GRAVITY_BOUNDS,
-  LINK_GRAVITY_BOUNDS,
+  LINK_BIAS_BOUNDS,
   LINK_BOUNDS,
   LINK_TYPE_BOUNDS,
   LINK_TYPE_WEIGHT_BOUNDS,
@@ -205,7 +205,7 @@ export function createRandomTypesConfig({
   LINK_LENGTH_BOUNDS,
   LINK_STIFFNESS_BOUNDS,
   GRAVITY_MATRIX_SYMMETRIC,
-  LINK_GRAVITY_MATRIX_SYMMETRIC,
+  LINK_BIAS_MATRIX_SYMMETRIC,
   LINK_TYPE_MATRIX_SYMMETRIC,
   LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC,
   BOND_PREFERENCE_MATRIX_SYMMETRIC,
@@ -245,11 +245,11 @@ export function createRandomTypesConfig({
     precision,
   );
 
-  const linkGravity = randomizeMatrix(
+  const linkBias = randomizeMatrix(
     TYPES_COUNT,
-    LINK_GRAVITY_BOUNDS,
+    LINK_BIAS_BOUNDS,
     createRandomFloat,
-    LINK_GRAVITY_MATRIX_SYMMETRIC,
+    LINK_BIAS_MATRIX_SYMMETRIC,
     precision,
   );
 
@@ -297,7 +297,7 @@ export function createRandomTypesConfig({
     CHARGE: charge,
     GRAVITY: gravity,
     FREQUENCIES: frequencies,
-    LINK_GRAVITY: linkGravity,
+    LINK_BIAS: linkBias,
     LINKS: links,
     TYPE_LINKS: deriveTypeLinksMatrix(links, typeLinkWeights),
     TYPE_LINK_WEIGHTS: typeLinkWeights,
@@ -318,7 +318,7 @@ export function createRandomIntTypesConfig({
   FREQUENCY_BOUNDS,
   CHARGE_BOUNDS,
   GRAVITY_BOUNDS,
-  LINK_GRAVITY_BOUNDS,
+  LINK_BIAS_BOUNDS,
   LINK_BOUNDS,
   LINK_TYPE_BOUNDS,
   LINK_TYPE_WEIGHT_BOUNDS,
@@ -327,7 +327,7 @@ export function createRandomIntTypesConfig({
   LINK_LENGTH_BOUNDS,
   LINK_STIFFNESS_BOUNDS,
   GRAVITY_MATRIX_SYMMETRIC,
-  LINK_GRAVITY_MATRIX_SYMMETRIC,
+  LINK_BIAS_MATRIX_SYMMETRIC,
   LINK_TYPE_MATRIX_SYMMETRIC,
   LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC,
   BOND_PREFERENCE_MATRIX_SYMMETRIC,
@@ -365,11 +365,11 @@ export function createRandomIntTypesConfig({
     0,
   );
 
-  const linkGravity = randomizeMatrix(
+  const linkBias = randomizeMatrix(
     TYPES_COUNT,
-    LINK_GRAVITY_BOUNDS,
+    LINK_BIAS_BOUNDS,
     createRandomInteger,
-    LINK_GRAVITY_MATRIX_SYMMETRIC,
+    LINK_BIAS_MATRIX_SYMMETRIC,
     0,
   );
 
@@ -417,7 +417,7 @@ export function createRandomIntTypesConfig({
     CHARGE: charge,
     GRAVITY: gravity,
     FREQUENCIES: frequencies,
-    LINK_GRAVITY: linkGravity,
+    LINK_BIAS: linkBias,
     LINKS: links,
     TYPE_LINKS: deriveTypeLinksMatrix(links, typeLinkWeights),
     TYPE_LINK_WEIGHTS: typeLinkWeights,
@@ -440,7 +440,7 @@ export function createDefaultRandomTypesConfig(typesCount: number): RandomTypesC
     USE_FREQUENCY_BOUNDS: false,
     USE_CHARGE_BOUNDS: false,
     USE_GRAVITY_BOUNDS: true,
-    USE_LINK_GRAVITY_BOUNDS: true,
+    USE_LINK_BIAS_BOUNDS: true,
     USE_LINK_BOUNDS: true,
     USE_LINK_TYPE_BOUNDS: false,
     USE_LINK_TYPE_WEIGHT_BOUNDS: true,
@@ -453,7 +453,7 @@ export function createDefaultRandomTypesConfig(typesCount: number): RandomTypesC
     FREQUENCY_BOUNDS: [0.1, 1, 0.5, 0.1, 1],
     CHARGE_BOUNDS: [-2, 2, 0, 0.5, 1],
     GRAVITY_BOUNDS: [-15, 1, -1, 0.1, 1],
-    LINK_GRAVITY_BOUNDS: [-20, -1, -1, 0.1, 1],
+    LINK_BIAS_BOUNDS: [-0.5, 0.2, -0.1, 0.05, 1],
     LINK_BOUNDS: [1, 8, 3],
     LINK_TYPE_BOUNDS: [0, 4, 2],
     LINK_TYPE_WEIGHT_BOUNDS: [1, 2, 1, 1, 1],
@@ -463,7 +463,7 @@ export function createDefaultRandomTypesConfig(typesCount: number): RandomTypesC
     LINK_STIFFNESS_BOUNDS: [0.5, 1.2, 1, 0.1, 1],
 
     GRAVITY_MATRIX_SYMMETRIC: false,
-    LINK_GRAVITY_MATRIX_SYMMETRIC: false,
+    LINK_BIAS_MATRIX_SYMMETRIC: false,
     LINK_TYPE_MATRIX_SYMMETRIC: false,
     LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC: false,
     BOND_PREFERENCE_MATRIX_SYMMETRIC: true,
@@ -475,7 +475,7 @@ export function createDefaultRandomTypesConfig(typesCount: number): RandomTypesC
 export function createDisabledTypesSymmetricConfig(): TypesSymmetricConfig {
   return {
     GRAVITY_MATRIX_SYMMETRIC: false,
-    LINK_GRAVITY_MATRIX_SYMMETRIC: false,
+    LINK_BIAS_MATRIX_SYMMETRIC: false,
     LINK_TYPE_MATRIX_SYMMETRIC: false,
     LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC: false,
     BOND_PREFERENCE_MATRIX_SYMMETRIC: false,
@@ -597,14 +597,14 @@ export function randomizeTypesConfig(
     }
   }
 
-  if (!randomTypesConfig.USE_LINK_GRAVITY_BOUNDS) {
-    copyConfigMatrixValue(oldConfig.LINK_GRAVITY, newConfig.LINK_GRAVITY, 0);
+  if (!randomTypesConfig.USE_LINK_BIAS_BOUNDS) {
+    copyConfigMatrixValue(oldConfig.LINK_BIAS, newConfig.LINK_BIAS, 0);
   } else {
-    if (randomTypesConfig.LINK_GRAVITY_MATRIX_SYMMETRIC) {
-      makeMatrixSymmetric(newConfig.LINK_GRAVITY);
+    if (randomTypesConfig.LINK_BIAS_MATRIX_SYMMETRIC) {
+      makeMatrixSymmetric(newConfig.LINK_BIAS);
     }
     if (skipSubMatricesBoundaryIndex !== undefined) {
-      copyConfigMatrixValue(oldConfig.LINK_GRAVITY, newConfig.LINK_GRAVITY, 0, skipSubMatricesBoundaryIndex);
+      copyConfigMatrixValue(oldConfig.LINK_BIAS, newConfig.LINK_BIAS, 0, skipSubMatricesBoundaryIndex);
     }
   }
 
@@ -742,7 +742,7 @@ export function clearInactiveParams(config: TypesConfig) {
   const pairs = getUnableToConnectTypePairs(config);
   for (const [i, j] of pairs) {
     config.TYPE_LINK_WEIGHTS[i][j] = 1;
-    config.LINK_GRAVITY[i][j] = 0;
+    config.LINK_BIAS[i][j] = 0;
   }
   syncDerivedTypeLinks(config);
 }

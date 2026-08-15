@@ -136,19 +136,18 @@ const randomizeTypesConfig = () => {
 
       <div>
         <input-header
-          name="Link Gravity"
-          tooltip="Gravity coefficient matrix for linked particles shows whether a particle of one type will attract or
-                 repel a particle of another type in the case when they are linked to each other, and with what force."
+          name="Link Bias"
+          tooltip="Constant radial force along bonded pairs. Positive attracts, negative repels."
           tooltip-position="left"
         >
-          <input type="checkbox" class="title-flag" v-model="randomTypesConfig.USE_LINK_GRAVITY_BOUNDS" />
+          <input type="checkbox" class="title-flag" v-model="randomTypesConfig.USE_LINK_BIAS_BOUNDS" />
         </input-header>
-        <div v-show="randomTypesConfig.USE_LINK_GRAVITY_BOUNDS">
+        <div v-show="randomTypesConfig.USE_LINK_BIAS_BOUNDS">
           <config-bounds
-            :step="1"
-            :values="randomTypesConfig.LINK_GRAVITY_BOUNDS"
+            :step="0.05"
+            :values="randomTypesConfig.LINK_BIAS_BOUNDS"
           />
-        <flag title="Symmetric" v-model="randomTypesConfig.LINK_GRAVITY_MATRIX_SYMMETRIC" />
+        <flag title="Symmetric" v-model="randomTypesConfig.LINK_BIAS_MATRIX_SYMMETRIC" />
         </div>
       </div>
 
