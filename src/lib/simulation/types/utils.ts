@@ -7,7 +7,7 @@ export interface LinksPoolInterface {
 
 export interface LinkManagerInterface extends Iterable<LinkInterface> {
   length: number;
-  create(lhs: AtomInterface, rhs: AtomInterface): LinkInterface;
+  create(lhs: AtomInterface, rhs: AtomInterface, order?: number): LinkInterface;
   delete(link: LinkInterface): void;
   find(lhs: AtomInterface, rhs: AtomInterface): LinkInterface | undefined;
   clear(): void;
@@ -21,6 +21,7 @@ export type LinkSwapPlan = {
 
 export interface RulesHelperInterface {
   canLink(lhs: AtomInterface, rhs: AtomInterface): boolean;
+  getLinkOrder(lhs: AtomInterface, rhs: AtomInterface): number;
   getLinkSwapPlan(lhs: AtomInterface, rhs: AtomInterface): LinkSwapPlan | null;
   isLinkRedundant(lhs: AtomInterface, rhs: AtomInterface): boolean;
   hasMergeTransform(lhs: AtomInterface, rhs: AtomInterface): boolean;

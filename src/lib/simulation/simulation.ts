@@ -209,7 +209,7 @@ export class Simulation implements SimulationInterface {
         console.warn(link, atomsMap, atoms);
       }
 
-      this._links.create(atomsMap.get(link[0])!, atomsMap.get(link[1])!);
+      this._links.create(atomsMap.get(link[0])!, atomsMap.get(link[1])!, link[2] ?? 1);
     }
 
     if (needToStart) {

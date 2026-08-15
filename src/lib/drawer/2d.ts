@@ -176,10 +176,7 @@ export class Drawer2d implements DrawerInterface {
   }
 
   private getBondOrder(link: LinkInterface): number {
-    const weights = this.TYPES_CONFIG.TYPE_LINK_WEIGHTS;
-    const forward = weights?.[link.lhs.type]?.[link.rhs.type] ?? 1;
-    const backward = weights?.[link.rhs.type]?.[link.lhs.type] ?? 1;
-    return Math.max(1, Math.min(3, Math.round(Math.max(forward, backward))));
+    return Math.max(1, Math.min(3, Math.round(link.order || 1)));
   }
 
   private getBondSpread(order: number): number {

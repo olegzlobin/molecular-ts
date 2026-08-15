@@ -101,7 +101,7 @@ describe('computeEnergy', () => {
     const lhs = createAtom(0, [0, 0], [0, 0]);
     const rhs = createAtom(1, [20, 0], [0, 0]);
 
-    const link = { id: '0-1', lhs, rhs, exportState: () => [lhs.id, rhs.id] } as LinkInterface;
+    const link = { id: '0-1', lhs, rhs, order: 1, exportState: () => [lhs.id, rhs.id, 1] } as LinkInterface;
 
     const snapshot = computeEnergy({
       atoms: [lhs, rhs],

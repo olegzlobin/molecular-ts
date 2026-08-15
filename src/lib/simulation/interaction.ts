@@ -161,7 +161,12 @@ export class InteractionManager implements InteractionManagerInterface {
         }
       }
 
-      const link = this.linkManager.create(lhs, rhs);
+      const order = this.ruleHelper.getLinkOrder(lhs, rhs);
+      if (order < 1) {
+        return;
+      }
+
+      const link = this.linkManager.create(lhs, rhs, order);
 
       const transformations = this.ruleHelper.handleTransform(lhs, rhs);
       for (const transformation of transformations) {

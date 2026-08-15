@@ -9,8 +9,10 @@ import { toVector } from '../math';
 
 class BondMap implements BondMapInterface {
   private storage: Record<number, AtomInterface> = {};
+  private orders: Record<number, number> = {};
   private typesCount: Record<number, number> = {};
   private count: number = 0;
+  private totalOrder: number = 0;
 
   get length(): number {
     return this.count;
@@ -24,8 +26,10 @@ class BondMap implements BondMapInterface {
     return this.storage.hasOwnProperty(atom.id);
   }
 
-  add(atom: AtomInterface): void {
+  add(atom: AtomInterface, order: number = 1): void {
     this.storage[atom.id] = atom;
+    this.orders[atom.id] = order;
+    this.totalOrder += order;
     if (!this.typesCount.hasOwnProperty(atom.type)) {
       this.typesCount[atom.type] = 0;
     }
@@ -34,7 +38,9 @@ class BondMap implements BondMapInterface {
   }
 
   delete(atom: AtomInterface): void {
+    this.totalOrder -= this.orders[atom.id] ?? 0;
     delete this.storage[atom.id];
+    delete this.orders[atom.id];
     this.typesCount[atom.type]--;
     this.count--;
   }
@@ -52,6 +58,14 @@ class BondMap implements BondMapInterface {
         console.warn('error', this.typesCount[atom.type], this.typesCount[newType]);
       }
     }
+  }
+
+  getOrder(atom: AtomInterface): number {
+    return this.orders[atom.id] ?? 0;
+  }
+
+  getTotalOrder(): number {
+    return this.totalOrder;
   }
 
   getTypesCountMap(): Record<number, number> {
@@ -99,10 +113,12 @@ export class Atom implements AtomInterface {
 export class Link implements LinkInterface {
   lhs: AtomInterface;
   rhs: AtomInterface;
+  order: number;
 
-  constructor(lhs: AtomInterface, rhs: AtomInterface) {
+  constructor(lhs: AtomInterface, rhs: AtomInterface, order: number = 1) {
     this.lhs = lhs;
     this.rhs = rhs;
+    this.order = order;
   }
 
   get id(): string {
@@ -110,6 +126,6 @@ export class Link implements LinkInterface {
   }
 
   exportState(): number[] {
-    return [this.lhs.id, this.rhs.id];
+    return [this.lhs.id, this.rhs.id, this.order];
   }
 }

@@ -24,6 +24,7 @@ class LinkPool implements LinksPoolInterface {
       const result = this.storage.pop() as LinkInterface;
       result.lhs = lhs;
       result.rhs = rhs;
+      result.order = 1;
       return result;
     }
     return new Link(lhs, rhs);
@@ -42,10 +43,11 @@ export class LinkManager implements LinkManagerInterface {
     return this.storage.size;
   }
 
-  create(lhs: AtomInterface, rhs: AtomInterface): LinkInterface {
+  create(lhs: AtomInterface, rhs: AtomInterface, order: number = 1): LinkInterface {
     const link = this.pool.allocate(lhs, rhs);
-    lhs.bonds.add(rhs);
-    rhs.bonds.add(lhs);
+    link.order = order;
+    lhs.bonds.add(rhs, order);
+    rhs.bonds.add(lhs, order);
     this.storage.add(link);
     return link;
   }
@@ -97,6 +99,14 @@ export class RulesHelper implements RulesHelperInterface {
     return this._canLink(lhs, rhs) && this._canLink(rhs, lhs);
   }
 
+  getLinkOrder(lhs: AtomInterface, rhs: AtomInterface): number {
+    const nominal = Math.min(
+      this._nominalWeight(lhs.type, rhs.type),
+      this._nominalWeight(rhs.type, lhs.type),
+    );
+    return Math.min(nominal, this._freeValence(lhs), this._freeValence(rhs));
+  }
+
   getLinkSwapPlan(lhs: AtomInterface, rhs: AtomInterface): LinkSwapPlan | null {
     if (this.canLink(lhs, rhs)) {
       return { breakLhsWith: [], breakRhsWith: [] };
@@ -140,8 +150,7 @@ export class RulesHelper implements RulesHelperInterface {
   }
 
   private _canLink(lhs: AtomInterface, rhs: AtomInterface): boolean {
-    const weight = this.TYPES_CONFIG.TYPE_LINK_WEIGHTS[lhs.type][rhs.type];
-    if (this.TYPES_CONFIG.LINKS[lhs.type] - this._countWeightedBonds(lhs) < weight) {
+    if (this._freeValence(lhs) < 1) {
       return false;
     }
     return lhs.bonds.lengthOf(rhs.type) < this.TYPES_CONFIG.TYPE_LINKS[lhs.type][rhs.type];
@@ -151,11 +160,16 @@ export class RulesHelper implements RulesHelperInterface {
     atom: AtomInterface,
     newPartner: AtomInterface,
   ): AtomInterface[] | null {
-    const weights = this.TYPES_CONFIG.TYPE_LINK_WEIGHTS[atom.type];
-    const needWeight = weights[newPartner.type];
+    const nominal = this._nominalWeight(atom.type, newPartner.type);
+    const partnerFree = this._freeValence(newPartner);
+    const needWeight = Math.min(nominal, partnerFree > 0 ? partnerFree : nominal);
+    if (needWeight < 1) {
+      return null;
+    }
+
     const maxLinks = this.TYPES_CONFIG.LINKS[atom.type];
     const maxToType = this.TYPES_CONFIG.TYPE_LINKS[atom.type][newPartner.type];
-    const newPref = this._bondPreference(atom, newPartner);
+    const newPref = this._bondPreference(atom, newPartner, needWeight);
     const factors = this.TYPES_CONFIG.BOND_PREFERENCE_FACTOR;
 
     const candidates = Object.values(atom.bonds.getStorage())
@@ -166,7 +180,7 @@ export class RulesHelper implements RulesHelperInterface {
       })
       .map((partner) => ({
         partner,
-        preference: this._bondPreference(atom, partner),
+        preference: this._bondPreference(atom, partner, atom.bonds.getOrder(partner)),
       }))
       .filter(({ preference }) => newPref > preference)
       .sort((a, b) => a.preference - b.preference || a.partner.id - b.partner.id);
@@ -181,7 +195,7 @@ export class RulesHelper implements RulesHelperInterface {
     }
 
     for (const { partner } of candidates) {
-      used -= weights[partner.type];
+      used -= atom.bonds.getOrder(partner);
       if (partner.type === newPartner.type) {
         countToNew -= 1;
       }
@@ -194,9 +208,10 @@ export class RulesHelper implements RulesHelperInterface {
     return null;
   }
 
-  private _bondPreference(atom: AtomInterface, partner: AtomInterface): number {
+  private _bondPreference(atom: AtomInterface, partner: AtomInterface, order: number): number {
     const matrix = this.TYPES_CONFIG.BOND_PREFERENCE;
-    let preference = matrix?.[atom.type]?.[partner.type] ?? 0;
+    const nominal = this._nominalWeight(atom.type, partner.type);
+    let preference = (matrix?.[atom.type]?.[partner.type] ?? 0) * (order / nominal);
     const factors = this.TYPES_CONFIG.BOND_PREFERENCE_FACTOR;
     if (!factors) {
       return preference;
@@ -265,13 +280,16 @@ export class RulesHelper implements RulesHelperInterface {
       && transforms[lhs.type][rhs.type] !== undefined;
   }
 
+  private _nominalWeight(fromType: number, toType: number): number {
+    return Math.max(1, Math.round(this.TYPES_CONFIG.TYPE_LINK_WEIGHTS[fromType][toType] ?? 1));
+  }
+
+  private _freeValence(atom: AtomInterface): number {
+    return this.TYPES_CONFIG.LINKS[atom.type] - this._countWeightedBonds(atom);
+  }
+
   private _countWeightedBonds(atom: AtomInterface): number {
-    let result = 0;
-    const typesCountMap = atom.bonds.getTypesCountMap();
-    for (const type in typesCountMap) {
-      result += this.TYPES_CONFIG.TYPE_LINK_WEIGHTS[atom.type][type] * typesCountMap[type];
-    }
-    return result;
+    return atom.bonds.getTotalOrder();
   }
 }
 

@@ -126,7 +126,7 @@ export function createDefaultTypesConfig(): TypesConfig {
     TYPE_LINKS: [
       [4, 4, 2, 3],
       [4, 1, 2, 1],
-      [2, 2, 2, 1],
+      [2, 2, 1, 1],
       [3, 3, 1, 3],
     ],
     TYPE_LINK_WEIGHTS: [
@@ -139,10 +139,10 @@ export function createDefaultTypesConfig(): TypesConfig {
     BOND_PREFERENCE: [
       // Roughly follows bond strength: N≡N ≫ O–H / C=O > C–H / H–H > C–C > O=O > N–O
       // So H₂O and CO₂ win over H₂/O₂/C-networks; N₂ stays inert.
-      [2.0, 2.5, 2.9, 1.9],
-      [2.5, 2.2, 3.0, 2.4],
-      [2.9, 3.0, 1.7, 1.1],
-      [1.9, 2.4, 1.1, 3.8],
+      [2.0, 2.5, 3.0, 2.0],
+      [2.5, 2.2, 3.0, 2.5],
+      [3.0, 3.0, 1.5, 1.0],
+      [2.0, 2.5, 1.0, 4.0],
     ],
     LINK_LENGTH: [1, 0.7, 1, 1],
     LINK_STIFFNESS: [1, 1, 1, 1],
@@ -270,7 +270,7 @@ export function createRandomTypesConfig({
   const typeLinkWeights = randomizeMatrix(
     TYPES_COUNT,
     LINK_TYPE_WEIGHT_BOUNDS,
-    createRandomFloat,
+    createRandomInteger,
     LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC,
     precision,
   );
@@ -473,7 +473,7 @@ export function createDefaultRandomTypesConfig(typesCount: number): RandomTypesC
     LINK_GRAVITY_BOUNDS: [-20, -1, -1, 0.1, 1],
     LINK_BOUNDS: [1, 8, 3],
     LINK_TYPE_BOUNDS: [0, 4, 2],
-    LINK_TYPE_WEIGHT_BOUNDS: [0.5, 2, 1, 0.5, 1],
+    LINK_TYPE_WEIGHT_BOUNDS: [1, 2, 1, 1, 1],
     BOND_PREFERENCE_BOUNDS: [0, 4, 1.5, 0.1, 1],
     BOND_PREFERENCE_FACTOR_BOUNDS: [0.5, 2, 1, 0.1, 1],
     LINK_LENGTH_BOUNDS: [0.7, 1.3, 1, 0.1, 1],

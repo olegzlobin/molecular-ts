@@ -5,9 +5,11 @@ export interface BondMapInterface {
   length: number;
   lengthOf(type: number): number;
   has(atom: AtomInterface): boolean;
-  add(atom: AtomInterface): void;
+  add(atom: AtomInterface, order?: number): void;
   delete(atom: AtomInterface): void;
   update(atom: AtomInterface): void;
+  getOrder(atom: AtomInterface): number;
+  getTotalOrder(): number;
   getTypesCountMap(): Record<number, number>;
   getStorage(): Record<number, AtomInterface>;
 }
@@ -30,5 +32,6 @@ export interface LinkInterface {
   id: string;
   lhs: AtomInterface;
   rhs: AtomInterface;
+  order: number;
   exportState(): number[];
 }

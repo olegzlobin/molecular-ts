@@ -161,21 +161,20 @@ const refill = () => {
       <div>
         <input-header
           name="Type Link Weights"
-          tooltip="The connection weight matrix shows the connection weights between each pair of types
-                   in the left type link limit."
+          tooltip="Nominal bond order for each type pair (prefer integers 1, 2, …). Actual order is min(weight, free valence on both sides); preference scales by actual/nominal."
           position="center"
         />
         <config-matrix
           :values="typesConfig.TYPE_LINK_WEIGHTS"
           :colors="typesConfig.COLORS"
-          :step="0.1"
+          :step="1"
           v-model:symmetric="typesSymmetricConfig.LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC"
         />
       </div>
       <div>
         <input-header
           name="Bond Preference"
-          tooltip="Higher values are preferred. When valence is full, a new bond can replace the weakest existing bond if it has a strictly higher preference."
+          tooltip="Higher values are preferred. Scaled by actual/nominal bond order. When valence is full, a new bond can replace the weakest existing bond if it has a strictly higher preference."
           position="center"
         />
         <config-matrix

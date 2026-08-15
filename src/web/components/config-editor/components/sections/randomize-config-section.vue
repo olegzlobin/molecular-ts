@@ -183,14 +183,13 @@ const randomizeTypesConfig = () => {
       <div>
         <input-header
           name="Types Link Weights"
-          tooltip="The connection weight matrix shows the connection weights between each pair of types
-                   in the left type link limit."
+          tooltip="Nominal bond order per type pair. Actual order uses leftover valence; preference scales by actual/nominal."
           tooltip-position="left"
         >
           <input type="checkbox" class="title-flag" v-model="randomTypesConfig.USE_LINK_TYPE_WEIGHT_BOUNDS" />
         </input-header>
         <div v-show="randomTypesConfig.USE_LINK_TYPE_WEIGHT_BOUNDS">
-          <config-bounds :step="0.1" :values="randomTypesConfig.LINK_TYPE_WEIGHT_BOUNDS" />
+          <config-bounds :step="1" :values="randomTypesConfig.LINK_TYPE_WEIGHT_BOUNDS" />
           <flag title="Symmetric" v-model="randomTypesConfig.LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC" />
         </div>
       </div>
@@ -198,7 +197,7 @@ const randomizeTypesConfig = () => {
       <div>
         <input-header
           name="Bond Preference"
-          tooltip="Higher values are preferred when swapping bonds under full valence."
+          tooltip="Higher values are preferred when swapping bonds. Scaled by actual/nominal bond order."
           tooltip-position="left"
         >
           <input type="checkbox" class="title-flag" v-model="randomTypesConfig.USE_BOND_PREFERENCE_BOUNDS" />
