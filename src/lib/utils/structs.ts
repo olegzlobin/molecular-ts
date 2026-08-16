@@ -16,6 +16,7 @@ import type {
 import { decodeTransformType, isMergeTransform } from '../config/types';
 import { typeLinkLimit } from '../config/bond-limits';
 import { arrayBinaryOperation, arrayUnaryOperation } from '../math';
+import { typeMass } from '../config/mass';
 import { Link } from '../simulation/atomic';
 
 class LinkPool implements LinksPoolInterface {
@@ -361,8 +362,8 @@ export class RulesHelper implements RulesHelperInterface {
       lhs.newType = newType;
     }
     if (isMergeTransform(raw)) {
-      const massLhs = this.TYPES_CONFIG.RADIUS[lhs.type] ** 3;
-      const massRhs = this.TYPES_CONFIG.RADIUS[rhs.type] ** 3;
+      const massLhs = typeMass(this.TYPES_CONFIG, lhs.type);
+      const massRhs = typeMass(this.TYPES_CONFIG, rhs.type);
       const massSum = massLhs + massRhs || 1;
       for (let i = 0; i < lhs.position.length; ++i) {
         lhs.position[i] = (lhs.position[i] * massLhs + rhs.position[i] * massRhs) / massSum;
@@ -420,8 +421,7 @@ export class GeometryHelper implements GeometryHelperInterface {
   }
 
   getMassMultiplier(lhs: AtomInterface, _rhs: AtomInterface): number {
-    const mass = this.TYPES_CONFIG.RADIUS[lhs.type] ** 3;
-    return mass > 0 ? 1 / mass : 1;
+    return 1 / typeMass(this.TYPES_CONFIG, lhs.type);
   }
 }
 

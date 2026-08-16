@@ -24,6 +24,7 @@ import { CompoundsCollector } from '../analysis/compounds';
 import { PreventException } from "../drawer/utils";
 import { toVector } from "../math";
 import { createAtom } from '../utils/functions';
+import { typeMass } from '../config/mass';
 import { createCompoundGraphByAtom } from "../analysis/factories";
 import { countEdgesGroupedByVertexTypes, countVertexesGroupedByType } from "../graph/utils";
 import { scoreBilateralSymmetry, scoreSymmetryAxisByQuartering } from "../analysis/symmetry";
@@ -327,8 +328,8 @@ export class Simulation implements SimulationInterface {
 
       this.breakAtomLinks(atom);
 
-      const mass1 = this.config.typesConfig.RADIUS[rule.to] ** 3;
-      const mass2 = this.config.typesConfig.RADIUS[rule.secondary] ** 3;
+      const mass1 = typeMass(this.config.typesConfig, rule.to);
+      const mass2 = typeMass(this.config.typesConfig, rule.secondary);
       const massSum = mass1 + mass2 || 1;
       const dir = toVector(new Array(atom.position.length).fill(0)).random().normalize();
       const u = dir.clone().mul(kick);

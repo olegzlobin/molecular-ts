@@ -116,6 +116,19 @@ const randomizeTypesConfig = () => {
         </div>
       </div>
 
+      <div v-show="!useIgnoreSubMatricesBoundaryIndex">
+        <input-header
+          name="Mass"
+          tooltip="Inertial mass of each type (a = F / m)."
+          tooltip-position="left"
+        >
+          <input type="checkbox" class="title-flag" v-model="randomTypesConfig.USE_MASS_BOUNDS" />
+        </input-header>
+        <div v-show="randomTypesConfig.USE_MASS_BOUNDS">
+          <config-bounds :step="0.1" :values="randomTypesConfig.MASS_BOUNDS" />
+        </div>
+      </div>
+
       <div>
         <input-header
           name="Gravity"

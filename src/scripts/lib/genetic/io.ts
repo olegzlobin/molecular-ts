@@ -31,6 +31,9 @@ export function getRandomizeConfigCollection(fileName: string, typesCount?: numb
     if (config.USE_LINK_STIFFNESS_BOUNDS === undefined) {
       config.USE_LINK_STIFFNESS_BOUNDS = false;
     }
+    if (config.USE_MASS_BOUNDS === undefined) {
+      config.USE_MASS_BOUNDS = false;
+    }
     if (!config.LINK_LENGTH_BOUNDS) {
       config.LINK_LENGTH_BOUNDS = [0.7, 1.3, 1, 0.1];
     }

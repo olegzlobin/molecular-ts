@@ -1,5 +1,6 @@
 import type { TypesConfig, ViewMode, WorldConfig } from '../config/types';
 import type { AtomInterface, LinkInterface } from '../simulation/types/atomic';
+import { typeMass } from '../config/mass';
 import { GeometryHelper } from '../utils/structs';
 import { getViewModeConfig } from '../utils/functions';
 import { linkStrengthFactor } from '../utils/link-strength';
@@ -38,11 +39,6 @@ export function emptyEnergyReport(): EnergyReport {
     delta: 0,
     deltaRel: 0,
   };
-}
-
-function atomMass(typesConfig: TypesConfig, type: number): number {
-  const mass = typesConfig.RADIUS[type] ** 3;
-  return mass > 0 ? mass : 1;
 }
 
 function pairForceCoeff(matrix: number[][], lhs: AtomInterface, rhs: AtomInterface): number {
@@ -85,7 +81,7 @@ export function computeEnergy(input: ComputeEnergyInput): EnergySnapshot {
   const snapshot = emptyEnergySnapshot();
 
   for (const atom of atoms) {
-    const mass = atomMass(typesConfig, atom.type);
+    const mass = typeMass(typesConfig, atom.type);
     snapshot.kinetic += 0.5 * mass * atom.speed.abs2;
 
     if (worldConfig.WORLD_GRAVITY) {

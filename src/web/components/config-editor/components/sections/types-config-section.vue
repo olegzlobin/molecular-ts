@@ -96,6 +96,14 @@ const refill = () => {
       </div>
       <div>
         <input-header
+          name="Mass"
+          tooltip="Inertial mass of each type. Used for force→acceleration (a = F / m). Legacy configs default to Radius³."
+          position="center"
+        />
+        <config-list :values="typesConfig.MASS" :colors="typesConfig.COLORS" :step="0.1" :min="0" />
+      </div>
+      <div>
+        <input-header
           name="Charge"
           tooltip="Coulomb charge of each type. Same signs repel, opposite attract. Works together with the Gravity matrix."
           position="center"

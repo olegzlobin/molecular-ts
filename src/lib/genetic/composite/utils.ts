@@ -21,6 +21,7 @@ export function extractExpressedGenome(compositeGenome: CompositeSimulationGenom
 export function extractExpressedTypesConfig(typesConfigs: TypesConfig[], expressionIndices: TypesConfig): TypesConfig {
   const result: TypesConfig = {
     RADIUS: express(typesConfigs.map((x) => x.RADIUS), expressionIndices.RADIUS),
+    MASS: express(typesConfigs.map((x) => x.MASS ?? x.RADIUS.map((r) => r ** 3)), expressionIndices.MASS ?? expressionIndices.RADIUS),
     CHARGE: express(typesConfigs.map((x) => x.CHARGE ?? x.RADIUS.map(() => 0)), expressionIndices.CHARGE ?? expressionIndices.RADIUS),
     GRAVITY: express(typesConfigs.map((x) => x.GRAVITY), expressionIndices.GRAVITY),
     LINK_BIAS: express(typesConfigs.map((x) => x.LINK_BIAS), expressionIndices.LINK_BIAS),
@@ -114,6 +115,7 @@ export function createRandomExpressedIndicesConfig(typesCount: number, chromosom
     USE_RADIUS_BOUNDS: true,
     USE_FREQUENCY_BOUNDS: true,
     USE_CHARGE_BOUNDS: false,
+    USE_MASS_BOUNDS: false,
     USE_GRAVITY_BOUNDS: true,
     USE_LINK_BIAS_BOUNDS: true,
     USE_LINK_BOUNDS: true,
@@ -128,6 +130,7 @@ export function createRandomExpressedIndicesConfig(typesCount: number, chromosom
     RADIUS_BOUNDS: [0, chromosomesCount-1],
     FREQUENCY_BOUNDS: [0, chromosomesCount-1],
     CHARGE_BOUNDS: [0, chromosomesCount-1],
+    MASS_BOUNDS: [0, chromosomesCount-1],
     GRAVITY_BOUNDS: [0, chromosomesCount-1],
     LINK_BIAS_BOUNDS: [0, chromosomesCount-1],
     LINK_BOUNDS: [0, chromosomesCount-1],

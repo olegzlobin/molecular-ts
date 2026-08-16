@@ -55,6 +55,10 @@ export function convertTypesConfigForBackwardCompatibility(inputConfig: TypesCon
     config.TRANSFORMS = {};
   }
 
+  if (!config.MASS || config.MASS.length !== (config.RADIUS?.length ?? 0)) {
+    config.MASS = (config.RADIUS ?? []).map((r) => (r ?? 1) ** 3);
+  }
+
   ensureNumericTypesFields(config);
   config.NAMES = ensureTypeNames(config.NAMES, config.COLORS?.length ?? config.RADIUS?.length ?? 0);
   syncDerivedTypeLinks(config);
@@ -81,6 +85,9 @@ export function convertRandomTypesConfigForBackwardCompatibility(inputConfig: Ra
   if (config.USE_CHARGE_BOUNDS === undefined) {
     config.USE_CHARGE_BOUNDS = false;
   }
+  if (config.USE_MASS_BOUNDS === undefined) {
+    config.USE_MASS_BOUNDS = false;
+  }
   if (config.USE_BOND_PREFERENCE_BOUNDS === undefined) {
     config.USE_BOND_PREFERENCE_BOUNDS = false;
   }
@@ -98,6 +105,9 @@ export function convertRandomTypesConfigForBackwardCompatibility(inputConfig: Ra
   }
   if (!config.CHARGE_BOUNDS) {
     config.CHARGE_BOUNDS = [-2, 2, 0, 0.5];
+  }
+  if (!config.MASS_BOUNDS) {
+    config.MASS_BOUNDS = [0.1, 2, 1, 0.1];
   }
   if (!config.BOND_PREFERENCE_BOUNDS) {
     config.BOND_PREFERENCE_BOUNDS = [0, 4, 1.5, 0.1];
