@@ -30,6 +30,7 @@ import {
   convertTypesSymmetricConfigForBackwardCompatibility,
   convertRandomTypesConfigForBackwardCompatibility,
 } from '@/web/utils/backward';
+import { decodeSharePayload, encodeSharePayload } from '@/web/utils/share-codec';
 import type { ShowConfig } from "@/lib/drawer/types";
 import { createDefaultShowConfig } from "@/lib/drawer/2d";
 
@@ -160,8 +161,8 @@ export const useConfigStore = defineStore("config", () => {
     };
   }
 
-  const exportConfigBase64 = () => {
-    return btoa(JSON.stringify(exportConfig()));
+  const exportConfigBase64 = async () => {
+    return encodeSharePayload(JSON.stringify(exportConfig()));
   }
 
   const importConfig = (config: {
@@ -193,17 +194,18 @@ export const useConfigStore = defineStore("config", () => {
     }
   }
 
-  const importConfigBase64 = (config: string) => {
+  const importConfigBase64 = async (config: string) => {
     try {
-      const newConfig = JSON.parse(atob(config)) as {
+      const json = await decodeSharePayload(config);
+      const newConfig = JSON.parse(json) as {
         worldConfig?: WorldConfig,
         typesConfig?: TypesConfig,
-        typeSymmetricConfig?: TypesSymmetricConfig,
+        typesSymmetricConfig?: TypesSymmetricConfig,
       };
 
       importConfig(newConfig);
     } catch (e) {
-      console.warn(e);
+      console.warn('Share link is invalid or truncated', e);
     }
   }
 
