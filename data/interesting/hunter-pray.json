@@ -94,6 +94,10 @@
       1,
       1
     ],
+    "MASS": [
+      1,
+      1
+    ],
     "CHARGE": [
       0,
       0
@@ -122,6 +126,16 @@
       1,
       1
     ],
+    "TYPE_LINK_WEIGHTS": [
+      [
+        2,
+        1
+      ],
+      [
+        1,
+        2
+      ]
+    ],
     "TYPE_LINKS": [
       [
         0,
@@ -130,16 +144,6 @@
       [
         1,
         0
-      ]
-    ],
-    "TYPE_LINK_WEIGHTS": [
-      [
-        1,
-        1
-      ],
-      [
-        1,
-        1
       ]
     ],
     "BOND_PREFERENCE": [
@@ -161,6 +165,28 @@
       1
     ],
     "BOND_PREFERENCE_FACTOR": [
+      [
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      [
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          1
+        ]
+      ]
+    ],
+    "LINK_STRENGTH_FACTOR": [
       [
         [
           1,
@@ -208,6 +234,7 @@
     "LINK_TYPE_MATRIX_SYMMETRIC": true,
     "LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC": true,
     "BOND_PREFERENCE_MATRIX_SYMMETRIC": true,
-    "BOND_PREFERENCE_FACTOR_MATRIX_SYMMETRIC": true
+    "BOND_PREFERENCE_FACTOR_MATRIX_SYMMETRIC": true,
+    "LINK_STRENGTH_FACTOR_MATRIX_SYMMETRIC": true
   }
 }
