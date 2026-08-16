@@ -6,7 +6,7 @@ import type { InteractionManagerInterface } from './types/interaction';
 import type { PhysicModelInterface } from './types/interaction';
 import { isEqual, Vector } from '../math';
 import { getViewModeConfig } from '../utils/functions';
-import { linkStrengthFactor } from '../utils/link-strength';
+import { linkStrengthFactor, isUnitFactorTensor } from '../utils/link-strength';
 import type { SummaryManagerInterface } from '../analysis/types';
 
 export class InteractionManager implements InteractionManagerInterface {
@@ -21,6 +21,11 @@ export class InteractionManager implements InteractionManagerInterface {
   private time: number;
   private bufVector: VectorInterface = new Vector([0, 0]);
   private tempVector: VectorInterface = new Vector([0, 0]);
+  private readonly gravityOut: [number, number] = [0, 0];
+  private interactionRadius2 = 0;
+  private linkRadius2Coarse = 0;
+  private linkStrengthUnit = true;
+  private maxLinkRadius = 0;
 
   constructor(
     viewMode: ViewMode,
@@ -41,6 +46,27 @@ export class InteractionManager implements InteractionManagerInterface {
     this.summaryManager = summaryManager;
     this.onLinkBreak = onLinkBreak;
     this.time = 0;
+    this.prepareTick();
+  }
+
+  prepareTick(): void {
+    const maxInteraction = this.WORLD_CONFIG.MAX_INTERACTION_RADIUS;
+    this.interactionRadius2 = maxInteraction * maxInteraction;
+    this.maxLinkRadius = this.WORLD_CONFIG.MAX_LINK_RADIUS;
+    let maxLength = 1;
+    const lengths = this.TYPES_CONFIG.LINK_LENGTH;
+    if (lengths) {
+      for (let i = 0; i < lengths.length; ++i) {
+        if (lengths[i] > maxLength) {
+          maxLength = lengths[i];
+        }
+      }
+    }
+    const coarse = this.maxLinkRadius * maxLength;
+    this.linkRadius2Coarse = coarse * coarse;
+    this.linkStrengthUnit = isUnitFactorTensor(this.TYPES_CONFIG.LINK_STRENGTH_FACTOR);
+    this.ruleHelper.prepareTick();
+    this.physicModel.geometry.prepareTick();
   }
 
   handleTime(): void {
@@ -114,12 +140,14 @@ export class InteractionManager implements InteractionManagerInterface {
     this.fillDistVector(lhs, rhs, this.bufVector);
     const dist2 = this.getDist2(this.bufVector);
 
-    if (dist2 > this.WORLD_CONFIG.MAX_INTERACTION_RADIUS ** 2) {
+    if (dist2 > this.interactionRadius2) {
       return;
     }
 
     if (dist2 > 0) {
-      const [rawLhs, rawRhs] = this.physicModel.getGravityForces(lhs, rhs, dist2);
+      const forces = this.physicModel.getGravityForces(lhs, rhs, dist2, this.gravityOut);
+      const rawLhs = forces[0];
+      const rawRhs = forces[1];
       if (rawLhs !== 0 || rawRhs !== 0) {
         const forceLhs = this.normalizeForce(rawLhs);
         const forceRhs = this.normalizeForce(rawRhs);
@@ -132,9 +160,18 @@ export class InteractionManager implements InteractionManagerInterface {
       }
     }
 
-    const linkRadius2 = (this.WORLD_CONFIG.MAX_LINK_RADIUS * this.getPairLinkLengthFactor(lhs, rhs)) ** 2;
+    const banned = lhs.linkBanWith === rhs.id || rhs.linkBanWith === lhs.id;
+    const bonded = lhs.bonds.has(rhs);
+    if (bonded && !banned) {
+      return;
+    }
+    if (!banned && dist2 > this.linkRadius2Coarse) {
+      return;
+    }
 
-    if (lhs.linkBanWith === rhs.id || rhs.linkBanWith === lhs.id) {
+    const linkRadius2 = (this.maxLinkRadius * this.getPairLinkLengthFactor(lhs, rhs)) ** 2;
+
+    if (banned) {
       if (dist2 > linkRadius2) {
         if (lhs.linkBanWith === rhs.id) {
           lhs.linkBanWith = undefined;
@@ -143,7 +180,7 @@ export class InteractionManager implements InteractionManagerInterface {
           rhs.linkBanWith = undefined;
         }
       } else if (
-        !lhs.bonds.has(rhs) &&
+        !bonded &&
         this.ruleHelper.canLink(lhs, rhs)
       ) {
         return;
@@ -151,7 +188,7 @@ export class InteractionManager implements InteractionManagerInterface {
     }
 
     if (
-      !lhs.bonds.has(rhs) &&
+      !bonded &&
       dist2 <= linkRadius2
     ) {
       const swapPlan = this.ruleHelper.getLinkSwapPlan(lhs, rhs);
@@ -197,17 +234,24 @@ export class InteractionManager implements InteractionManagerInterface {
 
   setPhysicModel(model: PhysicModelInterface): void {
     this.physicModel = model;
+    this.prepareTick();
   }
 
   getPairLinkLengthFactor(lhs: AtomInterface, rhs: AtomInterface): number {
     const lengths = this.TYPES_CONFIG.LINK_LENGTH;
     const base = ((lengths?.[lhs.type] ?? 1) + (lengths?.[rhs.type] ?? 1)) / 2;
+    if (this.linkStrengthUnit) {
+      return base;
+    }
     return base * linkStrengthFactor(this.TYPES_CONFIG, lhs, rhs);
   }
 
   getElasticFactor(lhs: AtomInterface, rhs: AtomInterface): number {
     const stiffness = this.TYPES_CONFIG.LINK_STIFFNESS;
     const base = ((stiffness?.[lhs.type] ?? 1) + (stiffness?.[rhs.type] ?? 1)) / 2;
+    if (this.linkStrengthUnit) {
+      return base;
+    }
     return base * linkStrengthFactor(this.TYPES_CONFIG, lhs, rhs);
   }
 

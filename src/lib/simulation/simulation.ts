@@ -49,7 +49,6 @@ export class Simulation implements SimulationInterface {
   private _energy: EnergyReport = emptyEnergyReport();
   private _energyInitial: EnergySnapshot | null = null;
   private _energyTracking: boolean = false;
-  private readonly pairBuffer: AtomInterface[] = [];
   private _energyFrameCounter: number = 0;
 
   constructor(config: SimulationConfig) {
@@ -255,6 +254,7 @@ export class Simulation implements SimulationInterface {
   }
 
   private interact(collectStockSummary: boolean = true): void {
+    this.interactionManager.prepareTick();
     this.applyPendingTypeChanges();
     this.handleDecays();
     this.applyPendingTypeChanges();
@@ -267,15 +267,10 @@ export class Simulation implements SimulationInterface {
     for (const atom of this._atoms) {
       this.spatialGridManager.updateAtomCell(atom);
     }
-    const pairs = this.pairBuffer;
-    pairs.length = 0;
     for (const atom of this._atoms) {
       this.spatialGridManager.handleAtom(atom, (lhs, rhs) => {
-        pairs.push(lhs, rhs);
+        this.interactionManager.interactAtoms(lhs, rhs);
       });
-    }
-    for (let i = 0; i < pairs.length; i += 2) {
-      this.interactionManager.interactAtoms(pairs[i], pairs[i + 1]);
     }
     this.removeDeletedAtoms();
     for (const link of this._links) {

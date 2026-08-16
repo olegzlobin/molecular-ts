@@ -27,6 +27,7 @@ export type LinkUpgradePlan = {
 };
 
 export interface RulesHelperInterface {
+  prepareTick(): void;
   canLink(lhs: AtomInterface, rhs: AtomInterface): boolean;
   getLinkOrder(lhs: AtomInterface, rhs: AtomInterface): number;
   getLinkSwapPlan(lhs: AtomInterface, rhs: AtomInterface): LinkSwapPlan | null;
@@ -37,6 +38,7 @@ export interface RulesHelperInterface {
 }
 
 export interface GeometryHelperInterface {
+  prepareTick(): void;
   getAtomRadius(atom: AtomInterface): number;
   getAtomsRadiusSum(lhs: AtomInterface, rhs: AtomInterface): number;
   getMassMultiplier(lhs: AtomInterface, rhs: AtomInterface): number;

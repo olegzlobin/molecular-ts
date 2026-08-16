@@ -103,10 +103,15 @@ export class RulesHelper implements RulesHelperInterface {
   private WORLD_CONFIG: WorldConfig;
   private readonly swapCandPartners: AtomInterface[] = [];
   private readonly swapCandPrefs: number[] = [];
+  private preferenceFactorsUnit = true;
 
   constructor(worldConfig: WorldConfig, typesConfig: TypesConfig) {
     this.TYPES_CONFIG = typesConfig;
     this.WORLD_CONFIG = worldConfig;
+  }
+
+  prepareTick(): void {
+    this.preferenceFactorsUnit = isUnitFactorTensor(this.TYPES_CONFIG.BOND_PREFERENCE_FACTOR);
   }
 
   canLink(lhs: AtomInterface, rhs: AtomInterface): boolean {
@@ -351,7 +356,7 @@ export class RulesHelper implements RulesHelperInterface {
     const matrix = this.TYPES_CONFIG.BOND_PREFERENCE;
     let preference = (matrix?.[atom.type]?.[partner.type] ?? 0) * order;
     const factors = this.TYPES_CONFIG.BOND_PREFERENCE_FACTOR;
-    if (!factors || isUnitFactorTensor(factors)) {
+    if (!factors || this.preferenceFactorsUnit) {
       return preference;
     }
 
@@ -445,22 +450,36 @@ export class RulesHelper implements RulesHelperInterface {
 export class GeometryHelper implements GeometryHelperInterface {
   private WORLD_CONFIG: WorldConfig;
   private TYPES_CONFIG: TypesConfig;
+  private readonly radiusByType: number[] = [];
+  private readonly invMassByType: number[] = [];
 
   constructor(worldConfig: WorldConfig, typesConfig: TypesConfig) {
     this.WORLD_CONFIG = worldConfig;
     this.TYPES_CONFIG = typesConfig;
+    this.prepareTick();
+  }
+
+  prepareTick(): void {
+    const radii = this.TYPES_CONFIG.RADIUS;
+    const atomRadius = this.WORLD_CONFIG.ATOM_RADIUS;
+    this.radiusByType.length = radii.length;
+    this.invMassByType.length = radii.length;
+    for (let i = 0; i < radii.length; ++i) {
+      this.radiusByType[i] = atomRadius * radii[i];
+      this.invMassByType[i] = 1 / typeMass(this.TYPES_CONFIG, i);
+    }
   }
 
   getAtomRadius(atom: AtomInterface): number {
-    return this.WORLD_CONFIG.ATOM_RADIUS * this.TYPES_CONFIG.RADIUS[atom.type];
+    return this.radiusByType[atom.type];
   }
 
   getAtomsRadiusSum(lhs: AtomInterface, rhs: AtomInterface): number {
-    return this.getAtomRadius(lhs) + this.getAtomRadius(rhs);
+    return this.radiusByType[lhs.type] + this.radiusByType[rhs.type];
   }
 
   getMassMultiplier(lhs: AtomInterface, _rhs: AtomInterface): number {
-    return 1 / typeMass(this.TYPES_CONFIG, lhs.type);
+    return this.invMassByType[lhs.type];
   }
 }
 

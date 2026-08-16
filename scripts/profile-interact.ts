@@ -10,7 +10,6 @@ import type { AtomInterface } from '../src/lib/simulation/types/atomic';
 type SimPrivate = {
   _atoms: AtomInterface[];
   _links: Iterable<unknown>;
-  pairBuffer: AtomInterface[];
   interactionManager: {
     moveAtom: (a: AtomInterface) => void;
     interactAtoms: (a: AtomInterface, b: AtomInterface) => void;
@@ -98,21 +97,16 @@ function timedInteract(sim: Simulation, n: number) {
     acc.updateCells += performance.now() - t0;
 
     t0 = performance.now();
-    const pairs = s.pairBuffer;
-    pairs.length = 0;
+    let pairCount = 0;
     for (const atom of s._atoms) {
       s.spatialGridManager.handleAtom(atom, (lhs, rhs) => {
-        pairs.push(lhs, rhs);
+        pairCount++;
+        s.interactionManager.interactAtoms(lhs, rhs);
       });
     }
-    acc.collectPairs += performance.now() - t0;
-    acc.pairs += pairs.length / 2;
-
-    t0 = performance.now();
-    for (let i = 0; i < pairs.length; i += 2) {
-      s.interactionManager.interactAtoms(pairs[i], pairs[i + 1]);
-    }
+    acc.collectPairs += 0;
     acc.interactAtoms += performance.now() - t0;
+    acc.pairs += pairCount;
 
     t0 = performance.now();
     s.removeDeletedAtoms();
@@ -141,7 +135,6 @@ function printBreakdown(label: string, acc: ReturnType<typeof timedInteract>, n:
     acc.typesDecays +
     acc.move +
     acc.updateCells +
-    acc.collectPairs +
     acc.interactAtoms +
     acc.removeDeleted +
     acc.interactLinks +
@@ -150,8 +143,7 @@ function printBreakdown(label: string, acc: ReturnType<typeof timedInteract>, n:
     ['types+decays', acc.typesDecays],
     ['move+summary', acc.move],
     ['updateCells', acc.updateCells],
-    ['collectPairs', acc.collectPairs],
-    ['interactAtoms', acc.interactAtoms],
+    ['pairs+interact', acc.interactAtoms],
     ['removeDeleted', acc.removeDeleted],
     ['interactLinks', acc.interactLinks],
     ['handleTime', acc.handleTime],
