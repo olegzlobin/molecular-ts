@@ -1,11 +1,17 @@
 <script setup lang="ts">
 
-import { ref, watch } from "vue";
+import { ref, toRefs, watch } from "vue";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { useConfigStore } from '@/web/store/config';
 import { useSimulationStore } from "@/web/store/simulation";
+import { usePhysicsStore } from '@/web/store/physics';
 import ConfigSection from '@/web/components/config-editor/components/containers/config-section.vue';
 import InputHeader from "@/web/components/base/input-header.vue";
+import Tooltip from "@/web/components/base/tooltip.vue";
 import { useRightBarStore } from '@/web/store/right-bar';
+
+const physicsStore = usePhysicsStore();
+const { physicModelName } = toRefs(physicsStore);
 
 const configStore = useConfigStore();
 const rightBarStore = useRightBarStore();
@@ -64,25 +70,23 @@ watch(() => configStore.worldConfig.VIEW_MODE, () => {
         </button>
       </div>
       <div>
-        <input-header
-          name="Physic Model"
-          tooltip="Spring: Hookean bonds, soft overlap bounce, 1/r² gravity and Coulomb.
-
-Link: F = k · ε · (r − L) / m
-  L = (Rᵢ + Rⱼ) · (ℓᵢ + ℓⱼ) / 2
-  ε = (sᵢ + sⱼ) / 2
-
-Bounce (r < Rᵢ+Rⱼ): F = −k_b · (Rᵢ+Rⱼ − r) / m
-
-Gravity: F = (G·g − k_c·qᵢ·qⱼ) / r² / m
-Link Bias (bonded): F = G·b / m  (constant; coulomb still / r²)
-
-Bounds: F = k_w · Δ
-
-m is proportional to type radius³."
-          :tooltipWidth="420"
-        />
-        <div class="physic-model-name">Spring</div>
+        <input-header name="Physic Model" />
+        <label
+          v-for="(title, value) in physicsStore.physicModelNameMap"
+          :key="value"
+          class="physic-model-option"
+        >
+          <input type="radio" name="physic-model" v-model="physicModelName" :value="value">
+          {{ title }}
+          <tooltip
+            :text="physicsStore.physicModelTooltipMap[value]"
+            :width="420"
+            style="margin-left: 4px;"
+          >
+            <font-awesome-icon icon="fa-regular fa-circle-question" style="color: #bbb" />
+          </tooltip>
+          &nbsp;
+        </label>
       </div>
       <div>
         <input-header
@@ -286,8 +290,13 @@ m is proportional to type radius³."
   }
 }
 
-.physic-model-name {
+.physic-model-option {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 12px;
+  font-weight: bold;
   color: #ddd;
+  cursor: pointer;
   padding: 4px 0;
 }
 
