@@ -18,6 +18,9 @@ import { typeLinkLimit } from '../config/bond-limits';
 import { arrayBinaryOperation, arrayUnaryOperation } from '../math';
 import { typeMass } from '../config/mass';
 import { Link } from '../simulation/atomic';
+import { isUnitFactorTensor } from './link-strength';
+
+const EMPTY_SWAP_PLAN: LinkSwapPlan = { breakLhsWith: [], breakRhsWith: [] };
 
 class LinkPool implements LinksPoolInterface {
   private storage: LinkInterface[] = [];
@@ -98,6 +101,8 @@ export class LinkManager implements LinkManagerInterface {
 export class RulesHelper implements RulesHelperInterface {
   private TYPES_CONFIG: TypesConfig;
   private WORLD_CONFIG: WorldConfig;
+  private readonly swapCandPartners: AtomInterface[] = [];
+  private readonly swapCandPrefs: number[] = [];
 
   constructor(worldConfig: WorldConfig, typesConfig: TypesConfig) {
     this.TYPES_CONFIG = typesConfig;
@@ -117,14 +122,16 @@ export class RulesHelper implements RulesHelperInterface {
   }
 
   getLinkSwapPlan(lhs: AtomInterface, rhs: AtomInterface): LinkSwapPlan | null {
-    if (this.canLink(lhs, rhs)) {
-      return { breakLhsWith: [], breakRhsWith: [] };
+    const lhsOk = this._canLink(lhs, rhs);
+    const rhsOk = this._canLink(rhs, lhs);
+    if (lhsOk && rhsOk) {
+      return EMPTY_SWAP_PLAN;
     }
 
-    let breakLhsWith: AtomInterface[] = [];
-    let breakRhsWith: AtomInterface[] = [];
+    let breakLhsWith: AtomInterface[] = EMPTY_SWAP_PLAN.breakLhsWith;
+    let breakRhsWith: AtomInterface[] = EMPTY_SWAP_PLAN.breakRhsWith;
 
-    if (!this._canLink(lhs, rhs)) {
+    if (!lhsOk) {
       const victims = this._findVictimsForSwap(lhs, rhs);
       if (!victims) {
         return null;
@@ -132,7 +139,7 @@ export class RulesHelper implements RulesHelperInterface {
       breakLhsWith = victims;
     }
 
-    if (!this._canLink(rhs, lhs)) {
+    if (!rhsOk) {
       const victims = this._findVictimsForSwap(rhs, lhs);
       if (!victims) {
         return null;
@@ -140,6 +147,9 @@ export class RulesHelper implements RulesHelperInterface {
       breakRhsWith = victims;
     }
 
+    if (breakLhsWith.length === 0 && breakRhsWith.length === 0) {
+      return EMPTY_SWAP_PLAN;
+    }
     return { breakLhsWith, breakRhsWith };
   }
 
@@ -208,38 +218,63 @@ export class RulesHelper implements RulesHelperInterface {
 
     const maxLinks = this.TYPES_CONFIG.LINKS[atom.type];
     const maxToType = this._typeLinkLimit(atom.type, newPartner.type);
-    const newPref = this._bondPreference(atom, newPartner, needWeight);
-    const factors = this.TYPES_CONFIG.BOND_PREFERENCE_FACTOR;
-
-    const candidates = Object.values(atom.bonds.getStorage())
-      .filter((partner) => partner !== newPartner)
-      .filter((partner) => {
-        const boost = factors?.[partner.type]?.[atom.type]?.[newPartner.type] ?? 1;
-        return !(boost > 1);
-      })
-      .map((partner) => ({
-        partner,
-        preference: this._bondPreference(atom, partner, atom.bonds.getOrder(partner)),
-      }))
-      .filter(({ preference }) => newPref > preference)
-      .sort((a, b) => a.preference - b.preference || a.partner.id - b.partner.id);
-
     let used = this._countWeightedBonds(atom);
     let countToNew = atom.bonds.lengthOf(newPartner.type);
-    const victims: AtomInterface[] = [];
-
-    const fits = () => maxLinks - used >= needWeight && countToNew < maxToType;
-    if (fits()) {
+    if (maxLinks - used >= needWeight && countToNew < maxToType) {
       return [];
     }
 
-    for (const { partner } of candidates) {
+    const newPref = this._bondPreference(atom, newPartner, needWeight);
+    const factors = this.TYPES_CONFIG.BOND_PREFERENCE_FACTOR;
+    const storage = atom.bonds.getStorage();
+    const partners = this.swapCandPartners;
+    const prefs = this.swapCandPrefs;
+    partners.length = 0;
+    prefs.length = 0;
+
+    for (const key in storage) {
+      const partner = storage[key];
+      if (partner === newPartner) {
+        continue;
+      }
+      const boost = factors?.[partner.type]?.[atom.type]?.[newPartner.type] ?? 1;
+      if (boost > 1) {
+        continue;
+      }
+      const preference = this._bondPreference(atom, partner, atom.bonds.getOrder(partner));
+      if (!(newPref > preference)) {
+        continue;
+      }
+      partners.push(partner);
+      prefs.push(preference);
+    }
+
+    const n = partners.length;
+    for (let i = 1; i < n; ++i) {
+      const partner = partners[i];
+      const preference = prefs[i];
+      let j = i - 1;
+      while (
+        j >= 0
+        && (prefs[j] > preference || (prefs[j] === preference && partners[j].id > partner.id))
+      ) {
+        partners[j + 1] = partners[j];
+        prefs[j + 1] = prefs[j];
+        j--;
+      }
+      partners[j + 1] = partner;
+      prefs[j + 1] = preference;
+    }
+
+    const victims: AtomInterface[] = [];
+    for (let i = 0; i < n; ++i) {
+      const partner = partners[i];
       used -= atom.bonds.getOrder(partner);
       if (partner.type === newPartner.type) {
         countToNew -= 1;
       }
       victims.push(partner);
-      if (fits()) {
+      if (maxLinks - used >= needWeight && countToNew < maxToType) {
         return victims;
       }
     }
@@ -316,17 +351,21 @@ export class RulesHelper implements RulesHelperInterface {
     const matrix = this.TYPES_CONFIG.BOND_PREFERENCE;
     let preference = (matrix?.[atom.type]?.[partner.type] ?? 0) * order;
     const factors = this.TYPES_CONFIG.BOND_PREFERENCE_FACTOR;
-    if (!factors) {
+    if (!factors || isUnitFactorTensor(factors)) {
       return preference;
     }
 
     const agents = new Set<number>();
-    for (const neighbor of Object.values(atom.bonds.getStorage())) {
+    const lhsBonds = atom.bonds.getStorage();
+    for (const key in lhsBonds) {
+      const neighbor = lhsBonds[key];
       if (neighbor !== partner) {
         agents.add(neighbor.type);
       }
     }
-    for (const neighbor of Object.values(partner.bonds.getStorage())) {
+    const rhsBonds = partner.bonds.getStorage();
+    for (const key in rhsBonds) {
+      const neighbor = rhsBonds[key];
       if (neighbor !== atom) {
         agents.add(neighbor.type);
       }
