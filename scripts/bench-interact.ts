@@ -67,8 +67,3 @@ console.log(`mode=${process.env.BENCH_MODE ?? 'unknown'} node=${process.version}
   bench('with gravity matrix', types, atoms, ticks);
 }
 
-{
-  const types = createDefaultTypesConfig();
-  types.CHARGE = [1, -1, 0.5, -0.5];
-  bench('with coulomb charges', types, atoms, ticks);
-}

@@ -123,7 +123,6 @@ export function createDefaultTypesConfig(): TypesConfig {
     FREQUENCIES: [1, 3, 1, 0.2],
     RADIUS: [1, 0.6, 1, 1],
     MASS: [1, 0.216, 1, 1],
-    CHARGE: [0, 0, 0, 0],
     GRAVITY: createFilledMatrix(4, 4, 0),
     // Constant radial bias while bonded; C–C repulsion keeps carbon networks from collapsing
     LINK_BIAS: [
@@ -197,7 +196,6 @@ export function createRandomTypesConfig({
   RADIUS_BOUNDS,
   FREQUENCY_BOUNDS,
   MASS_BOUNDS,
-  CHARGE_BOUNDS,
   GRAVITY_BOUNDS,
   LINK_BIAS_BOUNDS,
   LINK_BOUNDS,
@@ -243,10 +241,6 @@ export function createRandomTypesConfig({
     frequencies.push(createRandomFloat(FREQUENCY_BOUNDS, precision));
   }
 
-  const charge: number[] = [];
-  for (let i=0; i<TYPES_COUNT; ++i) {
-    charge.push(createRandomFloat(CHARGE_BOUNDS, precision));
-  }
 
   const bondPreference = randomizeMatrix(
     TYPES_COUNT,
@@ -320,7 +314,6 @@ export function createRandomTypesConfig({
   return {
     RADIUS: radius,
     MASS: mass,
-    CHARGE: charge,
     GRAVITY: gravity,
     FREQUENCIES: frequencies,
     LINK_BIAS: linkBias,
@@ -344,7 +337,6 @@ export function createRandomIntTypesConfig({
   RADIUS_BOUNDS,
   FREQUENCY_BOUNDS,
   MASS_BOUNDS,
-  CHARGE_BOUNDS,
   GRAVITY_BOUNDS,
   LINK_BIAS_BOUNDS,
   LINK_BOUNDS,
@@ -388,10 +380,6 @@ export function createRandomIntTypesConfig({
     frequencies.push(createRandomInteger(FREQUENCY_BOUNDS));
   }
 
-  const charge: number[] = [];
-  for (let i=0; i<TYPES_COUNT; ++i) {
-    charge.push(createRandomInteger(CHARGE_BOUNDS));
-  }
 
   const bondPreference = randomizeMatrix(
     TYPES_COUNT,
@@ -465,7 +453,6 @@ export function createRandomIntTypesConfig({
   return {
     RADIUS: radius,
     MASS: mass,
-    CHARGE: charge,
     GRAVITY: gravity,
     FREQUENCIES: frequencies,
     LINK_BIAS: linkBias,
@@ -491,7 +478,6 @@ export function createDefaultRandomTypesConfig(typesCount: number): RandomTypesC
     USE_RADIUS_BOUNDS: false,
     USE_FREQUENCY_BOUNDS: false,
     USE_MASS_BOUNDS: false,
-    USE_CHARGE_BOUNDS: false,
     USE_GRAVITY_BOUNDS: true,
     USE_LINK_BIAS_BOUNDS: true,
     USE_LINK_BOUNDS: true,
@@ -506,7 +492,6 @@ export function createDefaultRandomTypesConfig(typesCount: number): RandomTypesC
     RADIUS_BOUNDS: [0.8, 1.3, 1, 0.1, 1],
     FREQUENCY_BOUNDS: [0.1, 1, 0.5, 0.1, 1],
     MASS_BOUNDS: [0.1, 2, 1, 0.1, 1],
-    CHARGE_BOUNDS: [-2, 2, 0, 0.5, 1],
     GRAVITY_BOUNDS: [-15, 1, -1, 0.1, 1],
     LINK_BIAS_BOUNDS: [-0.5, 0.2, -0.1, 0.05, 1],
     LINK_BOUNDS: [1, 8, 3],
@@ -627,13 +612,6 @@ export function randomizeTypesConfig(
     );
   }
 
-  if (!randomTypesConfig.USE_CHARGE_BOUNDS || skipSubMatricesBoundaryIndex !== undefined) {
-    copyConfigListValue(
-      oldConfig.CHARGE ?? createFilledArray(oldConfig.RADIUS.length, 0),
-      newConfig.CHARGE,
-      0,
-    );
-  }
 
   if (!randomTypesConfig.USE_LINK_BOUNDS || skipSubMatricesBoundaryIndex !== undefined) {
     copyConfigListValue(oldConfig.LINKS, newConfig.LINKS, 0);

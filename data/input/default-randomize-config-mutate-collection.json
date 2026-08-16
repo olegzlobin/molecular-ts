@@ -73,17 +73,9 @@
     "LINK_BIAS_MATRIX_SYMMETRIC": false,
     "LINK_TYPE_MATRIX_SYMMETRIC": false,
     "LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC": false,
-    "USE_CHARGE_BOUNDS": false,
     "USE_BOND_PREFERENCE_BOUNDS": false,
     "USE_BOND_PREFERENCE_FACTOR_BOUNDS": false,
     "USE_LINK_STRENGTH_FACTOR_BOUNDS": false,
-    "CHARGE_BOUNDS": [
-      -2,
-      2,
-      0,
-      0.5,
-      1
-    ],
     "BOND_PREFERENCE_BOUNDS": [
       0,
       4,
@@ -185,17 +177,9 @@
     "LINK_BIAS_MATRIX_SYMMETRIC": false,
     "LINK_TYPE_MATRIX_SYMMETRIC": false,
     "LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC": false,
-    "USE_CHARGE_BOUNDS": false,
     "USE_BOND_PREFERENCE_BOUNDS": false,
     "USE_BOND_PREFERENCE_FACTOR_BOUNDS": false,
     "USE_LINK_STRENGTH_FACTOR_BOUNDS": false,
-    "CHARGE_BOUNDS": [
-      -2,
-      2,
-      0,
-      0.5,
-      1
-    ],
     "BOND_PREFERENCE_BOUNDS": [
       0,
       4,
@@ -297,17 +281,9 @@
     "LINK_BIAS_MATRIX_SYMMETRIC": false,
     "LINK_TYPE_MATRIX_SYMMETRIC": false,
     "LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC": false,
-    "USE_CHARGE_BOUNDS": false,
     "USE_BOND_PREFERENCE_BOUNDS": false,
     "USE_BOND_PREFERENCE_FACTOR_BOUNDS": false,
     "USE_LINK_STRENGTH_FACTOR_BOUNDS": false,
-    "CHARGE_BOUNDS": [
-      -2,
-      2,
-      0,
-      0.5,
-      1
-    ],
     "BOND_PREFERENCE_BOUNDS": [
       0,
       4,
@@ -409,17 +385,9 @@
     "LINK_BIAS_MATRIX_SYMMETRIC": false,
     "LINK_TYPE_MATRIX_SYMMETRIC": false,
     "LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC": false,
-    "USE_CHARGE_BOUNDS": false,
     "USE_BOND_PREFERENCE_BOUNDS": false,
     "USE_BOND_PREFERENCE_FACTOR_BOUNDS": false,
     "USE_LINK_STRENGTH_FACTOR_BOUNDS": false,
-    "CHARGE_BOUNDS": [
-      -2,
-      2,
-      0,
-      0.5,
-      1
-    ],
     "BOND_PREFERENCE_BOUNDS": [
       0,
       4,
@@ -521,17 +489,9 @@
     "LINK_BIAS_MATRIX_SYMMETRIC": false,
     "LINK_TYPE_MATRIX_SYMMETRIC": false,
     "LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC": false,
-    "USE_CHARGE_BOUNDS": false,
     "USE_BOND_PREFERENCE_BOUNDS": false,
     "USE_BOND_PREFERENCE_FACTOR_BOUNDS": false,
     "USE_LINK_STRENGTH_FACTOR_BOUNDS": false,
-    "CHARGE_BOUNDS": [
-      -2,
-      2,
-      0,
-      0.5,
-      1
-    ],
     "BOND_PREFERENCE_BOUNDS": [
       0,
       4,
@@ -633,17 +593,9 @@
     "LINK_BIAS_MATRIX_SYMMETRIC": false,
     "LINK_TYPE_MATRIX_SYMMETRIC": false,
     "LINK_TYPE_WEIGHT_MATRIX_SYMMETRIC": false,
-    "USE_CHARGE_BOUNDS": false,
     "USE_BOND_PREFERENCE_BOUNDS": false,
     "USE_BOND_PREFERENCE_FACTOR_BOUNDS": false,
     "USE_LINK_STRENGTH_FACTOR_BOUNDS": false,
-    "CHARGE_BOUNDS": [
-      -2,
-      2,
-      0,
-      0.5,
-      1
-    ],
     "BOND_PREFERENCE_BOUNDS": [
       0,
       4,

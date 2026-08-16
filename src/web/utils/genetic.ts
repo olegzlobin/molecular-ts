@@ -7,7 +7,6 @@ export function createDefaultPopulateRandomTypesConfigCollection(): RandomTypesC
 
       USE_RADIUS_BOUNDS: false,
       USE_FREQUENCY_BOUNDS: false,
-      USE_CHARGE_BOUNDS: false,
       USE_MASS_BOUNDS: false,
       USE_GRAVITY_BOUNDS: true,
       USE_LINK_BIAS_BOUNDS: true,
@@ -22,7 +21,6 @@ export function createDefaultPopulateRandomTypesConfigCollection(): RandomTypesC
 
       RADIUS_BOUNDS: [0.8, 1.3, 1, 0.1, 1],
       FREQUENCY_BOUNDS: [0.5, 1, 0.7, 0.1, 1],
-      CHARGE_BOUNDS: [-2, 2, 0, 0.5, 1],
       MASS_BOUNDS: [0.1, 2, 1, 0.1, 1],
       GRAVITY_BOUNDS: [-10, 1, -1, 0.1, 1],
       LINK_BIAS_BOUNDS: [-0.5, 0.2, 0, 0.05, 1],
@@ -50,7 +48,6 @@ export function createDefaultPopulateRandomTypesConfigCollection(): RandomTypesC
 
       USE_RADIUS_BOUNDS: false,
       USE_FREQUENCY_BOUNDS: false,
-      USE_CHARGE_BOUNDS: false,
       USE_MASS_BOUNDS: false,
       USE_GRAVITY_BOUNDS: true,
       USE_LINK_BIAS_BOUNDS: true,
@@ -65,7 +62,6 @@ export function createDefaultPopulateRandomTypesConfigCollection(): RandomTypesC
 
       RADIUS_BOUNDS: [0.8, 1.3, 1, 0.1, 1],
       FREQUENCY_BOUNDS: [0.5, 1, 0.7, 0.1, 1],
-      CHARGE_BOUNDS: [-2, 2, 0, 0.5, 1],
       MASS_BOUNDS: [0.1, 2, 1, 0.1, 1],
       GRAVITY_BOUNDS: [-10, -1, -3, 0.1, 1],
       LINK_BIAS_BOUNDS: [-0.5, 0.1, -0.1, 0.05, 1],
@@ -93,7 +89,6 @@ export function createDefaultPopulateRandomTypesConfigCollection(): RandomTypesC
 
       USE_RADIUS_BOUNDS: false,
       USE_FREQUENCY_BOUNDS: false,
-      USE_CHARGE_BOUNDS: false,
       USE_MASS_BOUNDS: false,
       USE_GRAVITY_BOUNDS: true,
       USE_LINK_BIAS_BOUNDS: true,
@@ -108,7 +103,6 @@ export function createDefaultPopulateRandomTypesConfigCollection(): RandomTypesC
 
       RADIUS_BOUNDS: [0.8, 1.3, 1, 0.1, 1],
       FREQUENCY_BOUNDS: [0.5, 1, 0.7, 0.1, 1],
-      CHARGE_BOUNDS: [-2, 2, 0, 0.5, 1],
       MASS_BOUNDS: [0.1, 2, 1, 0.1, 1],
       GRAVITY_BOUNDS: [-10, -1, -3, 0.1, 1],
       LINK_BIAS_BOUNDS: [-0.5, 0.1, -0.1, 0.05, 1],
@@ -141,7 +135,6 @@ export function createDefaultMutationRandomTypesConfigCollection(): RandomTypesC
 
       USE_RADIUS_BOUNDS: false,
       USE_FREQUENCY_BOUNDS: false,
-      USE_CHARGE_BOUNDS: false,
       USE_MASS_BOUNDS: false,
       USE_GRAVITY_BOUNDS: true,
       USE_LINK_BIAS_BOUNDS: true,
@@ -156,7 +149,6 @@ export function createDefaultMutationRandomTypesConfigCollection(): RandomTypesC
 
       RADIUS_BOUNDS: [0.8, 1.3, 1, 0.1, 1],
       FREQUENCY_BOUNDS: [0.5, 1, 0.7, 0.1, 1],
-      CHARGE_BOUNDS: [-2, 2, 0, 0.5, 1],
       MASS_BOUNDS: [0.1, 2, 1, 0.1, 1],
       GRAVITY_BOUNDS: [-10, 1, -1, 0.1, 1],
       LINK_BIAS_BOUNDS: [-0.5, 0.2, 0, 0.05, 1],
@@ -184,7 +176,6 @@ export function createDefaultMutationRandomTypesConfigCollection(): RandomTypesC
 
       USE_RADIUS_BOUNDS: false,
       USE_FREQUENCY_BOUNDS: false,
-      USE_CHARGE_BOUNDS: false,
       USE_MASS_BOUNDS: false,
       USE_GRAVITY_BOUNDS: true,
       USE_LINK_BIAS_BOUNDS: true,
@@ -199,7 +190,6 @@ export function createDefaultMutationRandomTypesConfigCollection(): RandomTypesC
 
       RADIUS_BOUNDS: [0.8, 1.3, 1, 0.1, 1],
       FREQUENCY_BOUNDS: [0.5, 1, 0.7, 0.1, 1],
-      CHARGE_BOUNDS: [-2, 2, 0, 0.5, 1],
       MASS_BOUNDS: [0.1, 2, 1, 0.1, 1],
       GRAVITY_BOUNDS: [-10, -1, -3, 0.1, 1],
       LINK_BIAS_BOUNDS: [-0.5, 0.1, -0.1, 0.05, 1],
@@ -227,7 +217,6 @@ export function createDefaultMutationRandomTypesConfigCollection(): RandomTypesC
 
       USE_RADIUS_BOUNDS: false,
       USE_FREQUENCY_BOUNDS: false,
-      USE_CHARGE_BOUNDS: false,
       USE_MASS_BOUNDS: false,
       USE_GRAVITY_BOUNDS: true,
       USE_LINK_BIAS_BOUNDS: true,
@@ -242,7 +231,6 @@ export function createDefaultMutationRandomTypesConfigCollection(): RandomTypesC
 
       RADIUS_BOUNDS: [0.8, 1.3, 1, 0.1, 1],
       FREQUENCY_BOUNDS: [0.5, 1, 0.7, 0.1, 1],
-      CHARGE_BOUNDS: [-2, 2, 0, 0.5, 1],
       MASS_BOUNDS: [0.1, 2, 1, 0.1, 1],
       GRAVITY_BOUNDS: [-10, -1, -3, 0.1, 1],
       LINK_BIAS_BOUNDS: [-0.5, 0.1, -0.1, 0.05, 1],
@@ -270,7 +258,6 @@ export function createDefaultMutationRandomTypesConfigCollection(): RandomTypesC
 
       USE_RADIUS_BOUNDS: false,
       USE_FREQUENCY_BOUNDS: true,
-      USE_CHARGE_BOUNDS: false,
       USE_MASS_BOUNDS: false,
       USE_GRAVITY_BOUNDS: false,
       USE_LINK_BIAS_BOUNDS: false,
@@ -285,7 +272,6 @@ export function createDefaultMutationRandomTypesConfigCollection(): RandomTypesC
 
       RADIUS_BOUNDS: [0.8, 1.3, 1, 0.1, 1],
       FREQUENCY_BOUNDS: [0.5, 1, 0.7, 0.1, 1],
-      CHARGE_BOUNDS: [-2, 2, 0, 0.5, 1],
       MASS_BOUNDS: [0.1, 2, 1, 0.1, 1],
       GRAVITY_BOUNDS: [-10, -1, -3, 0.1, 1],
       LINK_BIAS_BOUNDS: [-0.5, 0.1, -0.1, 0.05, 1],

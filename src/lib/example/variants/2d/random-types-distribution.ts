@@ -15,7 +15,6 @@ const TYPES_CONFIG: TypesConfig = createRandomTypesConfig({
 
   USE_RADIUS_BOUNDS: false,
   USE_FREQUENCY_BOUNDS: false,
-  USE_CHARGE_BOUNDS: false,
   USE_MASS_BOUNDS: false,
   USE_GRAVITY_BOUNDS: true,
   USE_LINK_BIAS_BOUNDS: true,
@@ -30,7 +29,6 @@ const TYPES_CONFIG: TypesConfig = createRandomTypesConfig({
 
   RADIUS_BOUNDS: [0.5, 1.5],
   FREQUENCY_BOUNDS: [0.1, 1, 0.5, 0.1],
-  CHARGE_BOUNDS: [-2, 2, 0, 0.5],
   MASS_BOUNDS: [0.1, 2, 1, 0.1],
   GRAVITY_BOUNDS: [-1, 0.5],
   LINK_BIAS_BOUNDS: [-0.3, 0.15],

@@ -37,7 +37,6 @@ export type TypeNumericField = {
 export const TYPE_NUMERIC_FIELDS: TypeNumericField[] = [
   { key: 'RADIUS', rank: 1, fill: 1 },
   { key: 'MASS', rank: 1, fill: 1 },
-  { key: 'CHARGE', rank: 1, fill: 0 },
   { key: 'FREQUENCIES', rank: 1, fill: 1 },
   { key: 'LINKS', rank: 1, fill: 0 },
   { key: 'LINK_LENGTH', rank: 1, fill: 1 },

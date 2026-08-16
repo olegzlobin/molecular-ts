@@ -12,9 +12,7 @@ export function convertWorldConfigForBackwardCompatibility(inputConfig: WorldCon
   if (config.WORLD_GRAVITY === undefined) {
     config.WORLD_GRAVITY = 0;
   }
-  if (config.COULOMB_FORCE_MULTIPLIER === undefined) {
-    config.COULOMB_FORCE_MULTIPLIER = 0.6;
-  }
+  deleteKey(config as Record<string, unknown>, 'COULOMB_FORCE_MULTIPLIER');
   config.PHYSIC_MODEL = 'spring';
   return config;
 }
@@ -27,6 +25,7 @@ export function convertTypesConfigForBackwardCompatibility(inputConfig: TypesCon
   deleteKey(config, 'LINK_FACTOR_ELASTIC');
   deleteKey(config, 'LINK_FACTOR_DISTANCE_EXTENDED');
   deleteKey(config, 'LINK_FACTOR_DISTANCE_USE_EXTENDED');
+  deleteKey(raw, 'CHARGE');
 
   const mistypedTransforms = raw.TRANSFORMS;
   if (mistypedTransforms !== undefined && config.TRANSFORMS === undefined) {
@@ -82,9 +81,6 @@ export function convertRandomTypesConfigForBackwardCompatibility(inputConfig: Ra
   if (config.USE_LINK_STIFFNESS_BOUNDS === undefined) {
     config.USE_LINK_STIFFNESS_BOUNDS = false;
   }
-  if (config.USE_CHARGE_BOUNDS === undefined) {
-    config.USE_CHARGE_BOUNDS = false;
-  }
   if (config.USE_MASS_BOUNDS === undefined) {
     config.USE_MASS_BOUNDS = false;
   }
@@ -102,9 +98,6 @@ export function convertRandomTypesConfigForBackwardCompatibility(inputConfig: Ra
   }
   if (!config.LINK_STIFFNESS_BOUNDS) {
     config.LINK_STIFFNESS_BOUNDS = [0.5, 1.2, 1, 0.1];
-  }
-  if (!config.CHARGE_BOUNDS) {
-    config.CHARGE_BOUNDS = [-2, 2, 0, 0.5];
   }
   if (!config.MASS_BOUNDS) {
     config.MASS_BOUNDS = [0.1, 2, 1, 0.1];

@@ -8,7 +8,6 @@ function typesConfig(): TypesConfig {
     NAMES: ['C', 'O', 'H'],
     COLORS: [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
     RADIUS: [1, 1, 1],
-    CHARGE: [0, 0, 0],
     FREQUENCIES: [1, 1, 1],
     GRAVITY: [
       [0, 0, 0],
@@ -50,7 +49,6 @@ function nitrogenTypesConfig(): TypesConfig {
     NAMES: ['N', 'H'],
     COLORS: [[0, 0, 0], [0, 0, 0]],
     RADIUS: [1, 1],
-    CHARGE: [0, 0],
     FREQUENCIES: [1, 1],
     GRAVITY: [[0, 0], [0, 0]],
     LINK_BIAS: [[0, 0], [0, 0]],

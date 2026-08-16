@@ -51,7 +51,6 @@ export type ViewModeConfig = {
 export type TypesConfig = {
   RADIUS: RadiusConfig;
   MASS: number[];
-  CHARGE: number[];
   GRAVITY: GravityConfig;
   LINK_BIAS: GravityConfig;
   LINKS: LinksConfig;
@@ -76,7 +75,6 @@ export type WorldConfig = {
   MAX_LINK_RADIUS: number;
   MAX_FORCE: number,
   GRAVITY_FORCE_MULTIPLIER: number;
-  COULOMB_FORCE_MULTIPLIER: number;
   WORLD_GRAVITY: number;
   LINK_FORCE_MULTIPLIER: number;
   BOUNCE_FORCE_MULTIPLIER: number;
@@ -97,7 +95,6 @@ export type RandomTypesConfig = {
   USE_RADIUS_BOUNDS: boolean;
   USE_FREQUENCY_BOUNDS: boolean;
   USE_MASS_BOUNDS: boolean;
-  USE_CHARGE_BOUNDS: boolean;
   USE_GRAVITY_BOUNDS: boolean;
   USE_LINK_BIAS_BOUNDS: boolean;
   USE_LINK_BOUNDS: boolean;
@@ -112,7 +109,6 @@ export type RandomTypesConfig = {
   RADIUS_BOUNDS: [number, number, number?, number?, number?];
   FREQUENCY_BOUNDS: [number, number, number?, number?, number?];
   MASS_BOUNDS: [number, number, number?, number?, number?];
-  CHARGE_BOUNDS: [number, number, number?, number?, number?];
   GRAVITY_BOUNDS: [number, number, number?, number?, number?];
   LINK_BIAS_BOUNDS: [number, number, number?, number?, number?];
   LINK_BOUNDS: [number, number, number?, number?, number?];

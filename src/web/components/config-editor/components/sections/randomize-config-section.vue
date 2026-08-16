@@ -103,18 +103,6 @@ const randomizeTypesConfig = () => {
         </div>
       </div>
 
-      <div v-show="!useIgnoreSubMatricesBoundaryIndex">
-        <input-header
-          name="Charge"
-          tooltip="Coulomb charge of each type. Same signs repel, opposite attract."
-          tooltip-position="left"
-        >
-          <input type="checkbox" class="title-flag" v-model="randomTypesConfig.USE_CHARGE_BOUNDS" />
-        </input-header>
-        <div v-show="randomTypesConfig.USE_CHARGE_BOUNDS">
-          <config-bounds :step="0.5" :values="randomTypesConfig.CHARGE_BOUNDS" />
-        </div>
-      </div>
 
       <div v-show="!useIgnoreSubMatricesBoundaryIndex">
         <input-header

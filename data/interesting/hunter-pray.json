@@ -7,7 +7,6 @@
     "MAX_LINK_RADIUS": 60,
     "MAX_FORCE": 0.15,
     "GRAVITY_FORCE_MULTIPLIER": 0.6,
-    "COULOMB_FORCE_MULTIPLIER": 0.6,
     "WORLD_GRAVITY": 0,
     "LINK_FORCE_MULTIPLIER": 0.0025,
     "BOUNCE_FORCE_MULTIPLIER": 0.02,
@@ -97,10 +96,6 @@
     "MASS": [
       1,
       1
-    ],
-    "CHARGE": [
-      0,
-      0
     ],
     "GRAVITY": [
       [
