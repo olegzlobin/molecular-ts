@@ -16,6 +16,7 @@ export class InteractionManager implements InteractionManagerInterface {
   private readonly linkManager: LinkManagerInterface;
   private readonly ruleHelper: RulesHelperInterface;
   private readonly summaryManager: SummaryManagerInterface;
+  private readonly onLinkBreak?: (link: LinkInterface) => void;
   private physicModel: PhysicModelInterface;
   private time: number;
   private bufVector: VectorInterface = new Vector([0, 0]);
@@ -28,7 +29,8 @@ export class InteractionManager implements InteractionManagerInterface {
     linkManager: LinkManagerInterface,
     physicModel: PhysicModelInterface,
     ruleHelper: RulesHelperInterface,
-    summaryManager: SummaryManagerInterface
+    summaryManager: SummaryManagerInterface,
+    onLinkBreak?: (link: LinkInterface) => void,
   ) {
     this.VIEW_MODE = viewMode;
     this.WORLD_CONFIG = worldConfig;
@@ -37,6 +39,7 @@ export class InteractionManager implements InteractionManagerInterface {
     this.physicModel = physicModel;
     this.ruleHelper = ruleHelper;
     this.summaryManager = summaryManager;
+    this.onLinkBreak = onLinkBreak;
     this.time = 0;
   }
 
@@ -72,8 +75,7 @@ export class InteractionManager implements InteractionManagerInterface {
       || dist2 > this.WORLD_CONFIG.MAX_INTERACTION_RADIUS ** 2
       || this.ruleHelper.isLinkRedundant(link.lhs, link.rhs)
     ) {
-      this.linkManager.delete(link);
-      this.summaryManager.noticeLinkDeleted(link, this.WORLD_CONFIG);
+      this.deleteLink(link);
       return;
     }
 
@@ -82,15 +84,13 @@ export class InteractionManager implements InteractionManagerInterface {
       for (const victim of upgrade.breakLhsWith) {
         const broken = this.linkManager.find(link.lhs, victim);
         if (broken) {
-          this.linkManager.delete(broken);
-          this.summaryManager.noticeLinkDeleted(broken, this.WORLD_CONFIG);
+          this.deleteLink(broken);
         }
       }
       for (const victim of upgrade.breakRhsWith) {
         const broken = this.linkManager.find(link.rhs, victim);
         if (broken) {
-          this.linkManager.delete(broken);
-          this.summaryManager.noticeLinkDeleted(broken, this.WORLD_CONFIG);
+          this.deleteLink(broken);
         }
       }
       this.linkManager.setOrder(link, upgrade.newOrder);
@@ -169,15 +169,13 @@ export class InteractionManager implements InteractionManagerInterface {
       for (const victim of swapPlan.breakLhsWith) {
         const broken = this.linkManager.find(lhs, victim);
         if (broken) {
-          this.linkManager.delete(broken);
-          this.summaryManager.noticeLinkDeleted(broken, this.WORLD_CONFIG);
+          this.deleteLink(broken);
         }
       }
       for (const victim of swapPlan.breakRhsWith) {
         const broken = this.linkManager.find(rhs, victim);
         if (broken) {
-          this.linkManager.delete(broken);
-          this.summaryManager.noticeLinkDeleted(broken, this.WORLD_CONFIG);
+          this.deleteLink(broken);
         }
       }
 
@@ -289,5 +287,11 @@ export class InteractionManager implements InteractionManagerInterface {
     for (let i = 0; i < lhs.position.length; ++i) {
       out[i] = rhs.position[i] - lhs.position[i];
     }
+  }
+
+  private deleteLink(link: LinkInterface): void {
+    this.linkManager.delete(link);
+    this.summaryManager.noticeLinkDeleted(link, this.WORLD_CONFIG);
+    this.onLinkBreak?.(link);
   }
 }

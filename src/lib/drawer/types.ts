@@ -1,7 +1,9 @@
 import type { NumericVector } from '../math/types';
 import type { AtomInterface } from '../simulation/types/atomic';
 import type { LinkManagerInterface } from '../simulation/types/utils';
-import type { TypesConfig, WorldConfig } from '../config/types';
+import type { ColorVector, TypesConfig, WorldConfig } from '../config/types';
+
+export type ReactionEffectKind = 'transform' | 'vanish' | 'split';
 
 export type ViewConfig = {
   offset: NumericVector;
@@ -28,6 +30,8 @@ export interface DrawerInterface {
   readonly eventManager?: EventManagerInterface;
   draw(atoms: Array<AtomInterface>, links: LinkManagerInterface): void;
   clear(): void;
+  pushReactionEffect(position: NumericVector, color: ColorVector, kind: ReactionEffectKind): void;
+  pushLinkBreakEffect(from: NumericVector, to: NumericVector, color: ColorVector): void;
 }
 
 export interface EventManagerInterface {

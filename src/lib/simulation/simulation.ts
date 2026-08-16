@@ -1,5 +1,5 @@
 import type { SimulationConfig, SimulationInterface } from './types/simulation';
-import type { AtomInterface } from './types/atomic';
+import type { AtomInterface, LinkInterface } from './types/atomic';
 import type { DrawerInterface } from '../drawer/types';
 import type { LinkManagerInterface, RunningStateInterface } from './types/utils';
 import type { InteractionManagerInterface, PhysicModelInterface } from './types/interaction';
@@ -66,6 +66,7 @@ export class Simulation implements SimulationInterface {
       this.config.physicModel,
       new RulesHelper(this.config.worldConfig, this.config.typesConfig),
       this.summaryManager,
+      (link) => this.noticeLinkBreak(link),
     );
     this.spatialGridManager = new SpatialGridManager(this.config.worldConfig.MAX_INTERACTION_RADIUS);
     this.runningState = new RunningState();
@@ -254,12 +255,10 @@ export class Simulation implements SimulationInterface {
   }
 
   private interact(collectStockSummary: boolean = true): void {
-    for (const atom of this._atoms) {
-      this.interactionManager.updateAtomType(atom);
-    }
+    this.applyPendingTypeChanges();
     this.handleDecays();
+    this.applyPendingTypeChanges();
     for (const atom of this._atoms) {
-      this.interactionManager.updateAtomType(atom);
       this.interactionManager.moveAtom(atom);
       if (collectStockSummary) {
         this.summaryManager.noticeAtom(atom, this.config.worldConfig);
@@ -286,6 +285,44 @@ export class Simulation implements SimulationInterface {
       }
     }
     this.interactionManager.handleTime();
+  }
+
+  private applyPendingTypeChanges(): void {
+    for (const atom of this._atoms) {
+      if (atom.isTypeChanged) {
+        this.noticeReaction(atom.position, atom.newType as number, 'transform');
+      }
+      this.interactionManager.updateAtomType(atom);
+    }
+  }
+
+  private noticeReaction(
+    position: NumericVector,
+    type: number,
+    kind: 'transform' | 'vanish' | 'split',
+  ): void {
+    const color = this.config.typesConfig.COLORS[type];
+    if (color) {
+      this.drawer.pushReactionEffect(position, color, kind);
+    }
+  }
+
+  private noticeLinkBreak(link: LinkInterface): void {
+    const colors = this.config.typesConfig.COLORS;
+    const c0 = colors[link.lhs.type];
+    const c1 = colors[link.rhs.type];
+    if (!c0 || !c1) {
+      return;
+    }
+    this.drawer.pushLinkBreakEffect(
+      link.lhs.position,
+      link.rhs.position,
+      [
+        (c0[0] + c1[0]) / 2,
+        (c0[1] + c1[1]) / 2,
+        (c0[2] + c1[2]) / 2,
+      ],
+    );
   }
 
   private handleDecays(): void {
@@ -327,6 +364,7 @@ export class Simulation implements SimulationInterface {
       }
 
       this.breakAtomLinks(atom);
+      this.noticeReaction(atom.position, rule.secondary, 'split');
 
       const mass1 = typeMass(this.config.typesConfig, rule.to);
       const mass2 = typeMass(this.config.typesConfig, rule.secondary);
@@ -375,6 +413,7 @@ export class Simulation implements SimulationInterface {
   private breakAtomLinks(atom: AtomInterface): void {
     for (const link of [...this._links]) {
       if (link.lhs === atom || link.rhs === atom) {
+        this.noticeLinkBreak(link);
         this._links.delete(link);
       }
     }
@@ -385,8 +424,10 @@ export class Simulation implements SimulationInterface {
     for (let i = 0; i < this._atoms.length; ++i) {
       const atom = this._atoms[i];
       if (atom.toDelete) {
+        this.noticeReaction(atom.position, atom.type, 'vanish');
         for (const link of [...this._links]) {
           if (link.lhs === atom || link.rhs === atom) {
+            this.noticeLinkBreak(link);
             this._links.delete(link);
           }
         }

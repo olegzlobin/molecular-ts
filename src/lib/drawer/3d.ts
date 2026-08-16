@@ -3,15 +3,14 @@ import type {
   DrawerInterface,
   EventManagerInterface,
   MouseEventListenerCallback,
+  ReactionEffectKind,
 } from './types';
 import type { ColorVector, TypesConfig, WorldConfig } from '../config/types';
 import type { AtomInterface, LinkInterface } from '../simulation/types/atomic';
 import {
   Scene,
   Engine,
-  Camera,
   FreeCamera,
-  UniversalCamera,
   AnaglyphFreeCamera,
   Vector3,
   Light,
@@ -119,6 +118,22 @@ export class Drawer3d implements DrawerInterface {
     this.linksMap.forEach((item) => this.scene.removeMesh(item));
     this.atomsMap.clear();
     this.linksMap.clear();
+  }
+
+  public pushReactionEffect(
+    _position: NumericVector,
+    _color: ColorVector,
+    _kind: ReactionEffectKind,
+  ): void {
+    // ponytail: 2d rings first; 3d meshes if this proves useful
+  }
+
+  public pushLinkBreakEffect(
+    _from: NumericVector,
+    _to: NumericVector,
+    _color: ColorVector,
+  ): void {
+    return;
   }
 
   private updateAtomColor(atom: AtomInterface, drawObject: Mesh): void {

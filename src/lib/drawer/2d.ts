@@ -4,6 +4,7 @@ import type {
   Drawer2dConfigInterface,
   DrawerInterface,
   EventManagerInterface,
+  ReactionEffectKind,
   ShowConfig,
   ViewConfig,
 } from './types';
@@ -12,6 +13,16 @@ import type { AtomInterface, LinkInterface } from '../simulation/types/atomic';
 import type { LinkManagerInterface } from '../simulation/types/utils';
 import { EventManager } from '../drawer/utils';
 
+type ReactionFlash = {
+  x: number;
+  y: number;
+  x2?: number;
+  y2?: number;
+  color: ColorVector;
+  kind: ReactionEffectKind | 'break';
+  age: number;
+  life: number;
+};
 /**
  * Transpose coords with backward applying offset and scale
  * @param coords - coords to transpose
@@ -46,6 +57,7 @@ export class Drawer2d implements DrawerInterface {
   private readonly viewConfig: ViewConfig;
   private readonly showConfig: ShowConfig;
   private readonly context: CanvasRenderingContext2D;
+  private readonly flashes: ReactionFlash[] = [];
 
   constructor({
     domElement,
@@ -133,13 +145,105 @@ export class Drawer2d implements DrawerInterface {
       this.drawBounds();
     }
 
+    this.drawFlashes();
+
     this.context.restore();
+  }
+
+  public pushReactionEffect(position: NumericVector, color: ColorVector, kind: ReactionEffectKind): void {
+    if (position.length < 2) {
+      return;
+    }
+    // ponytail: hard cap so dense catalyst worlds stay light
+    if (this.flashes.length >= 400) {
+      this.flashes.shift();
+    }
+    const life = kind === 'vanish' ? 18 : kind === 'split' ? 14 : 12;
+    this.flashes.push({
+      x: position[0],
+      y: position[1],
+      color: [color[0], color[1], color[2]],
+      kind,
+      age: 0,
+      life,
+    });
+  }
+
+  public pushLinkBreakEffect(from: NumericVector, to: NumericVector, color: ColorVector): void {
+    if (from.length < 2 || to.length < 2) {
+      return;
+    }
+    if (this.flashes.length >= 400) {
+      this.flashes.shift();
+    }
+    this.flashes.push({
+      x: from[0],
+      y: from[1],
+      x2: to[0],
+      y2: to[1],
+      color: [color[0], color[1], color[2]],
+      kind: 'break',
+      age: 0,
+      life: 14,
+    });
   }
 
   public clear(): void {
     this.context.fillStyle = 'rgb(51, 51, 76, 0.8)';
     this.context.rect(0, 0, this.width, this.height);
     this.context.fill();
+  }
+
+  private drawFlashes(): void {
+    if (!this.flashes.length) {
+      return;
+    }
+
+    const base = this.WORLD_CONFIG.ATOM_RADIUS;
+    let write = 0;
+    for (let i = 0; i < this.flashes.length; ++i) {
+      const flash = this.flashes[i];
+      flash.age++;
+      if (flash.age > flash.life) {
+        continue;
+      }
+
+      const t = flash.age / flash.life;
+      const isBreak = flash.kind === 'break';
+      const visible = isBreak ? this.showConfig.showLinks : this.showConfig.showAtoms;
+
+      if (visible) {
+        const alpha = 1 - t;
+        const [r, g, b] = flash.color;
+
+        if (isBreak && flash.x2 !== undefined && flash.y2 !== undefined) {
+          const shrink = 1 - t * 0.45;
+          const mx = (flash.x + flash.x2) / 2;
+          const my = (flash.y + flash.y2) / 2;
+          this.context.beginPath();
+          this.context.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+          this.context.lineWidth = Math.max(0.5, 2.4 * (1 - t * 0.6));
+          this.context.moveTo(mx + (flash.x - mx) * shrink, my + (flash.y - my) * shrink);
+          this.context.lineTo(mx + (flash.x2 - mx) * shrink, my + (flash.y2 - my) * shrink);
+          this.context.stroke();
+          this.context.closePath();
+        } else if (!isBreak) {
+          const grow = flash.kind === 'vanish' ? 2.8 : flash.kind === 'split' ? 2.2 : 1.6;
+          const radius = base * (0.7 + grow * t);
+          const line = Math.max(0.6, (flash.kind === 'transform' ? 2.2 : 1.6) * (1 - t * 0.5));
+
+          this.context.beginPath();
+          this.context.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+          this.context.lineWidth = line;
+          this.context.ellipse(flash.x, flash.y, radius, radius, 0, 0, 2 * Math.PI);
+          this.context.stroke();
+          this.context.closePath();
+        }
+      }
+
+      this.flashes[write++] = flash;
+    }
+    this.flashes.length = write;
   }
 
   private drawBounds(): void {
