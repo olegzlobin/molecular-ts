@@ -14,20 +14,7 @@ export const usePhysicsStore = defineStore('physics', () => {
     spring: 'Spring',
   };
   const physicModelTooltipMap: Record<PhysicModelName, string> = {
-    spring: `Hookean bonds, soft overlap bounce, 1/r² gravity.
-
-Link: F = k · ε · (r − L) / m
-  L = (Rᵢ + Rⱼ) · (ℓᵢ + ℓⱼ) / 2
-  ε = (sᵢ + sⱼ) / 2
-
-Bounce (r < Rᵢ+Rⱼ): F = −k_b · (Rᵢ+Rⱼ − r) / m
-
-Gravity: F = G·g / r² / m
-Link Bias (bonded): F = G·b / m  (constant)
-
-Bounds: F = k_w · Δ
-
-m is the type Mass (legacy configs: Radius³).`,
+    spring: 'Hookean bonds, soft overlap bounce, 1/r² gravity.',
   };
 
   watch(physicModelName, (modelName: PhysicModelName) => {

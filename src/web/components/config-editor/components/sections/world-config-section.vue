@@ -79,14 +79,114 @@ watch(() => configStore.worldConfig.VIEW_MODE, updatePaused);
         >
           <input type="radio" name="physic-model" v-model="physicModelName" :value="value">
           {{ i18n.t(title) }}
-          <tooltip
-            :text="i18n.t(physicsStore.physicModelTooltipMap[value])"
-            :width="420"
-            style="margin-left: 4px;"
-          >
+          <tooltip :width="460" position="left" style="margin-left: 4px;">
+            <template #content>
+              <div class="physic-formulas">
+                <div class="eq-intro">{{ i18n.t(physicsStore.physicModelTooltipMap[value]) }}</div>
+                <div class="eq-block">
+                  <div class="eq-label">{{ i18n.t('Link') }}</div>
+                  <div class="eq">
+                    <var>a</var> =
+                    <span class="frac">
+                      <span><var>k</var> · <var>ε</var> · (<var>r</var> − <var>L</var>)</span>
+                      <span><var>m</var></span>
+                    </span>
+                  </div>
+                  <dl class="eq-vars">
+                    <div><dt><var>a</var></dt><dd>{{ i18n.t('acceleration (added to velocity)') }}</dd></div>
+                    <div><dt><var>k</var></dt><dd>{{ i18n.t('Link Force Multiplier') }}</dd></div>
+                    <div><dt><var>ε</var></dt><dd>{{ i18n.t('Link Stiffness') }}</dd></div>
+                    <div><dt><var>r</var></dt><dd>{{ i18n.t('distance between the pair') }}</dd></div>
+                    <div><dt><var>L</var></dt><dd>{{ i18n.t('rest length') }}</dd></div>
+                    <div><dt><var>m</var></dt><dd>{{ i18n.t('type Mass (legacy Radius³)') }}</dd></div>
+                  </dl>
+                  <div class="eq">
+                    <var>L</var> =
+                    <span class="frac">
+                      <span>(<var>R</var><sub>i</sub> + <var>R</var><sub>j</sub>) · (<var>ℓ</var><sub>i</sub> + <var>ℓ</var><sub>j</sub>)</span>
+                      <span>2</span>
+                    </span>
+                  </div>
+                  <dl class="eq-vars">
+                    <div><dt><var>R</var></dt><dd>{{ i18n.t('type Radius') }}</dd></div>
+                    <div><dt><var>ℓ</var></dt><dd>{{ i18n.t('Link Length') }}</dd></div>
+                    <div><dt><var>i</var>, <var>j</var></dt><dd>{{ i18n.t('the two particle types') }}</dd></div>
+                  </dl>
+                  <div class="eq">
+                    <var>ε</var> =
+                    <span class="frac">
+                      <span><var>s</var><sub>i</sub> + <var>s</var><sub>j</sub></span>
+                      <span>2</span>
+                    </span>
+                  </div>
+                  <dl class="eq-vars">
+                    <div><dt><var>s</var></dt><dd>{{ i18n.t('Link Stiffness') }}</dd></div>
+                  </dl>
+                </div>
+                <div class="eq-block">
+                  <div class="eq-label">
+                    {{ i18n.t('Bounce') }}
+                    (<var>r</var> &lt; <var>R</var><sub>i</sub>+<var>R</var><sub>j</sub>)
+                  </div>
+                  <div class="eq">
+                    <var>a</var> =
+                    <span class="frac">
+                      <span>−<var>k</var><sub>b</sub> · (<var>R</var><sub>i</sub>+<var>R</var><sub>j</sub> − <var>r</var>)</span>
+                      <span><var>m</var></span>
+                    </span>
+                  </div>
+                  <dl class="eq-vars">
+                    <div><dt><var>k</var><sub>b</sub></dt><dd>{{ i18n.t('Bounce Force Multiplier') }}</dd></div>
+                    <div><dt><var>R</var></dt><dd>{{ i18n.t('type Radius') }}</dd></div>
+                    <div><dt><var>r</var></dt><dd>{{ i18n.t('distance between the pair') }}</dd></div>
+                    <div><dt><var>m</var></dt><dd>{{ i18n.t('type Mass (legacy Radius³)') }}</dd></div>
+                  </dl>
+                </div>
+                <div class="eq-block">
+                  <div class="eq-label">{{ i18n.t('Gravity') }}</div>
+                  <div class="eq">
+                    <var>a</var> =
+                    <span class="frac">
+                      <span><var>G</var> · <var>g</var></span>
+                      <span><var>r</var>² · <var>m</var></span>
+                    </span>
+                  </div>
+                  <dl class="eq-vars">
+                    <div><dt><var>G</var></dt><dd>{{ i18n.t('Gravity Multiplier') }}</dd></div>
+                    <div><dt><var>g</var></dt><dd>{{ i18n.t('Gravity of the unlinked pair') }}</dd></div>
+                    <div><dt><var>r</var></dt><dd>{{ i18n.t('distance between the pair') }}</dd></div>
+                    <div><dt><var>m</var></dt><dd>{{ i18n.t('type Mass (legacy Radius³)') }}</dd></div>
+                  </dl>
+                </div>
+                <div class="eq-block">
+                  <div class="eq-label">{{ i18n.t('Link Bias') }}</div>
+                  <div class="eq">
+                    <var>a</var> =
+                    <span class="frac">
+                      <span><var>G</var> · <var>b</var></span>
+                      <span><var>m</var></span>
+                    </span>
+                  </div>
+                  <dl class="eq-vars">
+                    <div><dt><var>G</var></dt><dd>{{ i18n.t('Gravity Multiplier') }}</dd></div>
+                    <div><dt><var>b</var></dt><dd>{{ i18n.t('Link Bias of the bonded pair') }}</dd></div>
+                    <div><dt><var>m</var></dt><dd>{{ i18n.t('type Mass (legacy Radius³)') }}</dd></div>
+                  </dl>
+                </div>
+                <div class="eq-block">
+                  <div class="eq-label">{{ i18n.t('Bounds') }}</div>
+                  <div class="eq">
+                    <var>a</var> = <var>k</var><sub>w</sub> · <var>Δ</var>
+                  </div>
+                  <dl class="eq-vars">
+                    <div><dt><var>k</var><sub>w</sub></dt><dd>{{ i18n.t('Bounds Force Multiplier') }}</dd></div>
+                    <div><dt><var>Δ</var></dt><dd>{{ i18n.t('overlap past the bound') }}</dd></div>
+                  </dl>
+                </div>
+              </div>
+            </template>
             <font-awesome-icon icon="fa-regular fa-circle-question" style="color: #bbb" />
           </tooltip>
-          &nbsp;
         </label>
       </div>
       <div>
@@ -292,6 +392,101 @@ watch(() => configStore.worldConfig.VIEW_MODE, updatePaused);
   color: #ddd;
   cursor: pointer;
   padding: 4px 0;
+}
+
+.physic-formulas {
+  display: grid;
+  gap: 6px;
+}
+
+.eq-intro {
+  color: #bbb;
+  font-size: 12px;
+  font-weight: normal;
+  line-height: 1.4;
+}
+
+.eq-block {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+
+.eq-label {
+  margin-bottom: 4px;
+  color: #888;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.eq {
+  color: #e8e8e8;
+  font-family: "Cambria Math", "STIX Two Math", "Times New Roman", serif;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.eq var,
+.eq-label var {
+  font-style: italic;
+}
+
+.frac {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 2px;
+  vertical-align: middle;
+}
+
+.frac > span:first-child {
+  padding: 0 6px 1px;
+  border-bottom: 1px solid #aaa;
+  line-height: 1.25;
+}
+
+.frac > span:last-child {
+  padding: 1px 6px 0;
+  line-height: 1.25;
+}
+
+.eq-vars {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px 10px;
+  margin: 2px 0 8px;
+  color: #aaa;
+  font-size: 11px;
+  font-weight: normal;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.eq-vars:last-child {
+  margin-bottom: 0;
+}
+
+.eq-vars > div {
+  display: grid;
+  grid-template-columns: 2.6em 1fr;
+  gap: 6px;
+  align-items: baseline;
+}
+
+.eq-vars dt,
+.eq-vars dd {
+  margin: 0;
+}
+
+.eq-vars dt {
+  font-family: "Cambria Math", "STIX Two Math", "Times New Roman", serif;
+}
+
+.eq-vars var {
+  font-style: italic;
 }
 
 </style>

@@ -35,6 +35,8 @@ export const russianLocale: LocalePack = {
 
     'Physic Model': 'Модель физики',
     Spring: 'Пружина',
+    Link: 'Связь',
+    Bounce: 'Отскок',
     'Max Interaction Radius': 'Макс. радиус взаимодействия',
     'Maximum radius at which unlinked particles can interact.':
       'Максимальный радиус, на котором несвязанные частицы могут взаимодействовать.',
@@ -254,8 +256,17 @@ export const russianLocale: LocalePack = {
     'Transformations Type From Mean Count': 'Трансформации: исходный тип (среднее)',
     'Transformations Type To Mean Count': 'Трансформации: целевой тип (среднее)',
 
-    'Hookean bonds, soft overlap bounce, 1/r² gravity. Link: F = k · ε · (r − L) / m L = (Rᵢ + Rⱼ) · (ℓᵢ + ℓⱼ) / 2 ε = (sᵢ + sⱼ) / 2 Bounce (r < Rᵢ+Rⱼ): F = −k_b · (Rᵢ+Rⱼ − r) / m Gravity: F = G·g / r² / m Link Bias (bonded): F = G·b / m (constant) Bounds: F = k_w · Δ m is the type Mass (legacy configs: Radius³).':
-      'Пружинные связи, мягкий отскок при перекрытии, гравитация 1/r². Связь: F = k · ε · (r − L) / m. L = (Rᵢ + Rⱼ) · (ℓᵢ + ℓⱼ) / 2. ε = (sᵢ + sⱼ) / 2. Отскок (r < Rᵢ+Rⱼ): F = −k_b · (Rᵢ+Rⱼ − r) / m. Гравитация: F = G·g / r² / m. Смещение связи: F = G·b / m (константа). Границы: F = k_w · Δ. m — масса типа (в старых конфигах: Radius³).',
+    'Hookean bonds, soft overlap bounce, 1/r² gravity.':
+      'Пружинные связи, мягкий отскок при перекрытии, гравитация 1/r².',
+    'acceleration (added to velocity)': 'ускорение (прибавляется к скорости)',
+    'distance between the pair': 'расстояние между частицами',
+    'type Mass (legacy Radius³)': 'масса типа (в старых конфигах — куб радиуса)',
+    'type Radius': 'радиус типа',
+    'rest length': 'длина покоя',
+    'Gravity of the unlinked pair': 'гравитация несвязанной пары',
+    'Link Bias of the bonded pair': 'смещение связи связанной пары',
+    'overlap past the bound': 'выход за границу',
+    'the two particle types': 'два типа частиц',
   },
 };
 

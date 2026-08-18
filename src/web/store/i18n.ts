@@ -18,20 +18,24 @@ function normalizePack(pack: typeof englishLocale) {
   };
 }
 
-const locales = builtInLocales.map(normalizePack);
+function getPacks() {
+  return builtInLocales.map(normalizePack);
+}
 
 export const useI18nStore = defineStore('i18n', () => {
   const localStore = useLocalStore();
   const currentCode = ref(loadSavedCode());
 
+  const locales = computed(() => getPacks());
+
   const current = computed(() => {
-    return locales.find((pack) => pack.code === currentCode.value) ?? locales[0];
+    return locales.value.find((pack) => pack.code === currentCode.value) ?? locales.value[0];
   });
 
   function loadSavedCode(): string {
     try {
       const saved = localStore.get(LOCALE_KEY) as { code?: string } | null;
-      if (saved && typeof saved.code === 'string' && locales.some((pack) => pack.code === saved.code)) {
+      if (saved && typeof saved.code === 'string' && getPacks().some((pack) => pack.code === saved.code)) {
         return saved.code;
       }
     } catch {
@@ -42,12 +46,13 @@ export const useI18nStore = defineStore('i18n', () => {
 
   function t(key: string, ...args: Array<string | number>): string {
     const normalized = normalizeMessageKey(key);
-    const translated = current.value.messages[normalized] ?? normalized;
+    const pack = builtInLocales.find((item) => item.code === currentCode.value) ?? englishLocale;
+    const translated = normalizePack(pack).messages[normalized] ?? normalized;
     return formatMessage(translated, args);
   }
 
   function setLocale(code: string): void {
-    if (!locales.some((pack) => pack.code === code)) {
+    if (!getPacks().some((pack) => pack.code === code)) {
       return;
     }
     currentCode.value = code;
