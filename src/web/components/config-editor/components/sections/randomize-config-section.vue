@@ -9,9 +9,11 @@ import InitialConfigSection from "@/web/components/config-editor/components/sect
 import Flag from "@/web/components/inputs/flag.vue";
 import InputHeader from "@/web/components/base/input-header.vue";
 import RandomizeConfigSnippets from "@/web/components/config-editor/components/widgets/randomize-config-snippets.vue";
+import { useI18nStore } from "@/web/store/i18n";
 
 const configStore = useConfigStore();
 const { randomTypesConfig, typesConfig } = configStore;
+const i18n = useI18nStore();
 
 const {
   clearAtoms,
@@ -35,7 +37,7 @@ watch(useIgnoreSubMatricesBoundaryIndex, () => {
 });
 
 const randomizeTypesConfig = () => {
-  if (!confirm('Are you sure?')) {
+  if (!confirm(i18n.t('Are you sure?'))) {
     return;
   }
 
@@ -293,7 +295,7 @@ const randomizeTypesConfig = () => {
           v-show="useIgnoreSubMatricesBoundaryIndex"
           type="number"
           v-model="ignoreSubMatricesBoundaryIndex"
-          placeholder="Cross position"
+          :placeholder="i18n.t('Cross position')"
           style="margin-top: 10px;"
         />
       </div>
@@ -309,7 +311,7 @@ const randomizeTypesConfig = () => {
       </div>
       <br />
       <button class="btn btn-outline-primary" @click="randomizeTypesConfig" style="width: 100%;">
-        {{ needRefill ? 'Randomize and Refill' : 'Randomize' }}
+        {{ needRefill ? i18n.t('Randomize and Refill') : i18n.t('Randomize') }}
       </button>
       <br />
       <br />
@@ -319,12 +321,12 @@ const randomizeTypesConfig = () => {
         @dblclick="configStore.randomizeColors(false)"
         style="width: 100%;"
       >
-        Randomize colors
+        {{ i18n.t('Randomize colors') }}
       </button>
       <br />
       <br />
       <br />
-      <h4>Snippets</h4>
+      <h4>{{ i18n.t('Snippets') }}</h4>
       <randomize-config-snippets />
     </template>
   </config-section>

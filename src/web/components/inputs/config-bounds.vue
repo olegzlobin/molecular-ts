@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useI18nStore } from '@/web/store/i18n';
 
 const props = withDefaults(defineProps<{
   values: [number, number, number?, number?, number?];
@@ -9,6 +10,8 @@ const props = withDefaults(defineProps<{
 }>(), {
   step: 1,
 });
+
+const i18n = useI18nStore();
 
 onMounted(() => {
   if (props.values[4] === undefined || props.values[4] === null) {
@@ -22,11 +25,11 @@ onMounted(() => {
   <table>
     <tbody>
       <tr>
-        <td>min</td>
-        <td>max</td>
-        <td>median</td>
-        <td v-if="values[3] !== undefined && values[3] !== null" width="20%">step</td>
-        <td width="20%" title="Share of values that deviate from median. 1 = fully random, 0 = all median.">share</td>
+        <td>{{ i18n.t('min') }}</td>
+        <td>{{ i18n.t('max') }}</td>
+        <td>{{ i18n.t('median') }}</td>
+        <td v-if="values[3] !== undefined && values[3] !== null" width="20%">{{ i18n.t('step') }}</td>
+        <td width="20%" :title="i18n.t('Share of values that deviate from median. 1 = fully random, 0 = all median.')">{{ i18n.t('share') }}</td>
       </tr>
       <tr>
         <td>

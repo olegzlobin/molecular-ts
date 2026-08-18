@@ -3,12 +3,15 @@
 import type { DecayConfig } from "@/lib/config/types";
 import { ref, watch } from "vue";
 import TypeSelect from "@/web/components/inputs/type-select.vue";
+import { useI18nStore } from "@/web/store/i18n";
 
 const modelValue = defineModel<DecayConfig>();
 defineProps<{
   colors: [number, number, number][];
   names?: string[];
 }>();
+
+const i18n = useI18nStore();
 
 type DecayRow = {
   from: number;
@@ -84,7 +87,7 @@ const removeStabilizer = (row: DecayRow, index: number) => {
 <template>
   <div class="input-group mb-3">
     <div class="input-group-append">
-      <button class="btn btn-outline-secondary" @click="addRule">Add rule</button>
+      <button class="btn btn-outline-secondary" @click="addRule">{{ i18n.t('Add rule') }}</button>
     </div>
   </div>
   <div class="list-group">
@@ -123,7 +126,7 @@ const removeStabilizer = (row: DecayRow, index: number) => {
         </div>
       </div>
       <div class="btn-group">
-        <button class="btn btn-outline-secondary" @click="removeRule(index)">Remove</button>
+        <button class="btn btn-outline-secondary" @click="removeRule(index)">{{ i18n.t('Remove') }}</button>
       </div>
     </div>
   </div>

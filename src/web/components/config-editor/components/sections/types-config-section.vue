@@ -12,11 +12,13 @@ import TransformationConfig from "@/web/components/config-editor/components/widg
 import DecayConfig from "@/web/components/config-editor/components/widgets/decay-config.vue";
 import { useRightBarStore } from '@/web/store/right-bar';
 import ConfigActions from "@/web/components/inputs/config-actions.vue";
+import { useI18nStore } from "@/web/store/i18n";
 
 const configStore = useConfigStore();
 const rightBarStore = useRightBarStore();
 const typesConfig = configStore.typesConfig;
 const typesSymmetricConfig = configStore.typesSymmetricConfig;
+const i18n = useI18nStore();
 
 const {
   clearAtoms,
@@ -28,7 +30,7 @@ const clean = () => {
 }
 
 const setDefaultTypesConfig = () => {
-  if (!confirm('Are you sure?')) {
+  if (!confirm(i18n.t('Are you sure?'))) {
     return;
   }
 
@@ -48,7 +50,7 @@ const setDefaultTypesConfig = () => {
 };
 
 const refill = () => {
-  if (confirm('Are you sure?')) {
+  if (confirm(i18n.t('Are you sure?'))) {
     refillAtoms!();
   }
 };
@@ -59,12 +61,12 @@ const refill = () => {
   <config-section>
     <template #body>
       <div class="btn-group" role="group">
-        <button class="btn btn-outline-secondary" @click="rightBarStore.toggle(rightBarStore.modes.RANDOMIZE)">Randomize</button>
-        <button class="btn btn-outline-secondary" @click="rightBarStore.toggle(rightBarStore.modes.EDIT_TYPES)">Edit</button>
-        <button class="btn btn-outline-secondary" @click="setDefaultTypesConfig">Default</button>
-        <button class="btn btn-outline-secondary" @click="refill">Refill</button>
-        <button class="btn btn-outline-secondary" @click="rightBarStore.toggle(rightBarStore.modes.GENETIC)">Genetic</button>
-        <button class="btn btn-outline-secondary" @click="configStore.appendType">Add type</button>
+        <button class="btn btn-outline-secondary" @click="rightBarStore.toggle(rightBarStore.modes.RANDOMIZE)">{{ i18n.t('Randomize') }}</button>
+        <button class="btn btn-outline-secondary" @click="rightBarStore.toggle(rightBarStore.modes.EDIT_TYPES)">{{ i18n.t('Edit') }}</button>
+        <button class="btn btn-outline-secondary" @click="setDefaultTypesConfig">{{ i18n.t('Default') }}</button>
+        <button class="btn btn-outline-secondary" @click="refill">{{ i18n.t('Refill') }}</button>
+        <button class="btn btn-outline-secondary" @click="rightBarStore.toggle(rightBarStore.modes.GENETIC)">{{ i18n.t('Genetic') }}</button>
+        <button class="btn btn-outline-secondary" @click="configStore.appendType">{{ i18n.t('Add type') }}</button>
       </div>
       <div>
         <input-header
@@ -185,7 +187,7 @@ const refill = () => {
         <config-list :values="typesConfig.LINK_STIFFNESS" :colors="typesConfig.COLORS" :step="0.1" :min="0" />
       </div>
       <details class="advanced-settings">
-        <summary>Advanced settings</summary>
+        <summary>{{ i18n.t('Advanced settings') }}</summary>
         <div class="advanced-block">
           <input-header
             name="Bond Preference Factor"

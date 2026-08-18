@@ -10,8 +10,10 @@ import InputHeader from '@/web/components/base/input-header.vue';
 import { emptyEnergyReport } from '@/lib/analysis/energy';
 import { buildMoleculeSnapshot, type MoleculeSnapshot } from '@/lib/analysis/molecules';
 import { defaultTypeName } from '@/lib/config/atom-types';
+import { useI18nStore } from '@/web/store/i18n';
 
 const { getCurrentSimulation } = useSimulationStore();
+const i18n = useI18nStore();
 
 const showMean: Ref<boolean> = ref(false);
 
@@ -31,9 +33,9 @@ const takeMoleculeSnapshot = (stepIndex?: number) => {
       sim.config.typesConfig.NAMES,
       stepIndex ?? sim.stepIndex,
     );
-    moleculeStatus.value = `Snapshot at step ${moleculeSnapshot.value.tick}`;
+    moleculeStatus.value = i18n.t('Snapshot at step {0}', moleculeSnapshot.value.tick);
   } catch {
-    moleculeStatus.value = 'Simulation not ready';
+    moleculeStatus.value = i18n.t('Simulation not ready');
   }
 };
 
@@ -42,16 +44,16 @@ const startMoleculeWait = () => {
     const sim = getCurrentSimulation();
     waitStartTick.value = sim.stepIndex;
     waitProgress.value = 0;
-    moleculeStatus.value = `Waiting ${waitTicks.value} ticks from ${sim.stepIndex}…`;
+    moleculeStatus.value = i18n.t('Waiting {0} ticks from {1}…', waitTicks.value, sim.stepIndex);
   } catch {
-    moleculeStatus.value = 'Simulation not ready';
+    moleculeStatus.value = i18n.t('Simulation not ready');
   }
 };
 
 const cancelMoleculeWait = () => {
   waitStartTick.value = null;
   waitProgress.value = 0;
-  moleculeStatus.value = 'Cancelled';
+  moleculeStatus.value = i18n.t('Cancelled');
 };
 
 const pollMoleculeWait = () => {
@@ -76,7 +78,7 @@ const copyMoleculeJson = async () => {
     return;
   }
   await navigator.clipboard.writeText(JSON.stringify(moleculeSnapshot.value, null, 2));
-  moleculeStatus.value = 'JSON copied';
+  moleculeStatus.value = i18n.t('JSON copied');
 };
 
 const pct = (value: number): string => `${(value * 100).toFixed(1)}%`;
@@ -617,7 +619,7 @@ onUnmounted(() => {
         />
         <div class="molecules-controls">
           <label class="molecules-wait">
-            Wait ticks
+            {{ i18n.t('Wait ticks') }}
             <input type="number" v-model.number="waitTicks" min="1" step="1" />
           </label>
           <div class="btn-group" role="group">
@@ -627,7 +629,7 @@ onUnmounted(() => {
               :disabled="isWaitingMolecules"
               @click="startMoleculeWait"
             >
-              Wait & snapshot
+              {{ i18n.t('Wait & snapshot') }}
             </button>
             <button
               type="button"
@@ -635,10 +637,10 @@ onUnmounted(() => {
               :disabled="!isWaitingMolecules"
               @click="cancelMoleculeWait"
             >
-              Cancel
+              {{ i18n.t('Cancel') }}
             </button>
             <button type="button" class="btn btn-outline-secondary" @click="takeMoleculeSnapshot()">
-              Now
+              {{ i18n.t('Now') }}
             </button>
             <button
               type="button"
@@ -646,22 +648,22 @@ onUnmounted(() => {
               :disabled="!moleculeSnapshot"
               @click="copyMoleculeJson"
             >
-              Copy JSON
+              {{ i18n.t('Copy JSON') }}
             </button>
           </div>
         </div>
         <div v-if="isWaitingMolecules" class="molecules-status">
-          Progress: {{ waitProgress }} / {{ waitTicks }}
+          {{ i18n.t('Progress: {0} / {1}', waitProgress, waitTicks) }}
         </div>
         <div v-else-if="moleculeStatus" class="molecules-status">{{ moleculeStatus }}</div>
         <table v-if="moleculeSnapshot" class="molecules-table">
           <thead>
             <tr>
-              <th>Formula</th>
-              <th>Count</th>
-              <th>Atoms</th>
-              <th>Mol %</th>
-              <th>Atom %</th>
+              <th>{{ i18n.t('Formula') }}</th>
+              <th>{{ i18n.t('Count') }}</th>
+              <th>{{ i18n.t('Atoms') }}</th>
+              <th>{{ i18n.t('Mol %') }}</th>
+              <th>{{ i18n.t('Atom %') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -675,18 +677,18 @@ onUnmounted(() => {
           </tbody>
         </table>
         <div v-if="moleculeSnapshot" class="molecules-status">
-          Molecules: {{ moleculeSnapshot.moleculeCount }},
-          free atoms: {{ moleculeSnapshot.freeAtomCount }},
-          total atoms: {{ moleculeSnapshot.totalAtoms }}
+          {{ i18n.t('Molecules: {0},', moleculeSnapshot.moleculeCount) }}
+          {{ i18n.t('free atoms: {0},', moleculeSnapshot.freeAtomCount) }}
+          {{ i18n.t('total atoms: {0}', moleculeSnapshot.totalAtoms) }}
         </div>
       </div>
       <div class="energy-readout">
         <div class="energy-readout-header">
-          <h5 class="mb-0">Energy</h5>
+          <h5 class="mb-0">{{ i18n.t('Energy') }}</h5>
           <button
             type="button"
             class="btn btn-sm btn-outline-secondary"
-            title="Reset baseline E₀"
+            :title="i18n.t('Reset baseline E₀')"
             @click="resetEnergyBaseline"
           >
             E₀

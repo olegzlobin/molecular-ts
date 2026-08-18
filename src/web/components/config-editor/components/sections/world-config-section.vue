@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { ref, toRefs, watch } from "vue";
+import { computed, ref, toRefs, watch } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { useConfigStore } from '@/web/store/config';
 import { useSimulationStore } from "@/web/store/simulation";
@@ -9,12 +9,14 @@ import ConfigSection from '@/web/components/config-editor/components/containers/
 import InputHeader from "@/web/components/base/input-header.vue";
 import Tooltip from "@/web/components/base/tooltip.vue";
 import { useRightBarStore } from '@/web/store/right-bar';
+import { useI18nStore } from "@/web/store/i18n";
 
 const physicsStore = usePhysicsStore();
 const { physicModelName } = toRefs(physicsStore);
 
 const configStore = useConfigStore();
 const rightBarStore = useRightBarStore();
+const i18n = useI18nStore();
 const worldConfig = configStore.worldConfig;
 const showConfig = configStore.showConfig;
 
@@ -26,29 +28,28 @@ const {
 } = useSimulationStore();
 
 const clear = () => {
-  if (confirm('Are you sure?')) {
+  if (confirm(i18n.t('Are you sure?'))) {
     clearAtoms!();
   }
 };
 
 const refill = () => {
-  if (confirm('Are you sure?')) {
+  if (confirm(i18n.t('Are you sure?'))) {
     refillAtoms!();
   }
 };
 
-const pausedTitle = ref('Pause');
-const updatePausedTitle = () => {
-  pausedTitle.value = simulation.isPaused() ? 'Resume' : 'Pause';
-}
+const paused = ref(false);
+const pausedTitle = computed(() => i18n.t(paused.value ? 'Resume' : 'Pause'));
+const updatePaused = () => {
+  paused.value = simulation.isPaused();
+};
 const togglePause = () => {
   simulation.togglePause();
-  updatePausedTitle();
+  updatePaused();
 };
 
-watch(() => configStore.worldConfig.VIEW_MODE, () => {
-  updatePausedTitle();
-});
+watch(() => configStore.worldConfig.VIEW_MODE, updatePaused);
 
 </script>
 
@@ -60,13 +61,13 @@ watch(() => configStore.worldConfig.VIEW_MODE, () => {
           {{ pausedTitle }}
         </button>
         <button class="btn btn-outline-secondary" @click="clear">
-          Clear
+          {{ i18n.t('Clear') }}
         </button>
         <button class="btn btn-outline-secondary" @click="refill">
-          Refill
+          {{ i18n.t('Refill') }}
         </button>
         <button class="btn btn-outline-secondary" @click="rightBarStore.toggle(rightBarStore.modes.SUMMARY)">
-          Summary
+          {{ i18n.t('Summary') }}
         </button>
       </div>
       <div>
@@ -77,9 +78,9 @@ watch(() => configStore.worldConfig.VIEW_MODE, () => {
           class="physic-model-option"
         >
           <input type="radio" name="physic-model" v-model="physicModelName" :value="value">
-          {{ title }}
+          {{ i18n.t(title) }}
           <tooltip
-            :text="physicsStore.physicModelTooltipMap[value]"
+            :text="i18n.t(physicsStore.physicModelTooltipMap[value])"
             :width="420"
             style="margin-left: 4px;"
           >
@@ -195,7 +196,7 @@ watch(() => configStore.worldConfig.VIEW_MODE, () => {
               <td v-if="worldConfig.VIEW_MODE === '3d'">z</td>
             </tr>
             <tr>
-              <td>min</td>
+              <td>{{ i18n.t('min') }}</td>
               <td
                 v-for="(_, index) in worldConfig.CONFIG_2D.BOUNDS.MIN_POSITION"
                 v-if="worldConfig.VIEW_MODE === '2d'"
@@ -220,7 +221,7 @@ watch(() => configStore.worldConfig.VIEW_MODE, () => {
               </td>
             </tr>
             <tr>
-              <td>max</td>
+              <td>{{ i18n.t('max') }}</td>
               <td
                 v-for="(_, index) in worldConfig.CONFIG_2D.BOUNDS.MAX_POSITION"
                 v-if="worldConfig.VIEW_MODE === '2d'"
@@ -251,19 +252,19 @@ watch(() => configStore.worldConfig.VIEW_MODE, () => {
           <div>
             <label>
               <input type="checkbox" v-model="showConfig.showAtoms" />
-              Show atoms
+              {{ i18n.t('Show atoms') }}
             </label>
           </div>
           <div>
             <label>
               <input type="checkbox" v-model="showConfig.showLinks" />
-              Show links
+              {{ i18n.t('Show links') }}
             </label>
           </div>
           <div>
             <label>
               <input type="checkbox" v-model="showConfig.showBounds" />
-              Show bounds
+              {{ i18n.t('Show bounds') }}
             </label>
           </div>
         </div>

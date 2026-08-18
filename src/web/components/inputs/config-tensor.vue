@@ -10,6 +10,7 @@ import {
 } from 'mdb-vue-ui-kit';
 import { getColorString } from '@/web/components/config-editor/utils';
 import ConfigMatrix from '@/web/components/inputs/config-matrix.vue';
+import { useI18nStore } from '@/web/store/i18n';
 
 const symmetric = defineModel<boolean | undefined>('symmetric');
 
@@ -27,6 +28,8 @@ const props = withDefaults(defineProps<{
   matrixHint: '',
 });
 
+const i18n = useI18nStore();
+
 const activeTabId = ref('tab-0');
 
 const activeAgentIndex = computed(() => {
@@ -38,7 +41,7 @@ const activeAgentIndex = computed(() => {
 
 <template>
   <div class="config-tensor-widget">
-    <div class="tensor-axis-label">{{ tabLabel }}</div>
+    <div class="tensor-axis-label">{{ i18n.t(tabLabel) }}</div>
     <MDBTabs v-model="activeTabId">
       <MDBTabNav fill>
         <MDBTabItem
@@ -52,10 +55,10 @@ const activeAgentIndex = computed(() => {
         <MDBTabPane :tabId="`tab-${index}`" v-for="(matrix, index) in values">
           <div class="my-tab-pane">
             <div v-if="matrixHint" class="tensor-matrix-hint">
-              {{ matrixHint }}
+              {{ i18n.t(matrixHint) }}
             </div>
             <div class="tensor-matrix-caption">
-              Bond A ⟷ B
+              {{ i18n.t('Bond A ⟷ B') }}
               <span
                 class="agent-swatch"
                 :style="{ backgroundColor: getColorString(colors[activeAgentIndex] ?? colors[0]) }"
@@ -79,7 +82,6 @@ const activeAgentIndex = computed(() => {
 <style scoped lang="scss">
 
 @use "../config-editor/assets/config-editor";
-@use "../../../../node_modules/bootstrap/scss/bootstrap-utilities";
 
 .tensor-axis-label {
   font-size: 0.85rem;

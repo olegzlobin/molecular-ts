@@ -130,11 +130,13 @@ export const useSimulationStore = defineStore("simulation", () => {
   }
 
   const isPaused = () => {
-    return getCurrentSimulation().isPaused;
+    const current = configStore.worldConfig.VIEW_MODE === '3d' ? simulation3d : simulation2d;
+    return current?.isPaused ?? false;
   }
 
   const togglePause = () => {
-    return getCurrentSimulation().togglePause();
+    const current = configStore.worldConfig.VIEW_MODE === '3d' ? simulation3d : simulation2d;
+    return current?.togglePause();
   }
 
   const setViewMode = async (viewMode: ViewMode) => {
