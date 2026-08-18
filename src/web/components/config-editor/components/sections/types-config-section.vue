@@ -65,7 +65,6 @@ const refill = () => {
         <button class="btn btn-outline-secondary" @click="rightBarStore.toggle(rightBarStore.modes.EDIT_TYPES)">{{ i18n.t('Edit') }}</button>
         <button class="btn btn-outline-secondary" @click="setDefaultTypesConfig">{{ i18n.t('Default') }}</button>
         <button class="btn btn-outline-secondary" @click="refill">{{ i18n.t('Refill') }}</button>
-        <button class="btn btn-outline-secondary" @click="rightBarStore.toggle(rightBarStore.modes.GENETIC)">{{ i18n.t('Genetic') }}</button>
         <button class="btn btn-outline-secondary" @click="configStore.appendType">{{ i18n.t('Add type') }}</button>
       </div>
       <div>

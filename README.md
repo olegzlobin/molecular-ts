@@ -57,8 +57,7 @@ Live demo: https://smoren.github.io/molecular-ts/
 Play with the simulation hyperparameters in the [live demo](https://smoren.github.io/molecular-ts/) and share links
 to interesting worlds obtained in the app in the [special issue](https://github.com/Smoren/molecular-ts/issues/1).
 
-Worlds can be imported and exported as configuration and state files. A genetic search is available in the application
-to explore type configurations that produce more structured compounds.
+Worlds can be imported and exported as configuration and state files.
 
 ## Install
 

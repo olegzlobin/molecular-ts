@@ -2,7 +2,6 @@ export const AVAILABLE_MODES = [
   'RANDOMIZE',
   'SUMMARY',
   'EDIT_TYPES',
-  'GENETIC',
 ] as const;
 
 export type BarModeAlias = (typeof AVAILABLE_MODES)[number];
@@ -26,5 +25,4 @@ export const modesMap = createModesMap([
   ['RANDOMIZE', 'Randomize types config'],
   ['SUMMARY', 'Summary'],
   ['EDIT_TYPES', 'Edit types config'],
-  ['GENETIC', 'Genetic search'],
 ]);
