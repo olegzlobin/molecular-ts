@@ -271,8 +271,8 @@ export const russianLocale: LocalePack = {
     Molecules: 'Молекулы',
     'Count bonded groups by chemical-like formulas from type names (Hill order: C, H, then A–Z). Free atoms are included as single-letter formulas.':
       'Подсчёт связанных групп по химико-подобным формулам из имён типов (порядок Хилла: C, H, затем A–Z). Свободные атомы входят как однобуквенные формулы.',
-    'Wait ticks': 'Ждать тиков',
-    'Wait & snapshot': 'Ждать и снимок',
+    'Wait ticks': 'Через тиков',
+    'Wait & snapshot': 'Снять',
     Cancel: 'Отмена',
     Now: 'Сейчас',
     'Copy JSON': 'Копировать JSON',

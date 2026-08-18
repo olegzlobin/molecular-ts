@@ -60,7 +60,7 @@ const refill = () => {
 <template>
   <config-section>
     <template #body>
-      <div class="btn-group" role="group">
+      <div class="types-actions" role="group">
         <button class="btn btn-outline-secondary" @click="rightBarStore.toggle(rightBarStore.modes.RANDOMIZE)">{{ i18n.t('Randomize') }}</button>
         <button class="btn btn-outline-secondary" @click="rightBarStore.toggle(rightBarStore.modes.EDIT_TYPES)">{{ i18n.t('Edit') }}</button>
         <button class="btn btn-outline-secondary" @click="setDefaultTypesConfig">{{ i18n.t('Default') }}</button>
@@ -244,6 +244,18 @@ const refill = () => {
 <style scoped lang="scss">
 
 @use "../../assets/config-editor";
+
+.types-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  width: 100%;
+
+  .btn {
+    flex: 1 1 auto;
+    white-space: nowrap;
+  }
+}
 
 .advanced-settings {
   margin-top: 16px;
