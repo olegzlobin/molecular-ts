@@ -17,59 +17,20 @@ const i18n = useI18nStore();
 
 const showMean: Ref<boolean> = ref(false);
 
-const waitTicks = ref(500);
-const waitStartTick = ref<number | null>(null);
-const waitProgress = ref(0);
 const moleculeSnapshot = ref<MoleculeSnapshot | null>(null);
 const moleculeStatus = ref('');
 
-const isWaitingMolecules = computed(() => waitStartTick.value !== null);
-
-const takeMoleculeSnapshot = (stepIndex?: number) => {
+const takeMoleculeSnapshot = () => {
   try {
     const sim = getCurrentSimulation();
     moleculeSnapshot.value = buildMoleculeSnapshot(
       sim.atoms,
       sim.config.typesConfig.NAMES,
-      stepIndex ?? sim.stepIndex,
+      sim.stepIndex,
     );
     moleculeStatus.value = i18n.t('Snapshot at step {0}', moleculeSnapshot.value.tick);
   } catch {
     moleculeStatus.value = i18n.t('Simulation not ready');
-  }
-};
-
-const startMoleculeWait = () => {
-  try {
-    const sim = getCurrentSimulation();
-    waitStartTick.value = sim.stepIndex;
-    waitProgress.value = 0;
-    moleculeStatus.value = i18n.t('Waiting {0} ticks from {1}…', waitTicks.value, sim.stepIndex);
-  } catch {
-    moleculeStatus.value = i18n.t('Simulation not ready');
-  }
-};
-
-const cancelMoleculeWait = () => {
-  waitStartTick.value = null;
-  waitProgress.value = 0;
-  moleculeStatus.value = i18n.t('Cancelled');
-};
-
-const pollMoleculeWait = () => {
-  if (waitStartTick.value === null) {
-    return;
-  }
-  try {
-    const sim = getCurrentSimulation();
-    const elapsed = sim.stepIndex - waitStartTick.value;
-    waitProgress.value = Math.max(0, elapsed);
-    if (elapsed >= waitTicks.value) {
-      waitStartTick.value = null;
-      takeMoleculeSnapshot(sim.stepIndex);
-    }
-  } catch {
-    // simulation not ready
   }
 };
 
@@ -131,7 +92,6 @@ const resetEnergyBaseline = () => {
 };
 
 let energyReadoutTimer: ReturnType<typeof setInterval> | undefined;
-let moleculeWaitTimer: ReturnType<typeof setInterval> | undefined;
 
 type ChartConfig = {
   id: string;
@@ -588,17 +548,12 @@ onMounted(() => {
   }
   refreshEnergyReadout();
   energyReadoutTimer = setInterval(refreshEnergyReadout, 200);
-  moleculeWaitTimer = setInterval(pollMoleculeWait, 200);
 });
 
 onUnmounted(() => {
   if (energyReadoutTimer !== undefined) {
     clearInterval(energyReadoutTimer);
     energyReadoutTimer = undefined;
-  }
-  if (moleculeWaitTimer !== undefined) {
-    clearInterval(moleculeWaitTimer);
-    moleculeWaitTimer = undefined;
   }
   try {
     getCurrentSimulation().setEnergyTracking(false);
@@ -618,28 +573,8 @@ onUnmounted(() => {
           tooltip="Count bonded groups by chemical-like formulas from type names (Hill order: C, H, then A–Z). Free atoms are included as single-letter formulas."
         />
         <div class="molecules-controls">
-          <label class="molecules-wait">
-            {{ i18n.t('Wait ticks') }}
-            <input type="number" v-model.number="waitTicks" min="1" step="1" />
-          </label>
           <div class="btn-group" role="group">
-            <button
-              type="button"
-              class="btn btn-outline-secondary"
-              :disabled="isWaitingMolecules"
-              @click="startMoleculeWait"
-            >
-              {{ i18n.t('Wait & snapshot') }}
-            </button>
-            <button
-              type="button"
-              class="btn btn-outline-secondary"
-              :disabled="!isWaitingMolecules"
-              @click="cancelMoleculeWait"
-            >
-              {{ i18n.t('Cancel') }}
-            </button>
-            <button type="button" class="btn btn-outline-secondary" @click="takeMoleculeSnapshot()">
+            <button type="button" class="btn btn-outline-secondary" @click="takeMoleculeSnapshot">
               {{ i18n.t('Now') }}
             </button>
             <button
@@ -652,10 +587,7 @@ onUnmounted(() => {
             </button>
           </div>
         </div>
-        <div v-if="isWaitingMolecules" class="molecules-status">
-          {{ i18n.t('Progress: {0} / {1}', waitProgress, waitTicks) }}
-        </div>
-        <div v-else-if="moleculeStatus" class="molecules-status">{{ moleculeStatus }}</div>
+        <div v-if="moleculeStatus" class="molecules-status">{{ moleculeStatus }}</div>
         <table v-if="moleculeSnapshot" class="molecules-table">
           <thead>
             <tr>
@@ -766,16 +698,7 @@ onUnmounted(() => {
 }
 
 .molecules-controls {
-  display: grid;
-  gap: 0.5rem;
   margin-top: 0.5rem;
-}
-
-.molecules-wait {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 0.5rem;
-  align-items: center;
 }
 
 .molecules-status {
