@@ -34,7 +34,7 @@
 
 Дефолтный конфиг типов (C, H, O, N): частицы образуют связи и небольшие молекулы.
 
-![Дефолтный конфиг](docs/default-config.mp4)
+![Дефолтный конфиг](docs/default-config.webp)
 
 [Живое демо](https://olegzlobin.github.io/molecular-ts/)
 

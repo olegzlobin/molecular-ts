@@ -34,7 +34,7 @@ spontaneous emergence of artificial life will be present.
 
 Default types config (C, H, O, N): particles form bonds and small molecules.
 
-![Default config](docs/default-config.mp4)
+![Default config](docs/default-config.webp)
 
 [Live demo](https://olegzlobin.github.io/molecular-ts/)
 
