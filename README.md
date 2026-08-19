@@ -36,6 +36,10 @@ Default types config (C, H, O, N): particles form bonds and small molecules.
 
 ![Default config](docs/default-config.webp)
 
+[`catalyst.json`](data/interesting/catalyst.json): type B catalyzes A→B; B decays back to A unless neighboring B stabilize it.
+
+![catalyst.json](docs/catalyst.webp)
+
 [Live demo](https://olegzlobin.github.io/molecular-ts/)
 
 ## Controls

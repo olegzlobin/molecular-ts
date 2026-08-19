@@ -36,6 +36,10 @@
 
 ![Дефолтный конфиг](docs/default-config.webp)
 
+[`catalyst.json`](data/interesting/catalyst.json): тип B катализирует превращение A→B; B распадается обратно в A, если его не стабилизируют соседние B.
+
+![catalyst.json](docs/catalyst.webp)
+
 [Живое демо](https://olegzlobin.github.io/molecular-ts/)
 
 ## Управление
