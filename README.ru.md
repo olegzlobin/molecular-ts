@@ -32,7 +32,11 @@
 
 ## Демо
 
-Живое демо: https://smoren.github.io/molecular-ts/
+Дефолтный конфиг типов (C, H, O, N): частицы образуют связи и небольшие молекулы.
+
+![Дефолтный конфиг](docs/default-config.mp4)
+
+[Живое демо](https://olegzlobin.github.io/molecular-ts/)
 
 ## Управление
 ### 3D

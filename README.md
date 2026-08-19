@@ -32,7 +32,11 @@ spontaneous emergence of artificial life will be present.
 
 ## Demo
 
-Live demo: https://smoren.github.io/molecular-ts/
+Default types config (C, H, O, N): particles form bonds and small molecules.
+
+![Default config](docs/default-config.mp4)
+
+[Live demo](https://olegzlobin.github.io/molecular-ts/)
 
 ## Controls
 ### 3D
