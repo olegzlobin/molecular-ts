@@ -28,8 +28,8 @@ export function convertTypesConfigForBackwardCompatibility(inputConfig: TypesCon
   deleteKey(raw, 'CHARGE');
 
   const mistypedTransforms = raw.TRANSFORMS;
-  if (mistypedTransforms !== undefined && config.TRANSFORMS === undefined) {
-    config.TRANSFORMS = mistypedTransforms as TypesConfig['TRANSFORMS'];
+  if (mistypedTransforms !== undefined && config.TRANSFORMATION === undefined) {
+    config.TRANSFORMATION = mistypedTransforms as TypesConfig['TRANSFORMATION'];
   }
   deleteKey(raw, 'TRANSFORMS');
 
@@ -50,8 +50,8 @@ export function convertTypesConfigForBackwardCompatibility(inputConfig: TypesCon
     }
   }
 
-  if (config.TRANSFORMS === undefined) {
-    config.TRANSFORMS = {};
+  if (config.TRANSFORMATION === undefined) {
+    config.TRANSFORMATION = {};
   }
 
   if (!config.MASS || config.MASS.length !== (config.RADIUS?.length ?? 0)) {
