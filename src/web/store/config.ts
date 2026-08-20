@@ -275,7 +275,7 @@ export const useConfigStore = defineStore("config", () => {
   }
 
   const appendType = () => {
-    const newConfig = createSingleTypeConfig();
+    const newConfig = createSingleTypeConfig(typesConfig.value.NAMES);
     addTypesFromConfig(newConfig);
   }
 
